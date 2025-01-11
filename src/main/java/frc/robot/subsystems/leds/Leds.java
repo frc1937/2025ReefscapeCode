@@ -12,7 +12,13 @@ import frc.lib.util.CustomLEDPatterns;
 
 import java.util.function.Supplier;
 
-import static frc.lib.util.CustomLEDPatterns.*;
+import static frc.lib.util.CustomLEDPatterns.LEDS_COUNT;
+import static frc.lib.util.CustomLEDPatterns.generateBreathingBuffer;
+import static frc.lib.util.CustomLEDPatterns.generateCirclingBuffer;
+import static frc.lib.util.CustomLEDPatterns.generateFlashingBuffer;
+import static frc.lib.util.CustomLEDPatterns.generateOutwardsPointsBuffer;
+import static frc.lib.util.CustomLEDPatterns.generatePositionIndicatorBuffer;
+import static frc.lib.util.CustomLEDPatterns.getBufferFromColors;
 
 public class Leds extends SubsystemBase {
     private static final AddressableLED ledstrip = new AddressableLED(0);
@@ -22,15 +28,6 @@ public class Leds extends SubsystemBase {
         ledstrip.setLength(LEDS_COUNT);
         ledstrip.setData(buffer);
         ledstrip.start();
-    }
-
-    public Command setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition, double timeout) {
-        return getCommandFromColours(() -> generatePositionIndicatorBuffer(
-                new Color8Bit(Color.kRed),
-                new Color8Bit(Color.kGreen),
-                robotPosition,
-                targetPosition
-        ), timeout);
     }
 
     public Command setLEDStatus(LEDMode mode, double timeout) {
@@ -56,10 +53,27 @@ public class Leds extends SubsystemBase {
                     new Color8Bit(Color.kGreen)
             ), timeout);
 
-            case BATTERY_LOW -> getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout);
+            case BATTERY_LOW ->
+                    getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout);
 
             default -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, 0);
         };
+    }
+
+    /**
+     * Sets the LED strip to indicate the robot's position relative to the target position.
+     * This is command-less as the target position may change during the assignment of the autonomous.
+     * @param robotPosition - The current robot position.
+     * @param targetPosition - The target position, where the robot should be.
+     */
+    public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
+        flashLEDStrip(
+                generatePositionIndicatorBuffer(
+                        new Color8Bit(Color.kRed),
+                        new Color8Bit(Color.kGreen),
+                        robotPosition,
+                        targetPosition
+                ));
     }
 
     private Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {

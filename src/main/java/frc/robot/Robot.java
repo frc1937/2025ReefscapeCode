@@ -1,18 +1,21 @@
 package frc.robot;
 
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LoggedRobot;
+
+import java.io.IOException;
 
 import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.poseestimation.photoncamera.CameraFactory.VISION_SIMULATION;
 
 public class Robot extends LoggedRobot {
-    private Command autonomousCommand;
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
     private RobotContainer robotContainer;
 
@@ -34,14 +37,25 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledInit() {
-        LEDS.setLEDToPositionIndicator(
-                POSE_ESTIMATOR.getCurrentPose().getTranslation(),
-                new Translation2d(2, 2),
-                10000).schedule();
     }
 
     @Override
     public void disabledPeriodic() {
+        try {
+            final PathPlannerPath path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
+
+            if (path.getStartingHolonomicPose().isEmpty()) return;
+
+            final Translation2d startingTranslation = path.getStartingHolonomicPose().get().getTranslation();
+
+            LEDS.setLEDToPositionIndicator(
+                    POSE_ESTIMATOR.getCurrentPose().getTranslation(),
+                    startingTranslation
+            );
+
+        } catch (IOException | ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -50,7 +64,7 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void autonomousInit() {
-        autonomousCommand = robotContainer.getAutonomousCommand();
+        final Command autonomousCommand = robotContainer.getAutonomousCommand();
 
         if (autonomousCommand != null) {
             autonomousCommand.schedule();

@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -19,8 +20,10 @@ import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
 import static frc.lib.util.Controller.Axis.LEFT_X;
@@ -31,12 +34,6 @@ public class RobotContainer {
     public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
             FRONT_CAMERA
     );
-
-    public static final DetectionCameraIO DETECTION_CAMERA = DetectionCameraFactory.createDetectionCamera("NotesCamera",
-            new Transform3d(
-                    new Translation3d(0.3, 0.08, 0.31),
-                    new Rotation3d()
-    ));
 
     public static final Swerve SWERVE = new Swerve();
     public static final Leds LEDS = new Leds();
@@ -54,6 +51,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    public String getAutoName() {
+        return autoChooser.getSendableChooser().getSelected();
     }
 
     private void configureBindings() {
