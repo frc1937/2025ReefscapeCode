@@ -48,11 +48,6 @@ public class Leds extends SubsystemBase {
                     new Color8Bit(Color.kWhite)
             ), timeout);
 
-            case NOT_AT_AUTO_PLACE -> getCommandFromColours(() -> generateBreathingBuffer(
-                    new Color8Bit(Color.kRed),
-                    new Color8Bit(Color.kGreen)
-            ), timeout);
-
             case BATTERY_LOW ->
                     getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout);
 
@@ -76,6 +71,14 @@ public class Leds extends SubsystemBase {
                 ));
     }
 
+    public enum LEDMode {
+        SHOOTER_LOADED,
+        SHOOTER_EMPTY,
+        DEBUG_MODE,
+        BATTERY_LOW,
+        DEFAULT,
+    }
+
     private Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
         if (timeout == 0)
             return Commands.run(() -> flashLEDStrip(colours.get()), this).ignoringDisable(true);
@@ -86,14 +89,5 @@ public class Leds extends SubsystemBase {
 
     private void flashLEDStrip(Color8Bit[] colours) {
         ledstrip.setData(getBufferFromColors(buffer, colours));
-    }
-
-    public enum LEDMode {
-        SHOOTER_LOADED,
-        SHOOTER_EMPTY,
-        DEBUG_MODE,
-        BATTERY_LOW,
-        DEFAULT,
-        NOT_AT_AUTO_PLACE
     }
 }
