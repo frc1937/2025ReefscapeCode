@@ -25,4 +25,9 @@ public class PortsConstants {
 
         public static final int GYRO_PORT = 30;
     }
+
+    public static class IntakePorts {
+        public static final int INTAKE_MOTOR_PORT = 1;
+        public static final int BEAM_BREAK_PORT = 4;
+    }
 }
