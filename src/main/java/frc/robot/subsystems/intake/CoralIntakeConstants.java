@@ -11,7 +11,7 @@ import frc.lib.generic.visualization.mechanisms.SpeedMechanism2d;
 import static frc.robot.utilities.PortsConstants.IntakePorts.BEAM_BREAK_PORT;
 import static frc.robot.utilities.PortsConstants.IntakePorts.INTAKE_MOTOR_PORT;
 
-public class IntakeConstants {
+public class CoralIntakeConstants {
     protected static final Motor INTAKE_MOTOR = MotorFactory.createTalonFX("INTAKE_MOTOR", INTAKE_MOTOR_PORT);
     protected static final Sensor BEAM_BREAK = SensorFactory.createDigitalInput("BEAM_BREAK", BEAM_BREAK_PORT);
 
