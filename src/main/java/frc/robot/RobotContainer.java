@@ -10,6 +10,8 @@ import frc.lib.generic.GenericSubsystem;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.*;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -33,6 +35,7 @@ public class RobotContainer {
 
     public static final Swerve SWERVE = new Swerve();
     public static final Leds LEDS = new Leds();
+    public static final Elevator ELEVATOR = new Elevator();
 
     private final Trigger userButton = new Trigger(RobotController::getUserButton);
 
@@ -58,7 +61,16 @@ public class RobotContainer {
         setupLEDs();
 
         setupFeederPathfinding(driveController.getButton(Controller.Inputs.A));
-        
+
+        driveController.getButton(Controller.Inputs.B).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB));
+        driveController.getButton(Controller.Inputs.A).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L1));
+        driveController.getButton(Controller.Inputs.Y).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L3));
+        driveController.getButton(Controller.Inputs.X).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.FEEDER));
+
+        ELEVATOR.setDefaultCommand(
+                ELEVATOR.setTargetPosition(ElevatorHeight.L2)
+        );
+
         configureButtons(ButtonLayout.TELEOP);
     }
 
