@@ -1,4 +1,4 @@
-package frc.robot.subsystems.coralIntake;
+package frc.robot.subsystems.coralintake;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.lib.generic.hardware.motor.*;
