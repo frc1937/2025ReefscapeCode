@@ -5,11 +5,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
-import frc.lib.util.flippable.FlippablePose2d;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
 
+import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
+import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.BLUE_BOTTOM_FEEDER_INTAKE_POSE;
@@ -36,10 +37,10 @@ public class PathfindingCommands {
         Pose2d originalPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
 
         if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
-            originalPose = FlippablePose2d.flipAboutYAxis(originalPose);
+            originalPose = flipAboutXAxis(originalPose);
 
         if (Flippable.isRedAlliance())
-            originalPose = FlippablePose2d.flipAboutXAxis(originalPose);
+            originalPose = flipAboutYAxis(originalPose);
 
         return originalPose;
     }

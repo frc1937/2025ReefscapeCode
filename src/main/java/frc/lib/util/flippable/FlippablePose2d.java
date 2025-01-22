@@ -5,35 +5,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-import static frc.robot.utilities.FieldConstants.FIELD_LENGTH;
-import static frc.robot.utilities.FieldConstants.FIELD_WIDTH;
-
 /**
  * A class that represents a {@link Pose2d} that can be flipped when the robot is on the red alliance.
  */
 public class FlippablePose2d extends Flippable<Pose2d> {
-    /**
-     * Rotate the pose about the Y axis
-     *
-     * @param pose The pose to rotate
-     * @return The rotated pose
-     */
-    public static Pose2d flipAboutYAxis(Pose2d pose) {
-        final Pose2d flippedPose = FlippingUtil.flipFieldPose(pose);
-        return new Pose2d(FIELD_LENGTH - flippedPose.getX(), flippedPose.getY(), Rotation2d.k180deg.minus(flippedPose.getRotation()));
-    }
-
-    /**
-     * Rotate the pose about the X axis, including rotation.
-     *
-     * @param pose The pose to rotate
-     * @return The rotated pose
-     */
-    public static Pose2d flipAboutXAxis(Pose2d pose) {
-        final Pose2d flippedPose = FlippingUtil.flipFieldPose(pose);
-        return new Pose2d(flippedPose.getX(), FIELD_WIDTH - flippedPose.getY(), flippedPose.getRotation().unaryMinus());
-    }
-
     /**
      * Creates a new FlippablePose2d with the given x, y, and rotation.
      *

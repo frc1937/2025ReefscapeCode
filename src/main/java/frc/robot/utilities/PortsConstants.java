@@ -30,4 +30,12 @@ public class PortsConstants {
         public static final int INTAKE_MOTOR_PORT = 1;
         public static final int BEAM_BREAK_DIO_PORT = 4;
     }
+
+    public static class ElevatorPorts {  // Fake ports
+        public static final int
+                MASTER_MOTOR_PORT = 7,
+                SLAVE_MOTOR_PORT = 8,
+                TOP_BEAM_BREAK_DIO_PORT = 15,
+                BOTTOM_BEAM_BREAK_DIO_PORT = 16;
+    }
 }

@@ -10,6 +10,8 @@ import frc.lib.generic.GenericSubsystem;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.*;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -33,6 +35,7 @@ public class RobotContainer {
 
     public static final Swerve SWERVE = new Swerve();
     public static final Leds LEDS = new Leds();
+    public static final Elevator ELEVATOR = new Elevator();
 
     private final Trigger userButton = new Trigger(RobotController::getUserButton);
 
@@ -58,7 +61,16 @@ public class RobotContainer {
         setupLEDs();
 
         setupFeederPathfinding(driveController.getButton(Controller.Inputs.A));
-        
+
+        driveController.getButton(Controller.Inputs.B).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB));
+        driveController.getButton(Controller.Inputs.A).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L1));
+        driveController.getButton(Controller.Inputs.Y).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L3));
+        driveController.getButton(Controller.Inputs.X).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.FEEDER));
+
+        ELEVATOR.setDefaultCommand(
+                ELEVATOR.setTargetPosition(ElevatorHeight.L2)
+        );
+
         configureButtons(ButtonLayout.TELEOP);
     }
 
@@ -87,13 +99,13 @@ public class RobotContainer {
         }).onTrue(LEDS.setLEDStatus(Leds.LEDMode.BATTERY_LOW, 5));
     }
 
-    private void setupDriving(DoubleSupplier translationSupplier, DoubleSupplier strafeSupplier) {
+    private void setupDriving(DoubleSupplier translationSupplier, DoubleSupplier strafeSupplier, DoubleSupplier rotationSupplier) {
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(
                         translationSupplier,
                         strafeSupplier,
+                        rotationSupplier,
 
-                        () -> -driveController.getRawAxis(Controller.Axis.RIGHT_X) * 6,
                         () -> driveController.getStick(Controller.Stick.RIGHT_STICK).getAsBoolean()
                 ));
 
@@ -102,10 +114,13 @@ public class RobotContainer {
     }
 
     private void configureButtonsTeleop() {
-        DoubleSupplier translationSupplier = () -> -driveController.getRawAxis(LEFT_Y);
-        DoubleSupplier strafeSupplier = () -> -driveController.getRawAxis(LEFT_X);
+        DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
 
-        setupDriving(translationSupplier, strafeSupplier);
+        DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_Y);
+        DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_X);
+        DoubleSupplier rotationSupplier =  () -> driveSign.getAsDouble() * driveController.getRawAxis(Controller.Axis.RIGHT_X);
+
+        setupDriving(translationSupplier, strafeSupplier, rotationSupplier);
 
 //        driveController.getButton(Controller.Inputs.A)
 //            .whileTrue(SwerveCommands.driveAndRotateToClosestNote(translationSupplier, strafeSupplier));

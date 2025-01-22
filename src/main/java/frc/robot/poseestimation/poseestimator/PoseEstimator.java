@@ -26,8 +26,8 @@ public class PoseEstimator implements AutoCloseable {
     private final TimeInterpolatableBuffer<Pose2d> previousOdometryPoses = TimeInterpolatableBuffer.createBuffer(POSE_BUFFER_SIZE_SECONDS);
 
     private Pose2d
-            odometryPose = new Pose2d(),
-            estimatedPose = new Pose2d();
+            odometryPose = EMPTY_POSE,
+            estimatedPose = EMPTY_POSE;
 
     private SwerveModulePosition[] lastSwerveModulePositions = new SwerveModulePosition[]{
             new SwerveModulePosition(),
