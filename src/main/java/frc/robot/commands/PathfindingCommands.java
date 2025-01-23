@@ -44,7 +44,7 @@ public class PathfindingCommands {
 
     private static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
-        final Translation2d distanceToReef = REEF_CENTER.minus(robotPose);
+        final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
 
@@ -59,11 +59,9 @@ public class PathfindingCommands {
     private static Command pathfindToFeeder() {
         final Pose2d targetPose = decideFeederPose();
 
-        if (isRobotInProximity(targetPose, 0.8)) {
-            return SwerveCommands.goToPosePID(targetPose);
-        }
-
-        return SwerveCommands.goToPoseBezier(targetPose);
+        return isRobotInProximity(targetPose, 0.8) ?
+                SwerveCommands.goToPosePID(targetPose) :
+                SwerveCommands.goToPoseBezier(targetPose);
     }
 
     private static Pose2d decideFeederPose() {
