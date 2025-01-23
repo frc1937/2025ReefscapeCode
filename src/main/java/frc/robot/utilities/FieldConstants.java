@@ -34,9 +34,9 @@ public class FieldConstants {
         private final FlippablePose2d rightBranch;
 
         ReefFace(double x, double y, Rotation2d rotation) {
-            this.facePose = new FlippablePose2d(x, y, rotation,true);
+            this.facePose = new FlippablePose2d(x, y, rotation, true);
 
-            final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(),facePose.getRotation().get(),true);
+            final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(), facePose.getRotation().get(), true);
             this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_TRANSFORM), true);
             this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_TRANSFORM), true);
         }
