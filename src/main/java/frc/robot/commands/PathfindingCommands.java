@@ -27,14 +27,12 @@ public class PathfindingCommands {
         );
     }
 
-    public static void setupReefPathfinding(Trigger button1, Trigger button2) {
-        button1.and(button2.negate()).whileTrue(
-                Commands.defer(() -> pathfindToBranch(true), Set.of(SWERVE))
+    public static void setupReefPathfinding(Trigger firstButton, Trigger secondButton) {
+        firstButton.and(secondButton.negate()).whileTrue(
                 new DeferredCommand(() -> pathfindToBranch(true), Set.of(SWERVE))
         );
 
-        button2.and(button1.negate()).whileTrue(
-                Commands.defer(() -> pathfindToBranch(false), Set.of(SWERVE))
+        secondButton.and(firstButton.negate()).whileTrue(
                 new DeferredCommand(() -> pathfindToBranch(false), Set.of(SWERVE))
         );
     }
