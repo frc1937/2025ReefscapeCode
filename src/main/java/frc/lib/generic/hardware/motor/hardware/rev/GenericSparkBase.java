@@ -91,44 +91,7 @@ public abstract class GenericSparkBase extends Motor {
 
     @Override
     public boolean configure(MotorConfiguration configuration) {
-        currentConfiguration = configuration;
-
-        SparkBaseConfig sparkConfig = getSparkConfig();
-
-        sparkConfig.idleMode(configuration.idleMode == MotorProperties.IdleMode.COAST ? SparkBaseConfig.IdleMode.kCoast : SparkBaseConfig.IdleMode.kBrake);
-
-        sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(configuration.closedLoopTolerance);
-
-        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
-        sparkConfig.closedLoop.pid(configuration.slot.kP(), configuration.slot.kI(), configuration.slot.kD());
-
-        sparkConfig.encoder.positionConversionFactor(1.0 / configuration.gearRatio);
-        sparkConfig.encoder.velocityConversionFactor(1.0 / (Conversions.SEC_PER_MIN * configuration.gearRatio));
-
-        sparkConfig.openLoopRampRate(configuration.dutyCycleOpenLoopRampPeriod);
-        sparkConfig.closedLoopRampRate(configuration.dutyCycleClosedLoopRampPeriod);
-
-        sparkConfig.voltageCompensation(12);
-
-        sparkConfig.signals.apply(signalsConfig);
-
-        sparkConfig.inverted(configuration.inverted);
-
-        if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
-        if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
-
-        configureFeedforward(configuration.slot);
-
-        configureProfile(configuration);
-        sparkConfig = configureExtras(configuration, sparkConfig);
-
-        int i = 0;
-
-        while (i <= 5 && spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) != REVLibError.kOk) {
-            i++;
-        }
-
-        return spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
+        return configureMotor(configuration, null, false);
     }
 
     protected void configureFeedforward(MotorProperties.Slot slot) {
@@ -148,8 +111,11 @@ public abstract class GenericSparkBase extends Motor {
     }
 
     @Override
-    public void setFollowerOf(String name, int masterPort) {
-        //TODO: Implement
+    public void setFollowerOf(Motor motor, boolean invert) {
+        if (!(motor instanceof GenericSparkBase))
+            return;
+
+        configureMotor(currentConfiguration, ((GenericSparkBase) motor).spark, invert);
     }
 
     @Override
@@ -371,7 +337,7 @@ public abstract class GenericSparkBase extends Motor {
     protected abstract SparkBaseConfig getSparkConfig();
 
     private void optimizeBusUsage() {
-        final int disabledMs = 0;//todo: add a "setup signal updates" to compensate for this goofy ahh rev shit
+        final int disabledMs = 0;
 
         //Status0:
         signalsConfig.appliedOutputPeriodMs(disabledMs);
@@ -415,5 +381,49 @@ public abstract class GenericSparkBase extends Motor {
         //Status7:
         signalsConfig.iAccumulationPeriodMs(disabledMs);
         signalsConfig.iAccumulationAlwaysOn(false);
+    }
+
+    private boolean configureMotor(MotorConfiguration configuration, SparkBase master, boolean invert) {
+        currentConfiguration = configuration;
+
+        SparkBaseConfig sparkConfig = getSparkConfig();
+
+        sparkConfig.idleMode(configuration.idleMode == MotorProperties.IdleMode.COAST ? SparkBaseConfig.IdleMode.kCoast : SparkBaseConfig.IdleMode.kBrake);
+
+        sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(configuration.closedLoopTolerance);
+
+        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
+        sparkConfig.closedLoop.pid(configuration.slot.kP(), configuration.slot.kI(), configuration.slot.kD());
+
+        sparkConfig.encoder.positionConversionFactor(1.0 / configuration.gearRatio);
+        sparkConfig.encoder.velocityConversionFactor(1.0 / (Conversions.SEC_PER_MIN * configuration.gearRatio));
+
+        sparkConfig.openLoopRampRate(configuration.dutyCycleOpenLoopRampPeriod);
+        sparkConfig.closedLoopRampRate(configuration.dutyCycleClosedLoopRampPeriod);
+
+        sparkConfig.voltageCompensation(12);
+
+        sparkConfig.signals.apply(signalsConfig);
+
+        sparkConfig.inverted(configuration.inverted);
+
+        if (master != null)
+            sparkConfig.follow(master, invert);
+
+        if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
+        if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
+
+        configureFeedforward(configuration.slot);
+
+        configureProfile(configuration);
+        sparkConfig = configureExtras(configuration, sparkConfig);
+
+        int i = 0;
+
+        while (i <= 5 && spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) != REVLibError.kOk) {
+            i++;
+        }
+
+        return spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
     }
 }

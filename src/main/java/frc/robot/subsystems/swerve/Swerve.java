@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,9 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.OdometryThread;
-import frc.lib.math.AdvancedSwerveKinematics;
 import frc.lib.math.Optimizations;
-import frc.lib.util.mirrorable.Mirrorable;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 
@@ -22,25 +19,17 @@ import static frc.lib.math.MathUtils.getAngleFromPoseToPose;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
+import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
-
-    public Swerve() {
-        configurePathPlanner();
-    }
-
-    public void stop() {
-        for (SwerveModule currentModule : MODULES)
-            currentModule.stop();
-    }
 
     public void setGyroHeading(Rotation2d heading) {
         GYRO.setGyroYaw(heading.getDegrees());
     }
 
     public ChassisSpeeds getRobotRelativeVelocity() {
-        return SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+        return ROBOT_CONFIG.toChassisSpeeds(getModuleStates());
     }
 
     @Override
@@ -50,7 +39,7 @@ public class Swerve extends GenericSubsystem {
 
         if (OdometryThread.getInstance().getLatestTimestamps().length == 0) return;
 
-        final SwerveWheelPositions[] swerveWheelPositions = new SwerveWheelPositions[odometryUpdates];
+        final SwerveModulePosition[][] swerveWheelPositions = new SwerveModulePosition[odometryUpdates][];
         final Rotation2d[] gyroRotations = new Rotation2d[odometryUpdates];
 
         for (int i = 0; i < odometryUpdates; i++) {
@@ -58,11 +47,27 @@ public class Swerve extends GenericSubsystem {
             gyroRotations[i] = Rotation2d.fromDegrees(odometryUpdatesYawDegrees[i]);
         }
 
-        POSE_ESTIMATOR.addOdometryObservations(
+        POSE_ESTIMATOR.updateFromOdometry(
                         swerveWheelPositions,
                         gyroRotations,
                         OdometryThread.getInstance().getLatestTimestamps()
                 );
+    }
+
+    public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+        chassisSpeeds = discretize(chassisSpeeds);
+
+        if (Optimizations.isStill(chassisSpeeds)) {
+            stop();
+            return;
+        }
+
+        final SwerveModuleState[] swerveModuleStates = SWERVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
+
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
+
+        for (int i = 0; i < MODULES.length; i++)
+            MODULES[i].setTargetState(swerveModuleStates[i]);
     }
 
     protected void driveOrientationBased(double xPower, double yPower, double thetaPower, boolean robotCentric) {
@@ -96,10 +101,12 @@ public class Swerve extends GenericSubsystem {
                         currentPose.getX(),
                         target.getX()
                 ),
+
                 SWERVE_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getY(),
                         target.getY()
                 ),
+
                 SWERVE_ROTATION_CONTROLLER.calculate(
                         currentPose.getRotation().getDegrees(),
                         target.getRotation().getDegrees()
@@ -119,23 +126,6 @@ public class Swerve extends GenericSubsystem {
         driveRobotRelative(speeds);
     }
 
-    protected void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
-        chassisSpeeds = discretize(chassisSpeeds);
-        chassisSpeeds = AdvancedSwerveKinematics.correctForDynamics(chassisSpeeds);
-
-        if (Optimizations.isStill(chassisSpeeds)) {
-            stop();
-            return;
-        }
-
-        final SwerveModuleState[] swerveModuleStates = SWERVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
-
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, MAX_SPEED_MPS);
-
-        for (int i = 0; i < MODULES.length; i++)
-            MODULES[i].setTargetState(swerveModuleStates[i]);
-    }
-
     protected void initializeDrive(boolean openLoop) {
         for (SwerveModule currentModule : MODULES)
             currentModule.setOpenLoop(openLoop);
@@ -143,34 +133,20 @@ public class Swerve extends GenericSubsystem {
         SWERVE_ROTATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees());
     }
 
-    protected SwerveWheelPositions getSwerveWheelPositions(int odometryUpdateIndex) {
+    protected SwerveModulePosition[] getSwerveWheelPositions(int odometryUpdateIndex) {
         final SwerveModulePosition[] swerveModulePositions = new SwerveModulePosition[MODULES.length];
 
         for (int i = 0; i < MODULES.length; i++) {
             swerveModulePositions[i] = MODULES[i].getOdometryPosition(odometryUpdateIndex);
-            if (swerveModulePositions[i] == null) return null;
         }
 
-        return new SwerveWheelPositions(swerveModulePositions);
-    }
-
-    protected void configurePathPlanner() {
-        AutoBuilder.configure(
-                POSE_ESTIMATOR::getCurrentPose,
-                POSE_ESTIMATOR::resetPose,
-                this::getRobotRelativeVelocity,
-                (speeds, feedforwards) -> driveRobotRelative(speeds),
-                PATHPLANNER_PID_CONSTANTS,
-                PATHPLANNER_ROBOT_CONFIGURATION,
-                Mirrorable::isRedAlliance,
-                this
-        );
+        return swerveModulePositions;
     }
 
     protected ChassisSpeeds proportionalSpeedToMps(ChassisSpeeds chassisSpeeds) {
         return new ChassisSpeeds(
-                proportionalPowerToMps(chassisSpeeds.vxMetersPerSecond, MAX_SPEED_MPS),
-                proportionalPowerToMps(chassisSpeeds.vyMetersPerSecond, MAX_SPEED_MPS),
+                proportionalPowerToMps(chassisSpeeds.vxMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
+                proportionalPowerToMps(chassisSpeeds.vyMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
                 chassisSpeeds.omegaRadiansPerSecond
         );
     }
@@ -194,6 +170,11 @@ public class Swerve extends GenericSubsystem {
             states[i] = MODULES[i].getTargetState();
 
         return states;
+    }
+
+    protected void stop() {
+        for (SwerveModule currentModule : MODULES)
+            currentModule.stop();
     }
 
     protected ChassisSpeeds discretize(ChassisSpeeds chassisSpeeds) {

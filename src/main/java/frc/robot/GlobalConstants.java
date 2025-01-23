@@ -11,12 +11,9 @@ public class GlobalConstants {
     public static final Lock FASTER_THREAD_LOCK = new ReentrantLock();
     public static final double ODOMETRY_FREQUENCY_HERTZ = 200.0;
 
-    public static final boolean IS_TUNING_MODE = true;
-
     public static final double GRAVITY = 9.80665;
-    public static final double MINIMUM_ACCELERATION_FOR_COLLISION = 25;
 
-    public static final double FIELD_LENGTH_METRES = 14.56;
+    public static final double FIELD_LENGTH_METRES = 17.55;
 
     public static final double VOLTAGE_COMPENSATION_SATURATION = 12;
 
@@ -40,4 +37,6 @@ public class GlobalConstants {
             CURRENT_MODE = Mode.REPLAY;
         }
     }
+
+    public static final boolean IS_SIMULATION = CURRENT_MODE == Mode.SIMULATION;
 }

@@ -5,16 +5,11 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class ExtendedDCMotorSim extends DCMotorSim {
-    public ExtendedDCMotorSim(LinearSystem<N2, N1, N2> plant, DCMotor gearbox, double gearing) {
-        super(plant, gearbox, gearing);
-    }
-
-    public ExtendedDCMotorSim(DCMotor gearbox, double gearing, double jKgMetersSquared) {
-        super(LinearSystemId.createDCMotorSystem(gearbox, jKgMetersSquared, gearing), gearbox);
+    public ExtendedDCMotorSim(LinearSystem<N2, N1, N2> plant, DCMotor gearbox) {
+        super(plant, gearbox);
     }
 
     /**

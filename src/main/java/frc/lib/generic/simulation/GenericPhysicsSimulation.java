@@ -10,12 +10,17 @@ public abstract class GenericPhysicsSimulation {
         this.gearRatio = gearRatio;
     }
 
+
     public double getMotorPositionRotations() {
         return getSystemPositionRotations() * gearRatio;
     }
 
     public double getMotorVelocityRotationsPerSecond() {
         return getSystemVelocityRotationsPerSecond() * gearRatio;
+    }
+
+    public double getMotorAccelerationRotationsPerSecondSquared() {
+        return getSystemAccelerationRotationsPerSecondSquared() * gearRatio;
     }
 
     public abstract double getCurrent();

@@ -5,6 +5,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -167,8 +168,11 @@ public class GenericTalonFX extends Motor {
     }
 
     @Override
-    public void setFollowerOf(String name, int masterPort) {
-        talonFX.setControl(new StrictFollower(masterPort)); //check if this should be called 10 times or once is enough
+    public void setFollowerOf(Motor motor, boolean invert) {
+        if (!(motor instanceof GenericTalonFX))
+            return;
+
+        talonFX.setControl(new Follower(motor.getDeviceID(), invert));
     }
 
     @Override

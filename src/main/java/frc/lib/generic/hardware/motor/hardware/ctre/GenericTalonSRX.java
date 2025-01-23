@@ -61,8 +61,11 @@ public class GenericTalonSRX extends Motor {
     }
 
     @Override
-    public void setFollowerOf(String name, int masterPort) {
-        talonSRX.set(ControlMode.Follower, masterPort);
+    public void setFollowerOf(Motor motor, boolean invert) {
+        if (!(motor instanceof GenericTalonSRX))
+            return;
+
+        talonSRX.follow(((GenericTalonSRX) motor).talonSRX);
     }
 
     @Override

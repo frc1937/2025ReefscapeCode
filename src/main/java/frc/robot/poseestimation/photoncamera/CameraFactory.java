@@ -6,10 +6,6 @@ import frc.robot.GlobalConstants;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 
 public class CameraFactory {
-    public static final VisionSimulation VISION_SIMULATION = new VisionSimulation();
-
-    private CameraFactory() {}
-
     public static PhotonCameraIO generateCamera(String cameraName, Transform3d robotCenterToCamera) {
         if (CURRENT_MODE == GlobalConstants.Mode.REPLAY)
             return new PhotonCameraIO(cameraName, robotCenterToCamera);

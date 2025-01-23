@@ -13,8 +13,8 @@ import frc.lib.math.Optimizations;
 
 import static frc.lib.math.Conversions.rotationsToMetres;
 import static frc.robot.GlobalConstants.VOLTAGE_COMPENSATION_SATURATION;
-import static frc.robot.subsystems.swerve.SwerveConstants.MAX_SPEED_MPS;
 import static frc.robot.subsystems.swerve.SwerveConstants.WHEEL_DIAMETER;
+import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class SwerveModule {
     private final Motor steerMotor, driveMotor;
@@ -73,7 +73,7 @@ public class SwerveModule {
         if (!isTemperatureOkay()) System.out.println("SWERVE MODULE " + driveMotor.getDeviceID() + " is TOO HOT!" );
 
         if (openLoop) {
-            final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / MAX_SPEED_MPS);
+            final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
             driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, targetPowerOpenLoop);
         } else {
             final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);

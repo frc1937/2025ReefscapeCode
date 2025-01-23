@@ -1,7 +1,6 @@
 package frc.robot.subsystems.swerve;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +17,7 @@ import java.util.function.DoubleSupplier;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_ROTATION_CONTROLLER;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
+import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
 public class SwerveCommands {
     public static Command stopDriving() {
@@ -41,20 +41,16 @@ public class SwerveCommands {
     }
 
     public static Command goToPoseBezier(Pose2d targetPose) {
-        return AutoBuilder.pathfindToPose(targetPose, new PathConstraints(
-                1,1,
-                1,1));
+        return AutoBuilder.pathfindToPose(targetPose, PATHPLANNER_CONSTRAINTS);
     }
 
-
-    public static Command goToPoseWithPID(Pose2d targetPose) {
+    public static Command goToPosePID(Pose2d targetPose) {
         final Pose2d fixedTargetPose = new Pose2d(targetPose.getTranslation(), Rotation2d.fromDegrees(MathUtil.inputModulus(targetPose.getRotation().getDegrees(), -180, 180)));
 
         return new FunctionalCommand(
                 () -> SWERVE.initializeDrive(true),
                 () -> SWERVE.driveToPose(fixedTargetPose),
-                interrupt -> {
-                },
+                interrupt -> {},
                 () -> false,
                 SWERVE
         );

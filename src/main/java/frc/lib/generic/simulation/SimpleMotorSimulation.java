@@ -12,12 +12,14 @@ public class SimpleMotorSimulation extends GenericPhysicsSimulation {
 
     public SimpleMotorSimulation(DCMotor gearbox, double gearRatio, double momentOfInertia) {
         super(gearRatio);
-        motorSimulation = new ExtendedDCMotorSim(gearbox,gearRatio, momentOfInertia);
+
+        motorSimulation = new ExtendedDCMotorSim(LinearSystemId.createDCMotorSystem(gearbox, momentOfInertia, gearRatio), gearbox);
     }
 
-    public SimpleMotorSimulation(DCMotor gearbox, double gearRatio, double kv, double ka) {
+    public SimpleMotorSimulation(double kv, double ka, DCMotor gearbox, double gearRatio) {
         super(gearRatio);
-        motorSimulation = new ExtendedDCMotorSim(LinearSystemId.createDCMotorSystem(kv, ka), gearbox, gearRatio);
+
+        motorSimulation = new ExtendedDCMotorSim(LinearSystemId.createDCMotorSystem(kv, ka), gearbox);
     }
 
     @Override

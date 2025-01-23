@@ -20,8 +20,11 @@ import static frc.lib.util.CustomLEDPatterns.generateOutwardsPointsBuffer;
 import static frc.lib.util.CustomLEDPatterns.generatePositionIndicatorBuffer;
 import static frc.lib.util.CustomLEDPatterns.getBufferFromColors;
 
+import static frc.lib.util.CustomLEDPatterns.*;
+import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
+
 public class Leds extends SubsystemBase {
-    private static final AddressableLED ledstrip = new AddressableLED(0);
+    private static final AddressableLED ledstrip = new AddressableLED(LEDSTRIP_PORT_PWM);
     private static final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_COUNT);
 
     public Leds() {

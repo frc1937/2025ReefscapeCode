@@ -8,11 +8,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 
 public class ExtendedSingleJointedArmSim extends SingleJointedArmSim {
-
-    public ExtendedSingleJointedArmSim(LinearSystem<N2, N1, N2> plant, DCMotor gearbox, double gearing, double armLengthMeters, double minAngleRads, double maxAngleRads, boolean simulateGravity, double startingAngleRads, double... measurementStdDevs) {
-        super(plant, gearbox, gearing, armLengthMeters, minAngleRads, maxAngleRads, simulateGravity, startingAngleRads, measurementStdDevs);
-    }
-
     public ExtendedSingleJointedArmSim(DCMotor gearbox, double gearing, double jKgMetersSquared, double armLengthMeters, double minAngleRads, double maxAngleRads, boolean simulateGravity, double startingAngleRads, double... measurementStdDevs) {
         super(gearbox, gearing, jKgMetersSquared, armLengthMeters, minAngleRads, maxAngleRads, simulateGravity, startingAngleRads, measurementStdDevs);
     }

@@ -43,7 +43,7 @@ public enum HardwareManager {
      * @param robot Robot object
      */
     public static void initialize(LoggedRobot robot) {
-        String logPath = "/home/lvuser/logs";
+        String logPath = CURRENT_MODE == Mode.REAL ?"/home/lvuser/logs" : "logs";
 
         final File logsDirectory = new File(logPath);
 
@@ -55,8 +55,10 @@ public enum HardwareManager {
         if (CURRENT_MODE == GlobalConstants.Mode.REAL || CURRENT_MODE == GlobalConstants.Mode.SIMULATION) {
             Logger.addDataReceiver(new NT4Publisher());
 
-            if (SHOULD_WRITE_LOGS)
+            if (SHOULD_WRITE_LOGS) {
                 Logger.addDataReceiver(new WPILOGWriter(logPath));
+            }
+
         } else {
             robot.setUseTiming(true);
             logPath = LogFileUtil.findReplayLog();
@@ -116,7 +118,7 @@ public enum HardwareManager {
     }
 
     private static void cleanOldFiles(File logsDirectory) {
-        if (!SHOULD_WRITE_LOGS || logsDirectory.getFreeSpace() >= MIN_FREE_SPACE)
+        if (CURRENT_MODE != Mode.REAL || !SHOULD_WRITE_LOGS || logsDirectory.getFreeSpace() >= MIN_FREE_SPACE)
             return;
 
         System.out.println("[!] ERROR: out of space!");

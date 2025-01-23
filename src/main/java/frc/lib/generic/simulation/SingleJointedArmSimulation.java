@@ -13,6 +13,7 @@ public class SingleJointedArmSimulation extends GenericPhysicsSimulation {
 
     public SingleJointedArmSimulation(DCMotor gearbox, double gearRatio, double armLengthMeters, double armMassKilograms, Rotation2d minimumAngle, Rotation2d maximumAngle, boolean simulateGravity) {
         super(gearRatio);
+
         armSimulation = new ExtendedSingleJointedArmSim(
                 gearbox,
                 gearRatio,

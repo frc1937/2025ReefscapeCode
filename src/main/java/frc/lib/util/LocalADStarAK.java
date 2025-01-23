@@ -1,23 +1,24 @@
 package frc.lib.util;
 
-import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Translation2d;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPoint;
-import com.pathplanner.lib.pathfinding.Pathfinder;
 import com.pathplanner.lib.pathfinding.LocalADStar;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.pathplanner.lib.pathfinding.Pathfinder;
+import edu.wpi.first.math.Pair;
+import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.LogTable;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class LocalADStarAK implements Pathfinder {
     private final ADStarIO io = new ADStarIO();
-    private static final boolean hasReplaySource = Logger.hasReplaySource();
+    private static final boolean HAS_REPLAY_SOURCE = Logger.hasReplaySource();
 
     /**
      * Get if a new path has been calculated since the last time a path was retrieved
@@ -26,7 +27,7 @@ public class LocalADStarAK implements Pathfinder {
      */
     @Override
     public boolean isNewPathAvailable() {
-        if (!hasReplaySource) {
+        if (!HAS_REPLAY_SOURCE) {
             io.updateIsNewPathAvailable();
         }
 
@@ -44,15 +45,13 @@ public class LocalADStarAK implements Pathfinder {
      */
     @Override
     public PathPlannerPath getCurrentPath(PathConstraints constraints, GoalEndState goalEndState) {
-        if (!hasReplaySource) {
+        if (!HAS_REPLAY_SOURCE)
             io.updateCurrentPathPoints(constraints, goalEndState);
-        }
 
         Logger.processInputs("LocalADStarAK", io);
 
-        if (io.currentPathPoints.isEmpty()) {
+        if (io.currentPathPoints.isEmpty())
             return null;
-        }
 
         return PathPlannerPath.fromPathPoints(io.currentPathPoints, constraints, goalEndState);
     }
@@ -65,7 +64,7 @@ public class LocalADStarAK implements Pathfinder {
      */
     @Override
     public void setStartPosition(Translation2d startPosition) {
-        if (!hasReplaySource) {
+        if (!HAS_REPLAY_SOURCE) {
             io.adStar.setStartPosition(startPosition);
         }
     }
@@ -78,7 +77,7 @@ public class LocalADStarAK implements Pathfinder {
      */
     @Override
     public void setGoalPosition(Translation2d goalPosition) {
-        if (!hasReplaySource) {
+        if (!HAS_REPLAY_SOURCE) {
             io.adStar.setGoalPosition(goalPosition);
         }
     }
@@ -94,7 +93,7 @@ public class LocalADStarAK implements Pathfinder {
     @Override
     public void setDynamicObstacles(
             List<Pair<Translation2d, Translation2d>> obs, Translation2d currentRobotPos) {
-        if (!hasReplaySource) {
+        if (!HAS_REPLAY_SOURCE) {
             io.adStar.setDynamicObstacles(obs, currentRobotPos);
         }
     }
@@ -108,7 +107,8 @@ public class LocalADStarAK implements Pathfinder {
         public void toLog(LogTable table) {
             table.put("IsNewPathAvailable", isNewPathAvailable);
 
-            double[] pointsLogged = new double[currentPathPoints.size() * 2];
+            final double[] pointsLogged = new double[currentPathPoints.size() * 2];
+
             int idx = 0;
             for (PathPoint point : currentPathPoints) {
                 pointsLogged[idx] = point.position.getX();
@@ -123,7 +123,7 @@ public class LocalADStarAK implements Pathfinder {
         public void fromLog(LogTable table) {
             isNewPathAvailable = table.get("IsNewPathAvailable", false);
 
-            double[] pointsLogged = table.get("CurrentPathPoints", new double[0]);
+            final double[] pointsLogged = table.get("CurrentPathPoints", new double[0]);
 
             List<PathPoint> pathPoints = new ArrayList<>();
             for (int i = 0; i < pointsLogged.length; i += 2) {
@@ -138,7 +138,7 @@ public class LocalADStarAK implements Pathfinder {
         }
 
         public void updateCurrentPathPoints(PathConstraints constraints, GoalEndState goalEndState) {
-            PathPlannerPath currentPath = adStar.getCurrentPath(constraints, goalEndState);
+            final PathPlannerPath currentPath = adStar.getCurrentPath(constraints, goalEndState);
 
             if (currentPath != null) {
                 currentPathPoints = currentPath.getAllPathPoints();

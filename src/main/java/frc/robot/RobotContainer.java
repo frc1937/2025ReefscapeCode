@@ -14,13 +14,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.util.Controller;
-import frc.robot.poseestimation.objectdetection.DetectionCameraFactory;
-import frc.robot.poseestimation.objectdetection.DetectionCameraIO;
+import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants.*;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
 import org.json.simple.parser.ParseException;
+import frc.robot.utilities.PathPlannerConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import java.io.IOException;
@@ -28,15 +30,20 @@ import java.util.function.DoubleSupplier;
 
 import static frc.lib.util.Controller.Axis.LEFT_X;
 import static frc.lib.util.Controller.Axis.LEFT_Y;
-import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.FRONT_CAMERA;
+import static frc.robot.commands.PathfindingCommands.setupFeederPathfinding;
+import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
 
 public class RobotContainer {
     public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
-            FRONT_CAMERA
+            FRONT_LEFT_CAMERA,
+            FRONT_RIGHT_CAMERA,
+            REAR_LEFT_CAMERA,
+            REAR_RIGHT_CAMERA
     );
 
     public static final Swerve SWERVE = new Swerve();
     public static final Leds LEDS = new Leds();
+    public static final Elevator ELEVATOR = new Elevator();
 
     private final Trigger userButton = new Trigger(RobotController::getUserButton);
 
@@ -45,6 +52,9 @@ public class RobotContainer {
     private LoggedDashboardChooser<Command> autoChooser;
 
     public RobotContainer() {
+        Flippable.init();
+        PathPlannerConstants.initializePathPlanner();
+
         setupAutonomous();
         configureBindings();
     }
@@ -62,6 +72,17 @@ public class RobotContainer {
 
         setupLEDs();
 
+        setupFeederPathfinding(driveController.getButton(Controller.Inputs.A));
+
+        driveController.getButton(Controller.Inputs.B).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB));
+        driveController.getButton(Controller.Inputs.A).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L1));
+        driveController.getButton(Controller.Inputs.Y).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.L3));
+        driveController.getButton(Controller.Inputs.X).whileTrue(ELEVATOR.setTargetPosition(ElevatorHeight.FEEDER));
+
+        ELEVATOR.setDefaultCommand(
+                ELEVATOR.setTargetPosition(ElevatorHeight.L2)
+        );
+
         configureButtons(ButtonLayout.TELEOP);
     }
 
@@ -78,12 +99,6 @@ public class RobotContainer {
         driveController.getButton(Controller.Inputs.X).whileTrue(subsystem.getSysIdDynamic(SysIdRoutine.Direction.kReverse));
     }
 
-    private enum ButtonLayout {
-        TELEOP,
-        CHARACTERIZE_FLYWHEEL,
-        CHARACTERIZE_ARM
-    }
-
     private void setupLEDs() {
         LEDS.setDefaultCommand(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0));
 
@@ -96,13 +111,13 @@ public class RobotContainer {
         }).onTrue(LEDS.setLEDStatus(Leds.LEDMode.BATTERY_LOW, 5));
     }
 
-    private void setupDriving(DoubleSupplier translationSupplier, DoubleSupplier strafeSupplier) {
+    private void setupDriving(DoubleSupplier translationSupplier, DoubleSupplier strafeSupplier, DoubleSupplier rotationSupplier) {
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(
                         translationSupplier,
                         strafeSupplier,
+                        rotationSupplier,
 
-                        () -> -driveController.getRawAxis(Controller.Axis.RIGHT_X) * 6,
                         () -> driveController.getStick(Controller.Stick.RIGHT_STICK).getAsBoolean()
                 ));
 
@@ -111,10 +126,13 @@ public class RobotContainer {
     }
 
     private void configureButtonsTeleop() {
-        DoubleSupplier translationSupplier = () -> -driveController.getRawAxis(LEFT_Y);
-        DoubleSupplier strafeSupplier = () -> -driveController.getRawAxis(LEFT_X);
+        DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
 
-        setupDriving(translationSupplier, strafeSupplier);
+        DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_Y);
+        DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_X);
+        DoubleSupplier rotationSupplier =  () -> driveSign.getAsDouble() * driveController.getRawAxis(Controller.Axis.RIGHT_X);
+
+        setupDriving(translationSupplier, strafeSupplier, rotationSupplier);
 
 //        driveController.getButton(Controller.Inputs.A)
 //            .whileTrue(SwerveCommands.driveAndRotateToClosestNote(translationSupplier, strafeSupplier));
@@ -132,9 +150,10 @@ public class RobotContainer {
     }
 
     private void setupAutonomous() {
-        FollowPathCommand.warmupCommand().schedule();
-        PathfindingCommand.warmupCommand().schedule();
-
         autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser(""));
+    }
+
+    private enum ButtonLayout {
+        TELEOP
     }
 }
