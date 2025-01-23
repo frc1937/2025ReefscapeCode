@@ -48,12 +48,12 @@ public class PathfindingCommands {
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
 
+        if (150 <= angle || angle < -150) return Flippable.isRedAlliance() ? FACE_0 : FACE_3;
         if (-30 <= angle && angle < 30) return Flippable.isRedAlliance() ? FACE_3 : FACE_0;
-        else if (-90 <= angle && angle < -30) return Flippable.isRedAlliance() ? FACE_4 : FACE_1;
-        else if (-150 <= angle && angle < -90) return Flippable.isRedAlliance() ? FACE_5 : FACE_2;
-        else if (150 <= angle || angle < -150) return Flippable.isRedAlliance() ? FACE_0 : FACE_3;
-        else if (90 <= angle) return Flippable.isRedAlliance() ? FACE_1 : FACE_4;
-        else return Flippable.isRedAlliance() ? FACE_2 : FACE_5;
+        if (90 <= angle) return Flippable.isRedAlliance() ? FACE_1 : FACE_4;
+        if (-90 <= angle && angle < -30) return Flippable.isRedAlliance() ? FACE_4 : FACE_1;
+        if (-150 <= angle && angle < -90) return Flippable.isRedAlliance() ? FACE_5 : FACE_2;
+        return Flippable.isRedAlliance() ? FACE_2 : FACE_5;
     }
 
     private static Command pathfindToFeeder() {
