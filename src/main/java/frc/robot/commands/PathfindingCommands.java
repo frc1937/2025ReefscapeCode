@@ -50,7 +50,7 @@ public class PathfindingCommands {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = reef.get().getTranslation().minus(robotPose);
 
-        final double angle = Units.radiansToDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
+        final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
 
         if (-30 <= angle && angle < 30) return Flippable.isRedAlliance() ? FACE_3 : FACE_0;
         else if (-90 <= angle && angle < -30) return Flippable.isRedAlliance() ? FACE_4 : FACE_1;
