@@ -23,17 +23,19 @@ import static frc.robot.utilities.FieldConstants.ReefFace.*;
 public class PathfindingCommands {
     public static void setupFeederPathfinding(Trigger button) {
         button.whileTrue(
-                Commands.defer(PathfindingCommands::pathfindToFeeder, Set.of(SWERVE))
+                new DeferredCommand(PathfindingCommands::pathfindToFeeder, Set.of(SWERVE))
         );
     }
 
     public static void setupReefPathfinding(Trigger button1, Trigger button2) {
         button1.and(button2.negate()).whileTrue(
                 Commands.defer(() -> pathfindToBranch(true), Set.of(SWERVE))
+                new DeferredCommand(() -> pathfindToBranch(true), Set.of(SWERVE))
         );
 
         button2.and(button1.negate()).whileTrue(
                 Commands.defer(() -> pathfindToBranch(false), Set.of(SWERVE))
+                new DeferredCommand(() -> pathfindToBranch(false), Set.of(SWERVE))
         );
     }
 
