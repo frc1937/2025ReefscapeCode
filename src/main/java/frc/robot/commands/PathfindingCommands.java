@@ -2,9 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
@@ -18,28 +16,37 @@ import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
 
 public class PathfindingCommands {
-    public static void setupFeederPathfinding(Trigger button) {
-        button.whileTrue(
-                new DeferredCommand(PathfindingCommands::pathfindToFeeder, Set.of(SWERVE))
-        );
+    private static final double PID_PATHFIND_THRESHOLD_REEF = 0.8;
+    private static final double PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
+
+    public static DeferredCommand pathfindToLeftBranch() {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = decideReefFace().getLeftBranch();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
     }
 
-    public static void setupReefPathfinding(Trigger firstButton, Trigger secondButton) {
-        firstButton.and(secondButton.negate()).whileTrue(
-                new DeferredCommand(() -> pathfindToBranch(true), Set.of(SWERVE))
-        );
+    public static DeferredCommand pathfindToRightBranch() {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = decideReefFace().getRightBranch();
 
-        secondButton.and(firstButton.negate()).whileTrue(
-                new DeferredCommand(() -> pathfindToBranch(false), Set.of(SWERVE))
-        );
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
     }
 
-    private static Command pathfindToBranch(boolean isLeftBranch) {
-        final Pose2d targetPose = isLeftBranch ? decideReefFace().getLeftBranch() : decideReefFace().getRightBranch();
+    public static DeferredCommand pathfindToFeeder() {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = decideFeederPose();
 
-        return isRobotInProximity(targetPose, 0.8) ?
-                SwerveCommands.goToPosePID(targetPose) :
-                SwerveCommands.goToPoseBezier(targetPose);
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
+                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
     }
 
     private static ReefFace decideReefFace() {
@@ -53,15 +60,8 @@ public class PathfindingCommands {
         if (90 <= angle) return Flippable.isRedAlliance() ? FACE_1 : FACE_4;
         if (-90 <= angle && angle < -30) return Flippable.isRedAlliance() ? FACE_4 : FACE_1;
         if (-150 <= angle && angle < -90) return Flippable.isRedAlliance() ? FACE_5 : FACE_2;
+
         return Flippable.isRedAlliance() ? FACE_2 : FACE_5;
-    }
-
-    private static Command pathfindToFeeder() {
-        final Pose2d targetPose = decideFeederPose();
-
-        return isRobotInProximity(targetPose, 0.8) ?
-                SwerveCommands.goToPosePID(targetPose) :
-                SwerveCommands.goToPoseBezier(targetPose);
     }
 
     private static Pose2d decideFeederPose() {
