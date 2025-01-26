@@ -42,7 +42,6 @@ public class AlgaeIntakeConstants {
         final MotorConfiguration intakeMotorConfiguration = new MotorConfiguration();
         intakeMotorConfiguration.idleMode = MotorProperties.IdleMode.COAST;
 
-        INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
         INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
 
         intakeMotorConfiguration.slot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
