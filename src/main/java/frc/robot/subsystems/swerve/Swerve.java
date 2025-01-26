@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -25,7 +26,14 @@ public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
     public void setGyroHeading(Rotation2d heading) {
-        GYRO.setGyroYaw(heading.getDegrees());
+        GYRO.setGyroYaw(heading.getRotations());
+    }
+
+    /**
+     * Returns the gyro heading in rotations, from -0.5 to 0.5.
+     */
+    public double getGyroHeading() {
+        return MathUtil.inputModulus(GYRO.getYawRotations(), -0.5, 0.5);
     }
 
     public ChassisSpeeds getRobotRelativeVelocity() {
@@ -34,8 +42,8 @@ public class Swerve extends GenericSubsystem {
 
     @Override
     public void periodic() {
-        final double[] odometryUpdatesYawDegrees = GYRO.getInputs().threadGyroYawDegrees;
-        final int odometryUpdates = odometryUpdatesYawDegrees.length;
+        final double[] odometryUpdatesYawRotations = GYRO.getInputs().threadGyroYawRotations;
+        final int odometryUpdates = odometryUpdatesYawRotations.length;
 
         if (OdometryThread.getInstance().getLatestTimestamps().length == 0) return;
 
@@ -44,7 +52,7 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < odometryUpdates; i++) {
             swerveWheelPositions[i] = getSwerveWheelPositions(i);
-            gyroRotations[i] = Rotation2d.fromDegrees(odometryUpdatesYawDegrees[i]);
+            gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
         POSE_ESTIMATOR.updateFromOdometry(

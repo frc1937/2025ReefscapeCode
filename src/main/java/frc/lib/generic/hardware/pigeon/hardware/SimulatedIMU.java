@@ -22,7 +22,7 @@ public class SimulatedIMU extends Pigeon {
     }
 
     @Override
-    public double getYaw() {
+    public double getYawDegrees() {
         return simulatedYawDegrees;
     }
 
@@ -46,7 +46,7 @@ public class SimulatedIMU extends Pigeon {
 
         update(SWERVE.getRobotRelativeVelocity().omegaRadiansPerSecond, ROBOT_PERIODIC_LOOP_TIME);
 
-        inputs.gyroYawDegrees = getYaw();
-        inputs.threadGyroYawDegrees = new double[]{inputs.gyroYawDegrees};
+        inputs.gyroYawRotations = getYawDegrees();
+        inputs.threadGyroYawDegrees = new double[]{inputs.gyroYawRotations};
     }
 }
