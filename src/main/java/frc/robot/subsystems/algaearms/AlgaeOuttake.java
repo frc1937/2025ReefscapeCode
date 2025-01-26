@@ -18,11 +18,11 @@ public class AlgaeOuttake extends GenericSubsystem {
         return Commands.runOnce(OUTTAKE_MOTOR::stopMotor, this);
     }
 
-    public Rotation2d getCurrentPosition() {
+    private Rotation2d getCurrentPosition() {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getSystemPosition());
     }
 
-    public Rotation2d getTargetPosition() {
+     private Rotation2d getTargetPosition() {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getClosedLoopTarget());
     }
 
