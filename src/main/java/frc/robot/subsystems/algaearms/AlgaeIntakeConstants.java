@@ -7,8 +7,8 @@ import frc.lib.generic.visualization.mechanisms.MechanismFactory;
 import frc.lib.generic.visualization.mechanisms.SingleJointedArmMechanism2d;
 
 import static frc.lib.generic.hardware.motor.MotorProperties.SparkType.MAX;
-import static frc.robot.utilities.PortsConstants.ArmPorts.ALGAE_ARM_MOTOR_PORT;
-import static frc.robot.utilities.PortsConstants.ArmPorts.ALGAE_INTAKE_MOTOR_PORT;
+import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_ARM_MOTOR_PORT;
+import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_PORT;
 
 public class AlgaeIntakeConstants {
     protected static final Motor ARM_MOTOR = MotorFactory.createSpark("ALGAE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);

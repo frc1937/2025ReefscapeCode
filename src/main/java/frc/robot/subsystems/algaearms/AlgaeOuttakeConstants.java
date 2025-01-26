@@ -8,7 +8,7 @@ import frc.lib.generic.visualization.mechanisms.MechanismFactory;
 import frc.lib.generic.visualization.mechanisms.SingleJointedArmMechanism2d;
 
 import static frc.lib.generic.hardware.motor.MotorProperties.SparkType.MAX;
-import static frc.robot.utilities.PortsConstants.ArmPorts.ALGAE_OUTTAKE_MOTOR_PORT;
+import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_OUTTAKE_MOTOR_PORT;
 
 public class AlgaeOuttakeConstants {
     protected static final Motor OUTTAKE_MOTOR = MotorFactory.createSpark("ALGAE_OUTTAKE_MOTOR", ALGAE_OUTTAKE_MOTOR_PORT, MAX);

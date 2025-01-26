@@ -31,7 +31,7 @@ public class PortsConstants {
         public static final int BEAM_BREAK_DIO_PORT = 4;
     }
 
-    public static class ArmPorts {
+    public static class AlgaePorts {
         public static final int ALGAE_ARM_MOTOR_PORT = 17;
         public static final int ALGAE_INTAKE_MOTOR_PORT = 5;
         public static final int ALGAE_OUTTAKE_MOTOR_PORT = 12;
