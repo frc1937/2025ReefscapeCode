@@ -1,6 +1,12 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.path.PathPlannerPath;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -15,9 +21,11 @@ import frc.robot.subsystems.elevator.ElevatorConstants.*;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.subsystems.swerve.SwerveCommands;
+import org.json.simple.parser.ParseException;
 import frc.robot.utilities.PathPlannerConstants;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import java.io.IOException;
 import java.util.function.DoubleSupplier;
 
 import static frc.lib.util.Controller.Axis.LEFT_X;
@@ -53,6 +61,10 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return autoChooser.get();
+    }
+
+    public String getAutoName() {
+        return autoChooser.getSendableChooser().getSelected();
     }
 
     private void configureBindings() {

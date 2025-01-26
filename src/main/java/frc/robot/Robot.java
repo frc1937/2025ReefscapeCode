@@ -1,10 +1,14 @@
 package frc.robot;
 
+import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
+import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LoggedRobot;
+
+import java.io.IOException;
 
 import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
@@ -29,11 +33,22 @@ public class Robot extends LoggedRobot {
     }
 
     @Override
-    public void disabledInit() {
-        LEDS.setLEDToPositionIndicator(
-                POSE_ESTIMATOR.getCurrentPose().getTranslation(),
-                new Translation2d(2, 2),
-                10000).schedule();
+    public void disabledPeriodic() {
+        try {
+            final PathPlannerPath path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
+
+            if (path.getStartingHolonomicPose().isEmpty()) return;
+
+            final Translation2d startingTranslation = path.getStartingHolonomicPose().get().getTranslation();
+
+            LEDS.setLEDToPositionIndicator(
+                    POSE_ESTIMATOR.getCurrentPose().getTranslation(),
+                    startingTranslation
+            );
+
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
