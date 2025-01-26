@@ -22,7 +22,7 @@ public class AlgaeOuttake extends GenericSubsystem {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getSystemPosition());
     }
 
-     private Rotation2d getTargetPosition() {
+    private Rotation2d getTargetPosition() {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getClosedLoopTarget());
     }
 

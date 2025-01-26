@@ -29,6 +29,7 @@ public class AlgaeIntakeConstants {
         ARM_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
         ARM_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
         ARM_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
         armMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
         armMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
