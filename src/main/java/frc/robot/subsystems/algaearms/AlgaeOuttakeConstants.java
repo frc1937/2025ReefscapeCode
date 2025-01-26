@@ -50,12 +50,8 @@ public class AlgaeOuttakeConstants {
             this.rotation = rotation;
         }
 
-        public Rotation2d getRotation() {
+        public Rotation2d getRotation2d() {
             return rotation;
-        }
-
-        public double getRotations() {
-            return rotation.getRotations();
         }
 
         public double getAngle() {
