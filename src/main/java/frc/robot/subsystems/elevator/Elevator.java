@@ -14,12 +14,17 @@ import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 public class Elevator extends GenericSubsystem {
-    public Command setTargetPosition(ElevatorHeight level){
-        return Commands.runEnd(() -> {
-            setMotorPosition(level.rotations);
-            if (CURRENT_MODE != REAL)
-                printPose(level.meters);
-        }, this::stopMotors, this);
+    public Command setTargetHeight(ElevatorHeight level) {
+        return Commands.runEnd(
+                () -> {
+                    setMotorPosition(level.getRotations());
+
+                    if (CURRENT_MODE != REAL)
+                        printPose(level.getMeters());
+                },
+                this::stopMotors,
+                this
+        );
     }
 
     public void periodic() {
@@ -34,7 +39,7 @@ public class Elevator extends GenericSubsystem {
         final double currentElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
 
         final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition, new Rotation3d(0, 0, 0));
-        Logger.recordOutput("Elevator", current3dPose);
+        Logger.recordOutput("ElevatorPose", current3dPose);
 
         ELEVATOR_MECHANISM.updateCurrentPosition(currentElevatorPosition);
         ELEVATOR_MECHANISM.updateTargetPosition(targetPositionMeters);

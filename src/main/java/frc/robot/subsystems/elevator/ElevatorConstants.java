@@ -32,12 +32,20 @@ public class ElevatorConstants {
         L1(0.457), L2(0.793), L3(1.196),
         FEEDER(0.93), CLIMB(0);
 
-        public final double rotations;
-        public final double meters;
+        private final double rotations;
+        private final double meters;
 
         ElevatorHeight(double meters) {
             this.rotations = Conversions.metresToRotations(meters, WHEEL_DIAMETER);
             this.meters = meters;
+        }
+
+        public double getRotations() {
+            return rotations;
+        }
+
+        public double getMeters() {
+            return meters;
         }
     }
 
