@@ -17,7 +17,7 @@ public class AlgaeOuttakeConstants {
             MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
             MAXIMUM_ROTATION = Rotation2d.fromDegrees(180);
 
-    protected static final SingleJointedArmMechanism2d ALGAE_OUTTAKE_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_OUTTAKE_MECHANISM", 4);
+    protected static final SingleJointedArmMechanism2d OUTTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_OUTTAKE_MECHANISM", 4);
 
     static {
         configureOuttakeMotor();

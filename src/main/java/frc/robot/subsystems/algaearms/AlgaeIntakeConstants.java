@@ -12,30 +12,30 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_ARM_MOTOR_PORT
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_PORT;
 
 public class AlgaeIntakeConstants {
-    protected static final Motor ARM_MOTOR = MotorFactory.createSpark("ALGAE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);
+    protected static final Motor INTAKE_ARM_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);
     protected static final Motor INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
 
-    protected static final SingleJointedArmMechanism2d ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_ARM_MECHANISM", 3);
+    protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("INTAKE_ARM_MECHANISM", 3);
 
     static {
-        configureArmMotor();
+        configureIntakeArmMotor();
         configureIntakeMotor();
     }
 
-    private static void configureArmMotor() {
-        final MotorConfiguration armMotorConfiguration = new MotorConfiguration();
-        armMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
+    private static void configureIntakeArmMotor() {
+        final MotorConfiguration intakeArmMotorConfiguration = new MotorConfiguration();
+        intakeArmMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        ARM_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
-        ARM_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
-        ARM_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-        ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
+        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
+        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
-        armMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
-        armMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
-        armMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1.0, 0.1, 0.2, -90, 90, false);
+        intakeArmMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
+        intakeArmMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.2, 0.01, 0.0, 0.0, 0.0, 0.0);
+        intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1.0, 0.1, 0.2, -90, 90, false);
 
-        ARM_MOTOR.configure(armMotorConfiguration);
+        INTAKE_ARM_MOTOR.configure(intakeArmMotorConfiguration);
     }
 
     private static void configureIntakeMotor() {

@@ -6,31 +6,31 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
 
-import static frc.robot.subsystems.algaearms.AlgaeOuttakeConstants.ALGAE_OUTTAKE_MECHANISM;
+import static frc.robot.subsystems.algaearms.AlgaeOuttakeConstants.OUTTAKE_ARM_MECHANISM;
 import static frc.robot.subsystems.algaearms.AlgaeOuttakeConstants.OUTTAKE_MOTOR;
 
 public class AlgaeOuttake extends GenericSubsystem {
-    public Command setAlgaeOuttakeState(AlgaeOuttakeConstants.OuttakeArmState state) {
-        return Commands.run(() -> OUTTAKE_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this).andThen(stopAlgaeOuttake());
+    public Command setAlgaeOuttakeArmState(AlgaeOuttakeConstants.OuttakeArmState state) {
+        return Commands.run(() -> OUTTAKE_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this).andThen(stopAlgaeOuttakeArm());
     }
 
-    public Command stopAlgaeOuttake() {
+    public Command stopAlgaeOuttakeArm() {
         return Commands.runOnce(OUTTAKE_MOTOR::stopMotor, this);
     }
 
-    private Rotation2d getCurrentPosition() {
+    private Rotation2d getCurrentArmPosition() {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getSystemPosition());
     }
 
-    private Rotation2d getTargetPosition() {
+    private Rotation2d getTargetArmPosition() {
         return Rotation2d.fromRotations(OUTTAKE_MOTOR.getClosedLoopTarget());
     }
 
     @Override
     public void periodic() {
-        if (ALGAE_OUTTAKE_MECHANISM != null) {
-            ALGAE_OUTTAKE_MECHANISM.updateTargetAngle(getTargetPosition());
-            ALGAE_OUTTAKE_MECHANISM.updateCurrentAngle(getCurrentPosition());
+        if (OUTTAKE_ARM_MECHANISM != null) {
+            OUTTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
+            OUTTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
         }
     }
 }
