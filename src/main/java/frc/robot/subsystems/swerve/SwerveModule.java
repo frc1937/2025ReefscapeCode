@@ -29,9 +29,13 @@ public class SwerveModule {
         this.steerEncoder = steerEncoder;
     }
 
-    public double getDriveWheelPositionRadians() {
+    protected double getDriveWheelPositionRadians() {
         return 2 * Math.PI * getDriveMotorInputs().threadSystemPosition[
                 getDriveMotorInputs().threadSystemPosition.length - 1];
+    }
+
+    protected void runDriveMotorsWheelCharacterization(double voltage) {
+        driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     protected void setTargetState(SwerveModuleState state) {

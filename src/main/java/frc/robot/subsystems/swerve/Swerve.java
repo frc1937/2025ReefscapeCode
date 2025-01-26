@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -33,11 +32,25 @@ public class Swerve extends GenericSubsystem {
      * Returns the gyro heading in rotations, from -0.5 to 0.5.
      */
     public double getGyroHeading() {
-        return MathUtil.inputModulus(GYRO.getYawRotations(), -0.5, 0.5);
+        return GYRO.getYawRotations();
     }
 
     public ChassisSpeeds getRobotRelativeVelocity() {
         return ROBOT_CONFIG.toChassisSpeeds(getModuleStates());
+    }
+
+    public void runDriveMotorWheelCharacterization(double voltage) {
+        for (SwerveModule module : MODULES)
+            module.runDriveMotorsWheelCharacterization(voltage);
+    }
+
+    public double[] getDriveWheelPositionsRadians() {
+        final double[] driveWheelPositions = new double[MODULES.length];
+
+        for (int i = 0; i < MODULES.length; i++)
+            driveWheelPositions[i] = MODULES[i].getDriveWheelPositionRadians();
+
+        return driveWheelPositions;
     }
 
     @Override
