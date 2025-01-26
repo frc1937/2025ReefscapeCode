@@ -9,8 +9,8 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import static frc.robot.subsystems.algaearms.AlgaeIntakeConstants.*;
 
 public class AlgaeIntake extends GenericSubsystem {
-    public Command setAlgaeArmPosition(double position) {
-        return Commands.run(() -> ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, position), this).andThen(stopAlgaeArm());
+    public Command setAlgaeArmPosition(IntakeArmState state) {
+        return Commands.run(() -> ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this).andThen(stopAlgaeArm());
     }
 
     public Command setAlgaeIntakeVoltage(double voltage) {

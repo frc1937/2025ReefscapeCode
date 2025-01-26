@@ -1,5 +1,6 @@
 package frc.robot.subsystems.algaearms;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.SimulationProperties;
@@ -48,5 +49,20 @@ public class AlgaeIntakeConstants {
         intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0, 0);
 
         INTAKE_MOTOR.configure(intakeMotorConfiguration);
+    }
+
+    public enum IntakeArmState {
+        EXTENDED(Rotation2d.kZero),
+        RETRACTED(Rotation2d.kCW_90deg);
+
+        private final Rotation2d rotation;
+
+        IntakeArmState(Rotation2d rotation) {
+            this.rotation = rotation;
+        }
+
+        public Rotation2d getRotation2d() {
+            return rotation;
+        }
     }
 }
