@@ -10,11 +10,11 @@ import static frc.robot.subsystems.algaearms.AlgaeOuttakeConstants.ALGAE_OUTTAKE
 import static frc.robot.subsystems.algaearms.AlgaeOuttakeConstants.OUTTAKE_MOTOR;
 
 public class AlgaeOuttake extends GenericSubsystem {
-    public Command setAlgaeRemoverPosition(AlgaeOuttakeConstants.OuttakeArmState state) {
-        return Commands.run(() -> OUTTAKE_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this).andThen(stopAlgaeRemover());
+    public Command setAlgaeOuttakeState(AlgaeOuttakeConstants.OuttakeArmState state) {
+        return Commands.run(() -> OUTTAKE_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this).andThen(stopAlgaeOuttake());
     }
 
-    public Command stopAlgaeRemover() {
+    public Command stopAlgaeOuttake() {
         return Commands.runOnce(OUTTAKE_MOTOR::stopMotor, this);
     }
 
