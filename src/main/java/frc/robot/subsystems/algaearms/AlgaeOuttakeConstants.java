@@ -39,23 +39,19 @@ public class AlgaeOuttakeConstants {
         OUTTAKE_MOTOR.configure(outtakeMotorConfiguration);
     }
 
-    public enum ArmState {
+    public enum OuttakeArmState {
         VERTICAL(Rotation2d.kCW_90deg),
         HORIZONTAL_IN(Rotation2d.k180deg),
         HORIZONTAL_OUT(Rotation2d.kZero);
 
         private final Rotation2d rotation;
 
-        ArmState(Rotation2d rotation) {
+        OuttakeArmState(Rotation2d rotation) {
             this.rotation = rotation;
         }
 
         public Rotation2d getRotation2d() {
             return rotation;
-        }
-
-        public double getAngle() {
-            return rotation.getDegrees();
         }
     }
 }
