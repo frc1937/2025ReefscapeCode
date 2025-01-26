@@ -35,6 +35,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic() {
         try {
+            if (robotContainer.getAutoName().equals("None")) return;
+
             final PathPlannerPath path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
 
             if (path.getStartingHolonomicPose().isEmpty()) return;

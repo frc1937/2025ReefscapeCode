@@ -10,7 +10,7 @@ import static frc.robot.GlobalConstants.ROBOT_PERIODIC_LOOP_TIME;
 import static frc.robot.RobotContainer.SWERVE;
 
 public class SimulatedIMU extends Pigeon {
-    private double simulatedYawDegrees = 0;
+    private double simulatedYawRotations = 0;
     private final boolean[] signalsToLog = new boolean[PIGEON_INPUTS_LENGTH];
 
     public SimulatedIMU(String name) {
@@ -18,17 +18,17 @@ public class SimulatedIMU extends Pigeon {
     }
 
     public void update(double omegaRadiansPerSecond, double timeSeconds) {
-        simulatedYawDegrees += Units.radiansToDegrees(omegaRadiansPerSecond * timeSeconds);
+        simulatedYawRotations += Units.radiansToRotations(omegaRadiansPerSecond * timeSeconds);
     }
 
     @Override
-    public double getYawDegrees() {
-        return simulatedYawDegrees;
+    public double getYawRotations() {
+        return simulatedYawRotations;
     }
 
     @Override
-    public void setGyroYaw(double yawDegrees) {
-        simulatedYawDegrees = yawDegrees;
+    public void setGyroYaw(double yawRotations) {
+        simulatedYawRotations = yawRotations;
     }
 
     @Override
@@ -46,7 +46,7 @@ public class SimulatedIMU extends Pigeon {
 
         update(SWERVE.getRobotRelativeVelocity().omegaRadiansPerSecond, ROBOT_PERIODIC_LOOP_TIME);
 
-        inputs.gyroYawRotations = getYawDegrees();
-        inputs.threadGyroYawDegrees = new double[]{inputs.gyroYawRotations};
+        inputs.gyroYawRotations = getYawRotations();
+        inputs.threadGyroYawRotations = new double[]{inputs.gyroYawRotations};
     }
 }
