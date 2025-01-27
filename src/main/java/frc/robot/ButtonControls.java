@@ -19,16 +19,16 @@ import static frc.lib.util.Controller.Axis.LEFT_X;
 import static frc.lib.util.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.ELEVATOR;
 import static frc.robot.RobotContainer.SWERVE;
-import static frc.robot.commands.PathfindingCommands.pathfindToFeeder;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class ButtonControls {
     public enum ButtonLayout {
         TELEOP,
         CHARACTERIZE_ELEVATOR,
-        CHARACTERIZE_SWERVE,
+        CHARACTERIZE_SWERVE_DRIVE_MOTORS,
         CHARACTERIZE_WHEEL_RADIUS,
-        CHARACTERIZE_ARM
+        CHARACTERIZE_ALGAE_OUTTAKE_ARM,
+        CHARACTERIZE_ALGAE_INTAKE_ARM
     }
 
     private static final Controller DRIVER_CONTROLLER = new Controller(0);
@@ -41,6 +41,7 @@ public class ButtonControls {
             case TELEOP -> configureButtonsTeleop();
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
             case CHARACTERIZE_ELEVATOR -> setupSysIdCharacterization(ELEVATOR);
+            case CHARACTERIZE_SWERVE_DRIVE_MOTORS -> setupSysIdCharacterization(SWERVE);
         }
     }
 
@@ -97,7 +98,9 @@ public class ButtonControls {
                 SWERVE::runDriveMotorWheelCharacterization
         );
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(wheelRadiusCharacterization);
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(
+                SwerveCommands.driveOpenLoop(() -> 0, () -> 0, () -> 0.1, () -> true).withTimeout(0.2)
+                        .andThen(wheelRadiusCharacterization));
     }
 
     private static void setupSysIdCharacterization(GenericSubsystem subsystem) {

@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
@@ -24,13 +26,27 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
+    @Override
+    public SysIdRoutine.Config getSysIdConfig() {
+        return SYSID_DRIVE_CONFIG;
+    }
+
+    @Override
+    public void sysIdDrive(double voltage) {
+        for (SwerveModule module : MODULES) {
+            module.runDriveMotorForCharacterization(voltage);
+        }
+    }
+
+    @Override
+    public void sysIdUpdateLog(SysIdRoutineLog log) {
+        MODULES[0].logForSysId(log);
+    }
+
     public void setGyroHeading(Rotation2d heading) {
         GYRO.setGyroYaw(heading.getRotations());
     }
 
-    /**
-     * Returns the gyro heading in rotations, from -0.5 to 0.5.
-     */
     public double getGyroHeading() {
         return GYRO.getYawRotations();
     }
@@ -41,7 +57,7 @@ public class Swerve extends GenericSubsystem {
 
     public void runDriveMotorWheelCharacterization(double voltage) {
         for (SwerveModule module : MODULES)
-            module.runDriveMotorsWheelCharacterization(voltage);
+            module.runDriveMotorForCharacterization(voltage);
     }
 
     public double[] getDriveWheelPositionsRadians() {
