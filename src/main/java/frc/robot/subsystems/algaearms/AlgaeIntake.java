@@ -25,19 +25,19 @@ public class AlgaeIntake extends GenericSubsystem {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor, this);
     }
 
-    private Rotation2d getCurrentArmPosition() {
-        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getSystemPosition());
-    }
-
-    private Rotation2d getTargetArmPosition() {
-        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getClosedLoopTarget());
-    }
-
     @Override
     public void periodic() {
         if (INTAKE_ARM_MECHANISM != null) {
             INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
             INTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
         }
+    }
+
+    private Rotation2d getCurrentArmPosition() {
+        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getSystemPosition());
+    }
+
+    private Rotation2d getTargetArmPosition() {
+        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getClosedLoopTarget());
     }
 }
