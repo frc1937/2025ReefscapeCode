@@ -40,6 +40,7 @@ public class ButtonControls {
         switch (layout) {
             case TELEOP -> configureButtonsTeleop();
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
+            case CHARACTERIZE_ELEVATOR -> setupSysIdCharacterization(ELEVATOR);
         }
     }
 
@@ -99,7 +100,7 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(wheelRadiusCharacterization);
     }
 
-    private void setupSysIdCharacterization(GenericSubsystem subsystem) {
+    private static void setupSysIdCharacterization(GenericSubsystem subsystem) {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(subsystem.getSysIdQuastatic(SysIdRoutine.Direction.kForward));
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(subsystem.getSysIdQuastatic(SysIdRoutine.Direction.kReverse));
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(subsystem.getSysIdDynamic(SysIdRoutine.Direction.kForward));

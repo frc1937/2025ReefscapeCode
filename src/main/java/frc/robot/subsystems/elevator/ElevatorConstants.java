@@ -1,6 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.hardware.sensors.Sensor;
 import frc.lib.generic.hardware.sensors.SensorFactory;
@@ -10,10 +11,18 @@ import frc.lib.math.Conversions;
 import frc.robot.GlobalConstants;
 import frc.robot.utilities.PortsConstants;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 import static frc.robot.utilities.PortsConstants.ElevatorPorts.*;
 
 public class ElevatorConstants {
+    protected static final SysIdRoutine.Config ELEVATOR_CONFIG = new SysIdRoutine.Config(
+            Volts.per(Second).of(1),
+            Volts.of(2),
+            Second.of(7)
+    );
+
     protected static final Motor
             MASTER_MOTOR = MotorFactory.createSpark("Elevator Master Motor", PortsConstants.ElevatorPorts.MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
             SLAVE_MOTOR = MotorFactory.createSpark("Elevator Slave Motor", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
@@ -29,8 +38,11 @@ public class ElevatorConstants {
     protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = new ElevatorMechanism2d("Elevator Mechanism", 1);
 
     public enum ElevatorHeight {
-        L1(0.457), L2(0.793), L3(1.196),
-        FEEDER(0.93), CLIMB(0);
+        L1(0.457),
+        L2(0.793),
+        L3(1.196),
+        FEEDER(0.93),
+        CLIMB(0);
 
         private final double rotations;
         private final double meters;
@@ -57,6 +69,8 @@ public class ElevatorConstants {
         final MotorConfiguration ELEVATOR_MOTORS_CONFIGURATION = new MotorConfiguration();
 
         SLAVE_MOTOR.setFollowerOf(MASTER_MOTOR, true);
+
+        ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
         ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(12.33, 0, 2.5, 0, 0,  1.311, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
