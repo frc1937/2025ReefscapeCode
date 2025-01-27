@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
+import frc.robot.subsystems.coralintake.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
@@ -25,6 +26,7 @@ public class RobotContainer {
 
     public static final Swerve SWERVE = new Swerve();
     public static final Elevator ELEVATOR = new Elevator();
+    public static final CoralIntake CORAL_INTAKE = new CoralIntake();
     public static final Leds LEDS = new Leds();
 
     private LoggedDashboardChooser<Command> autoChooser;

@@ -2,6 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
@@ -9,7 +10,7 @@ import frc.lib.generic.characterization.WheelRadiusCharacterization;
 import frc.lib.generic.hardware.KeyboardController;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.GamepieceManipulationCommands;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
@@ -67,27 +68,13 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(
-                PathfindingCommands.pathfindToLeftBranch().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
-        );
+        leftBumper.and(rightBumper.negate()).whileTrue(GamepieceManipulationCommands.pathfindToLeftBranchAndScore());
+        rightBumper.and(leftBumper.negate()).whileTrue(GamepieceManipulationCommands.pathfindToRightBranchAndScore());
 
-        rightBumper.and(leftBumper.negate()).whileTrue(
-                PathfindingCommands.pathfindToRightBranch().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
-        );
+        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(GamepieceManipulationCommands.pathfindToFeederAndEat());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(
-                PathfindingCommands.pathfindToFeeder().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
-        );
-
-        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L1)
-        );
-
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L3)
-        );
+        setupOperatorKeyboardButtons();
     }
-
 
     private static void configureButtonsCharacterizeWheelRadius() {
         final Command wheelRadiusCharacterization = new WheelRadiusCharacterization(
@@ -108,5 +95,17 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(subsystem.getSysIdQuastatic(SysIdRoutine.Direction.kReverse));
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(subsystem.getSysIdDynamic(SysIdRoutine.Direction.kForward));
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(subsystem.getSysIdDynamic(SysIdRoutine.Direction.kReverse));
+    }
+
+    private static void setupOperatorKeyboardButtons() {
+        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L1));
+        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L2));
+        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L3));
+
+        //TODO:
+        //t, y: upper faces
+        // f, j: left, right faces
+        // v, b: lower faces
+        //g, h: LEFT RIGHT brnahces
     }
 }
