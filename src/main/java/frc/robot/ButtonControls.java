@@ -48,7 +48,7 @@ public class ButtonControls {
 
         DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
         DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
-        DoubleSupplier rotationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X);
+        DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 3;
 
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(
@@ -73,7 +73,7 @@ public class ButtonControls {
                 PathfindingCommands.pathfindToRightBranch().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
         );
 
-        rightBumper.and(leftBumper).whileTrue(
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(
                 PathfindingCommands.pathfindToFeeder().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
         );
 
