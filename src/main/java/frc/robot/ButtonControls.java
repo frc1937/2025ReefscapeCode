@@ -62,17 +62,19 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.START).whileTrue(SwerveCommands.resetGyro());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.BACK).whileTrue(SwerveCommands.lockSwerve());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER).whileTrue(
+        final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
+        final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
+
+        leftBumper.and(rightBumper.negate()).whileTrue(
                 PathfindingCommands.pathfindToLeftBranch().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
         );
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER).whileTrue(
+        rightBumper.and(leftBumper.negate()).whileTrue(
                 PathfindingCommands.pathfindToRightBranch().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
         );
 
-        //TODO: Figure out how to access buttons on back of Kingston and use it here INSTEAD!
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(
-                pathfindToFeeder().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
+        rightBumper.and(leftBumper).whileTrue(
+                PathfindingCommands.pathfindToFeeder().alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
         );
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(
