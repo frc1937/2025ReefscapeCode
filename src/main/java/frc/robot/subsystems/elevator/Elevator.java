@@ -45,7 +45,10 @@ public class Elevator extends GenericSubsystem {
 
                 this
         );
+    }
 
+    public boolean isAtTarget() {
+        return MASTER_MOTOR.isAtPositionSetpoint();
     }
 
     @Override

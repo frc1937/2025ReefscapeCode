@@ -26,6 +26,10 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
+    public boolean isAtPose(Pose2d target) {
+        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < 0.1 && SWERVE_ROTATION_CONTROLLER.atGoal();
+    }
+
     @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return SYSID_DRIVE_CONFIG;

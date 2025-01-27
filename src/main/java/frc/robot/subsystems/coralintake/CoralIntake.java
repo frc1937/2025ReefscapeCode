@@ -11,7 +11,7 @@ import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR
 
 public class CoralIntake extends GenericSubsystem {
     public Command prepareGamePiece() {
-        return Commands.run(() -> setVoltage(4), this).until(() -> BEAM_BREAK_SENSOR.get() == 1).andThen(stop());
+        return Commands.run(() -> setVoltage(4), this).until(this::hasCoral).andThen(stop());
     }
 
     public Command releaseGamePiece() {
@@ -22,9 +22,13 @@ public class CoralIntake extends GenericSubsystem {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor);
     }
 
+    public boolean hasCoral() {
+        return BEAM_BREAK_SENSOR.get() == 1;
+    }
+
     @Override
     public void periodic() {
-        Logger.recordOutput("doesHoldGamePiece", BEAM_BREAK_SENSOR.get() == 1);
+        Logger.recordOutput("doesHoldGamePiece", hasCoral());
     }
 
     private void setVoltage(double voltage) {
