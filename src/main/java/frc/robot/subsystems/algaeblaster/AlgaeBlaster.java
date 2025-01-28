@@ -21,6 +21,10 @@ public class AlgaeBlaster extends GenericSubsystem {
         return Commands.runOnce(BLASTER_MOTOR::stopMotor, this);
     }
 
+    public boolean isArmAtTarget() {
+        return BLASTER_MOTOR.isAtPositionSetpoint();
+    }
+
     @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return BLASTER_SYSID_CONFIG;

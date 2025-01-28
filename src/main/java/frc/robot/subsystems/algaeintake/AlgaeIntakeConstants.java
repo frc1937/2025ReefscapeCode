@@ -46,6 +46,9 @@ public class AlgaeIntakeConstants {
 
         intakeArmMotorConfiguration.profileMaxVelocity = 2;
         intakeArmMotorConfiguration.profileMaxAcceleration = 3;
+
+        intakeArmMotorConfiguration.closedLoopTolerance = 0.1;
+
         intakeArmMotorConfiguration.supplyCurrentLimit = 30;
 
         INTAKE_ARM_MOTOR.configure(intakeArmMotorConfiguration);

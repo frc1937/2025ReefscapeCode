@@ -29,6 +29,10 @@ public class AlgaeIntake extends GenericSubsystem {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor, this);
     }
 
+    public boolean isArmAtTarget() {
+        return INTAKE_ARM_MOTOR.isAtPositionSetpoint();
+    }
+
     @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return INTAKE_ARM_SYSID_CONFIG;

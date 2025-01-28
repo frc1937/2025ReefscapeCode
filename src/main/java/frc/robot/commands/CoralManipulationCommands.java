@@ -7,7 +7,7 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import static frc.robot.RobotContainer.CORAL_INTAKE;
 import static frc.robot.RobotContainer.ELEVATOR;
 
-public class GamepieceManipulationCommands {
+public class CoralManipulationCommands {
     public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2;
 
     public static Command pathfindToLeftBranchAndScore() {

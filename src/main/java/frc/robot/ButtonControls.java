@@ -10,7 +10,8 @@ import frc.lib.generic.characterization.WheelRadiusCharacterization;
 import frc.lib.generic.hardware.KeyboardController;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.GamepieceManipulationCommands;
+import frc.robot.commands.AlgaeManipulationCommands;
+import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
@@ -69,10 +70,14 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(GamepieceManipulationCommands.pathfindToLeftBranchAndScore());
-        rightBumper.and(leftBumper.negate()).whileTrue(GamepieceManipulationCommands.pathfindToRightBranchAndScore());
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToLeftBranchAndScore());
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToRightBranchAndScore());
 
-        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(GamepieceManipulationCommands.pathfindToFeederAndEat());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
 
         setupOperatorKeyboardButtons();
     }
@@ -99,9 +104,9 @@ public class ButtonControls {
     }
 
     private static void setupOperatorKeyboardButtons() {
-        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
-        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
-        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
+        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
+        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
+        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
 
         //TODO:
         //t, y: upper faces
