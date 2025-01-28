@@ -51,6 +51,7 @@ public class AlgaeIntakeConstants {
         intakeMotorConfiguration.slot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
         intakeMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
         intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0, 0);
+
         intakeMotorConfiguration.supplyCurrentLimit = 20;
 
         INTAKE_MOTOR.configure(intakeMotorConfiguration);
