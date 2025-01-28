@@ -71,12 +71,14 @@ public class CustomLEDPatterns {
         final Color8Bit frontColor = deltaY < 0 ? interpolateColors(startColor, endColor, normalizedY) : new Color8Bit(Color.kBlack);
         final Color8Bit backColor = deltaY > 0 ? interpolateColors(startColor, endColor, normalizedY) : new Color8Bit(Color.kBlack);
 
+        buffer[23] = leftColor;
         buffer[0] = leftColor;
-        buffer[45] = leftColor;
-        buffer[23] = rightColor;
-        buffer[24] = rightColor;
+        buffer[22] = rightColor;
+        buffer[45] = rightColor;
+        buffer[10] = frontColor;
         buffer[11] = frontColor;
         buffer[12] = frontColor;
+        buffer[33] = backColor;
         buffer[34] = backColor;
         buffer[35] = backColor;
 
@@ -254,9 +256,9 @@ public class CustomLEDPatterns {
     }
 
     private static Color8Bit interpolateColors(Color8Bit startColor, Color8Bit endColor, double colorWeight) {
-        final int red = (int) (startColor.red * (1 - colorWeight) + endColor.red * colorWeight);
-        final int green = (int) (startColor.green * (1 - colorWeight) + endColor.green * colorWeight);
-        final int blue = (int) (startColor.blue * (1 - colorWeight) + endColor.blue * colorWeight);
+        final int red = (int) (endColor.red * (1 - colorWeight) + startColor.red * colorWeight);
+        final int green = (int) (endColor.green * (1 - colorWeight) + startColor.green * colorWeight);
+        final int blue = (int) (endColor.blue * (1 - colorWeight) + startColor.blue * colorWeight);
 
         return new Color8Bit(red, green, blue);
     }
