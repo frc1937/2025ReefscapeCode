@@ -31,11 +31,12 @@ public class AlgaeIntakeConstants {
         INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
         INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
-        intakeArmMotorConfiguration.profileMaxVelocity = 2;
-        intakeArmMotorConfiguration.profileMaxAcceleration = 3;
         intakeArmMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0, 0, 0, 0, 0);
         intakeArmMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.2, 0, 0, 0, 0, 0);
         intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1.0, 0.1, 0.2, -90, 90, false);
+
+        intakeArmMotorConfiguration.profileMaxVelocity = 2;
+        intakeArmMotorConfiguration.profileMaxAcceleration = 3;
         intakeArmMotorConfiguration.supplyCurrentLimit = 30;
 
         INTAKE_ARM_MOTOR.configure(intakeArmMotorConfiguration);

@@ -32,11 +32,12 @@ public class AlgaeOuttakeConstants {
         OUTTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
         OUTTAKE_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
-        outtakeMotorConfiguration.profileMaxVelocity = 2;
-        outtakeMotorConfiguration.profileMaxAcceleration = 3;
         outtakeMotorConfiguration.slot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);
         outtakeMotorConfiguration.simulationSlot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);
         outtakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1, 0.5, 0.2, MINIMUM_ROTATION, MAXIMUM_ROTATION, true);
+
+        outtakeMotorConfiguration.profileMaxVelocity = 2;
+        outtakeMotorConfiguration.profileMaxAcceleration = 3;
         outtakeMotorConfiguration.supplyCurrentLimit = 30;
 
         OUTTAKE_MOTOR.configure(outtakeMotorConfiguration);
