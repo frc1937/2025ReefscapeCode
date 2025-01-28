@@ -18,8 +18,7 @@ import java.util.function.DoubleSupplier;
 
 import static frc.lib.util.Controller.Axis.LEFT_X;
 import static frc.lib.util.Controller.Axis.LEFT_Y;
-import static frc.robot.RobotContainer.ELEVATOR;
-import static frc.robot.RobotContainer.SWERVE;
+import static frc.robot.RobotContainer.*;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class ButtonControls {
@@ -28,7 +27,7 @@ public class ButtonControls {
         CHARACTERIZE_ELEVATOR,
         CHARACTERIZE_SWERVE_DRIVE_MOTORS,
         CHARACTERIZE_WHEEL_RADIUS,
-        CHARACTERIZE_ALGAE_OUTTAKE_ARM,
+        CHARACTERIZE_ALGAE_BLASTER_ARM,
         CHARACTERIZE_ALGAE_INTAKE_ARM
     }
 
@@ -43,6 +42,8 @@ public class ButtonControls {
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
             case CHARACTERIZE_ELEVATOR -> setupSysIdCharacterization(ELEVATOR);
             case CHARACTERIZE_SWERVE_DRIVE_MOTORS -> setupSysIdCharacterization(SWERVE);
+            case CHARACTERIZE_ALGAE_INTAKE_ARM -> setupSysIdCharacterization(ALGAE_INTAKE);
+            case CHARACTERIZE_ALGAE_BLASTER_ARM -> setupSysIdCharacterization(ALGAE_BLASTER);
         }
     }
 

@@ -6,7 +6,7 @@ import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.Logger;
 
-import static frc.robot.subsystems.coralintake.CoralIntakeConstants.BEAM_BREAK_SENSOR;
+import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_BEAM_BREAK;
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR;
 
 public class CoralIntake extends GenericSubsystem {
@@ -23,12 +23,12 @@ public class CoralIntake extends GenericSubsystem {
     }
 
     public boolean hasCoral() {
-        return BEAM_BREAK_SENSOR.get() == 1;
+        return INTAKE_BEAM_BREAK.get() == 1;
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("doesHoldGamePiece", hasCoral());
+        Logger.recordOutput("hasCoral", hasCoral());
     }
 
     private void setVoltage(double voltage) {

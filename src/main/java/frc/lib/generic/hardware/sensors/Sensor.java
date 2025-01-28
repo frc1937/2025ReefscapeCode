@@ -21,7 +21,7 @@ public class Sensor implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs(name, inputs);
+        Logger.processInputs("Sensors/"+name, inputs);
     }
 
     public SensorInputsAutoLogged getInputs() { return inputs; }

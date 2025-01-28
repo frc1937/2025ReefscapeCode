@@ -1,17 +1,26 @@
-package frc.robot.subsystems.algaearms;
+package frc.robot.subsystems.algaeintake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.SimulationProperties;
 import frc.lib.generic.visualization.mechanisms.MechanismFactory;
 import frc.lib.generic.visualization.mechanisms.SingleJointedArmMechanism2d;
 
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.lib.generic.hardware.motor.MotorProperties.SparkType.MAX;
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_ARM_MOTOR_PORT;
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_PORT;
 
 public class AlgaeIntakeConstants {
+    protected static final SysIdRoutine.Config INTAKE_ARM_SYSID_CONFIG = new SysIdRoutine.Config(
+            Volts.per(Second).of(1),
+            Volts.of(2),
+            Second.of(7)
+    );
+
     protected static final Motor INTAKE_ARM_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);
     protected static final Motor INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
 

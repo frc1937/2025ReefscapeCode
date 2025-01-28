@@ -9,7 +9,6 @@ import frc.lib.generic.simulation.SimulationProperties;
 import frc.lib.generic.visualization.mechanisms.ElevatorMechanism2d;
 import frc.lib.math.Conversions;
 import frc.robot.GlobalConstants;
-import frc.robot.utilities.PortsConstants;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
@@ -24,12 +23,12 @@ public class ElevatorConstants {
     );
 
     protected static final Motor
-            MASTER_MOTOR = MotorFactory.createSpark("Elevator Master Motor", PortsConstants.ElevatorPorts.MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
-            SLAVE_MOTOR = MotorFactory.createSpark("Elevator Slave Motor", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
+            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
+            SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
 
     protected static final Sensor
-            TOP_BEAM_BREAK = SensorFactory.createDigitalInput("Top Beam Breaker", TOP_BEAM_BREAK_DIO_PORT),
-            BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("Button Beam Breaker", BOTTOM_BEAM_BREAK_DIO_PORT);
+            TOP_BEAM_BREAK = SensorFactory.createDigitalInput("TOP_BEAM_BREAKER", TOP_BEAM_BREAK_DIO_PORT),
+            BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("BUTTON_BEAM_BREAKER", BOTTOM_BEAM_BREAK_DIO_PORT);
 
     protected static final double
             ELEVATOR_MAX_EXTENSION_METERS = 0.86,
