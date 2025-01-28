@@ -8,13 +8,13 @@ import static frc.robot.RobotContainer.CORAL_INTAKE;
 import static frc.robot.RobotContainer.ELEVATOR;
 
 public class GamepieceManipulationCommands {
-    public static ElevatorConstants.ElevatorHeight currentScoringLevel = ElevatorConstants.ElevatorHeight.L2;
+    public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2;
 
     public static Command pathfindToLeftBranchAndScore() {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToLeftBranch();
 
         return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(currentScoringLevel))
+                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
                 .andThen(scoreCoral());
     }
@@ -23,7 +23,7 @@ public class GamepieceManipulationCommands {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToRightBranch();
 
         return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(currentScoringLevel))
+                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
                 .andThen(scoreCoral());
     }
@@ -38,6 +38,8 @@ public class GamepieceManipulationCommands {
     }
 
     public static Command scoreCoral() {
-        return ELEVATOR.setTargetHeight(currentScoringLevel).until(ELEVATOR::isAtTarget).andThen(CORAL_INTAKE.releaseGamePiece());
+        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                .until(ELEVATOR::isAtTarget)
+                .andThen(CORAL_INTAKE.releaseGamePiece());
     }
 }

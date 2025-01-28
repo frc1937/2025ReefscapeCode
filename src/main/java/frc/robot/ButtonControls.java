@@ -98,9 +98,9 @@ public class ButtonControls {
     }
 
     private static void setupOperatorKeyboardButtons() {
-        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L1));
-        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L2));
-        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.currentScoringLevel = ElevatorConstants.ElevatorHeight.L3));
+        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
+        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
+        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> GamepieceManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
 
         //TODO:
         //t, y: upper faces

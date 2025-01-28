@@ -11,12 +11,29 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.math.Conversions;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.function.Supplier;
+
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 public class Elevator extends GenericSubsystem {
+    public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> {
+                    setMotorPosition(levelSupplier.get().getRotations());
+
+                    if (CURRENT_MODE != REAL)
+                        printPose(levelSupplier.get().getMeters());
+                },
+                interrupt -> stopMotors(), // MASTER_MOTOR::isAtPositionSetpoint, TODO: Check if elevator can sustain itself on REAL.
+                () -> false,
+                this
+        );
+    }
+
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
                 () -> {},
