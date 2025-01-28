@@ -51,7 +51,7 @@ public class SwerveCommands {
                 () -> SWERVE.initializeDrive(true),
                 () -> SWERVE.driveToPose(fixedTargetPose),
                 interrupt -> {},
-                () -> SWERVE.isAtPose(targetPose),
+                () -> false,
                 SWERVE
         );
     }
