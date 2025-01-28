@@ -31,10 +31,12 @@ public class CoralManipulationCommands {
     public static Command pathfindToFeederAndEat() {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeeder();
 
-        return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
-                .until(pathfindingCommand::isFinished).
-                andThen(CORAL_INTAKE.prepareGamePiece());
+        return pathfindingCommand.alongWith(eatFromFeeder());
+    }
+
+    public static Command eatFromFeeder() {
+        return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
+                .alongWith(CORAL_INTAKE.prepareGamePiece());
     }
 
     public static Command scoreCoral() {

@@ -73,6 +73,7 @@ public class ButtonControls {
         leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToLeftBranchAndScore());
         rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToRightBranchAndScore());
 
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
@@ -107,11 +108,5 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
-
-        //TODO:
-        //t, y: upper faces
-        // f, j: left, right faces
-        // v, b: lower faces
-        //g, h: LEFT RIGHT brnahces
     }
 }
