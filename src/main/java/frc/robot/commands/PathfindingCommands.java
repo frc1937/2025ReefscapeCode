@@ -1,12 +1,10 @@
 package frc.robot.commands;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
@@ -20,7 +18,7 @@ import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
-import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
+import static frc.robot.utilities.PathPlannerConstants.*;
 
 public class PathfindingCommands {
     public static void setupFeederPathfinding(Trigger button) {
@@ -89,17 +87,12 @@ public class PathfindingCommands {
 
     private static Command pathfindToCage() {
         final Pose2d targetPose = decideCagePose();
-        final PathConstraints constraints = new PathConstraints(
-                1.2,
-                1.2,
-                1.2 / 0.047,
-                1.2
-        );
 
-        final Transform2d nextToCageTransform = new Transform2d(1.5, 0, Rotation2d.kZero);
-        return AutoBuilder.pathfindToPose(targetPose.transformBy(nextToCageTransform), PATHPLANNER_CONSTRAINTS, 1).andThen(
-                AutoBuilder.pathfindToPose(targetPose, constraints).andThen(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB))
-        );
+        final Command initialApproach = isRobotInProximity(targetPose, 1.5) ?
+                Commands.none() :
+                AutoBuilder.pathfindToPose(targetPose.transformBy(NEXT_TO_CAGE_TRANSFORM), PATHPLANNER_CONSTRAINTS, 1);
+
+        return initialApproach.andThen(AutoBuilder.pathfindToPose(targetPose, PATHPLANNER_CAGE_CONSTRAINTS).andThen(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB)));
     }
 
     private static Pose2d decideCagePose() {
@@ -114,8 +107,8 @@ public class PathfindingCommands {
             return CLOSE_CAGE.get();
         else if (middleCageDistanceY < farCageDistanceY)
             return MIDDLE_CAGE.get();
-        else
-            return FAR_CAGE.get();
+
+        return FAR_CAGE.get();
     }
 
     private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
