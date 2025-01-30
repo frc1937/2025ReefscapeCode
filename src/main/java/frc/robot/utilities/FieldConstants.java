@@ -19,6 +19,11 @@ public class FieldConstants {
     public static final double FIELD_WIDTH = 8.05;
     public static final double FIELD_LENGTH = 17.55;
 
+    public static final FlippablePose2d
+            FAR_CAGE = new FlippablePose2d(8.7738712, 7.2841866, Rotation2d.k180deg, true),
+            MIDDLE_CAGE = new FlippablePose2d(8.7738712, 6.168517, Rotation2d.k180deg, true),
+            CLOSE_CAGE = new FlippablePose2d(8.7738712, 5.0786538, Rotation2d.k180deg, true);
+
     public static final FlippableTranslation2d REEF_CENTER = new FlippableTranslation2d(4.490, 4.027, true);
 
     public enum ReefFace {

@@ -1,27 +1,52 @@
 package frc.robot.commands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
 
 import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
 import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
-import static frc.robot.RobotContainer.SWERVE;
+import static frc.robot.RobotContainer.*;
 import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
+import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
 public class PathfindingCommands {
     public static void setupFeederPathfinding(Trigger button) {
         button.whileTrue(
                 new DeferredCommand(PathfindingCommands::pathfindToFeeder, Set.of(SWERVE))
         );
+    }
+
+    private static Command pathfindToFeeder() {
+        final Pose2d targetPose = decideFeederPose();
+
+        return isRobotInProximity(targetPose, 0.8) ?
+                SwerveCommands.goToPosePID(targetPose) :
+                SwerveCommands.goToPoseBezier(targetPose);
+    }
+
+    private static Pose2d decideFeederPose() {
+        Pose2d originalPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
+
+        if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
+            originalPose = flipAboutXAxis(originalPose);
+
+        if (Flippable.isRedAlliance())
+            originalPose = flipAboutYAxis(originalPose);
+
+        return originalPose;
     }
 
     public static void setupReefPathfinding(Trigger firstButton, Trigger secondButton) {
@@ -56,24 +81,41 @@ public class PathfindingCommands {
         return Flippable.isRedAlliance() ? FACE_2 : FACE_5;
     }
 
-    private static Command pathfindToFeeder() {
-        final Pose2d targetPose = decideFeederPose();
-
-        return isRobotInProximity(targetPose, 0.8) ?
-                SwerveCommands.goToPosePID(targetPose) :
-                SwerveCommands.goToPoseBezier(targetPose);
+    public static void setupCagePathfinding(Trigger button) {
+        button.whileTrue(
+                new DeferredCommand((PathfindingCommands::pathfindToCage), Set.of(SWERVE))
+        );
     }
 
-    private static Pose2d decideFeederPose() {
-        Pose2d originalPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
+    private static Command pathfindToCage() {
+        final Pose2d targetPose = decideCagePose();
+        final PathConstraints constraints = new PathConstraints(
+                1.2,
+                1.2,
+                1.2 / 0.047,
+                1.2
+        );
 
-        if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
-            originalPose = flipAboutXAxis(originalPose);
+        final Transform2d nextToCageTransform = new Transform2d(1.5, 0, Rotation2d.kZero);
+        return AutoBuilder.pathfindToPose(targetPose.transformBy(nextToCageTransform), PATHPLANNER_CONSTRAINTS, 1).andThen(
+                AutoBuilder.pathfindToPose(targetPose, constraints).andThen(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB))
+        );
+    }
 
-        if (Flippable.isRedAlliance())
-            originalPose = flipAboutYAxis(originalPose);
+    private static Pose2d decideCagePose() {
+        final Pose2d robotPose = POSE_ESTIMATOR.getCurrentPose();
 
-        return originalPose;
+        final double
+                closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
+                middleCageDistanceY = Math.abs(robotPose.getY() - MIDDLE_CAGE.get().getY()),
+                farCageDistanceY = Math.abs(robotPose.getY() - FAR_CAGE.get().getY());
+
+        if (closeCageDistanceY < farCageDistanceY && closeCageDistanceY < middleCageDistanceY)
+            return CLOSE_CAGE.get();
+        else if (middleCageDistanceY < farCageDistanceY)
+            return MIDDLE_CAGE.get();
+        else
+            return FAR_CAGE.get();
     }
 
     private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
