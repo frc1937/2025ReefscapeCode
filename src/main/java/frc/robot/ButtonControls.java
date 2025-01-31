@@ -12,6 +12,7 @@ import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
+import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
@@ -64,6 +65,8 @@ public class ButtonControls {
                         () -> DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).getAsBoolean()
                 ));
 
+        ALGAE_INTAKE.setDefaultCommand(ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeState.RETRACTED));
+
         DRIVER_CONTROLLER.getButton(Controller.Inputs.START).whileTrue(SwerveCommands.resetGyro());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.BACK).whileTrue(SwerveCommands.lockSwerve());
 
@@ -76,11 +79,11 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
-
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoral());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
 
         setupOperatorKeyboardButtons();
     }

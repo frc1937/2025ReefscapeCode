@@ -10,17 +10,14 @@ import static frc.robot.RobotContainer.ALGAE_INTAKE;
 
 public class AlgaeManipulationCommands {
     public static Command intakeAlgae() {
-        return ALGAE_INTAKE.setAlgaeIntakeArmState(AlgaeIntakeConstants.IntakeArmState.EXTENDED)
-                .alongWith(ALGAE_INTAKE.setAlgaeIntakeVoltage(-2))
-                .until(ALGAE_INTAKE::isArmAtTarget)
-                .andThen(ALGAE_INTAKE.setAlgaeIntakeArmState(AlgaeIntakeConstants.IntakeArmState.RETRACTED));
+        return ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeState.EXTENDED)
+                .raceWith(new WaitCommand(2))
+                .andThen(ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeState.RETRACTED));
     }
 
     public static Command releaseAlgae() {
-        return ALGAE_INTAKE.setAlgaeIntakeArmState(AlgaeIntakeConstants.IntakeArmState.EXTENDED)
-                .alongWith(ALGAE_INTAKE.setAlgaeIntakeVoltage(6))
-                .andThen(new WaitCommand(0.4))
-                .andThen(ALGAE_INTAKE.setAlgaeIntakeArmState(AlgaeIntakeConstants.IntakeArmState.RETRACTED));
+        return ALGAE_INTAKE.setRollersVoltage(6)
+                .raceWith(new WaitCommand(1.2));
     }
 
     public static Command blastAlgaeOffReef() {

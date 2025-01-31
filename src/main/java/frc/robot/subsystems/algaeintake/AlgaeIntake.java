@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
@@ -12,21 +13,24 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.algaeintake.AlgaeIntakeConstants.*;
 
 public class AlgaeIntake extends GenericSubsystem {
-    public Command setAlgaeIntakeArmState(IntakeArmState state) {
-        return Commands.run(() -> INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this)
-                .andThen(stopAlgaeArm());
+    public Command setAlgaeIntakeState(IntakeState state) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> {
+                    INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
+                    INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());
+                },
+                interrupt -> {
+                    INTAKE_MOTOR.stopMotor();
+                    INTAKE_ARM_MOTOR.stopMotor();
+                },
+                () -> false,
+                this
+        );
     }
 
-    public Command setAlgaeIntakeVoltage(double voltage) {
+    public Command setRollersVoltage(double voltage) {
         return Commands.run(() -> INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage), this);
-    }
-
-    public Command stopAlgaeArm() {
-        return Commands.runOnce(INTAKE_ARM_MOTOR::stopMotor, this);
-    }
-
-    public Command stopAlgaeIntake() {
-        return Commands.runOnce(INTAKE_MOTOR::stopMotor, this);
     }
 
     public boolean isArmAtTarget() {

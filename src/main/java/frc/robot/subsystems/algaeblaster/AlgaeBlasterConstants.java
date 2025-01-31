@@ -47,6 +47,8 @@ public class AlgaeBlasterConstants {
 
         blasterMotorConfiguration.profileMaxVelocity = 2;
         blasterMotorConfiguration.profileMaxAcceleration = 3;
+        blasterMotorConfiguration.closedLoopTolerance = 0.5;
+
         blasterMotorConfiguration.supplyCurrentLimit = 30;
 
         BLASTER_MOTOR.configure(blasterMotorConfiguration);

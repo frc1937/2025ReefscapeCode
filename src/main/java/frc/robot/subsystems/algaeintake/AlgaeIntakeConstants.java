@@ -41,12 +41,13 @@ public class AlgaeIntakeConstants {
         INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
         intakeArmMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0, 0, 0, 0, 0);
-        intakeArmMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.2, 0, 0, 0, 0, 0);
-        intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1.0, 0.1, 0.2, -90, 90, false);
+        intakeArmMotorConfiguration.simulationSlot = new MotorProperties.Slot(1, 0, 0, 0, 0, 0);
+        intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM,
+                DCMotor.getFalcon500(1),
+                1.0, 0.1, 0.2, Rotation2d.fromDegrees(-180), Rotation2d.fromDegrees(180), false);
 
-        intakeArmMotorConfiguration.profileMaxVelocity = 2;
+        intakeArmMotorConfiguration.profileMaxVelocity = 1;
         intakeArmMotorConfiguration.profileMaxAcceleration = 3;
-
         intakeArmMotorConfiguration.closedLoopTolerance = 0.1;
 
         intakeArmMotorConfiguration.supplyCurrentLimit = 30;
@@ -62,25 +63,31 @@ public class AlgaeIntakeConstants {
 
         intakeMotorConfiguration.slot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
         intakeMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
-        intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0, 0);
+        intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR,
+                DCMotor.getFalcon500(1), 1, 0.003);
 
         intakeMotorConfiguration.supplyCurrentLimit = 20;
 
         INTAKE_MOTOR.configure(intakeMotorConfiguration);
     }
 
-    public enum IntakeArmState {
-        EXTENDED(Rotation2d.kZero),
-        RETRACTED(Rotation2d.kCW_90deg);
+    public enum IntakeState {
+        EXTENDED(0.03, -2),
+        RETRACTED(0.25, 0);
 
-        private final Rotation2d rotation;
+        private final double armTargetPosition;
+        private final double intakeSpeed;
 
-        IntakeArmState(Rotation2d rotation) {
-            this.rotation = rotation;
+        IntakeState(double armTargetPosition, double intakeSpeed) {
+            this.armTargetPosition = armTargetPosition;
+            this.intakeSpeed = intakeSpeed;
         }
 
-        public Rotation2d getRotation2d() {
-            return rotation;
+        public double getTargetArmPositionRotations() {
+            return armTargetPosition;
+        }
+        public double getRollerVoltage() {
+            return intakeSpeed;
         }
     }
 }

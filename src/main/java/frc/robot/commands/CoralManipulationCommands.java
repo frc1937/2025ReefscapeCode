@@ -16,7 +16,7 @@ public class CoralManipulationCommands {
         return pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
-                .andThen(scoreCoral());
+                .andThen(scoreCoralNoPositionCheck());
     }
 
     public static Command pathfindToRightBranchAndScore() {
@@ -25,7 +25,7 @@ public class CoralManipulationCommands {
         return pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
-                .andThen(scoreCoral());
+                .andThen(scoreCoralNoPositionCheck());
     }
 
     public static Command pathfindToFeederAndEat() {
@@ -39,7 +39,7 @@ public class CoralManipulationCommands {
                 .alongWith(CORAL_INTAKE.prepareGamePiece());
     }
 
-    public static Command scoreCoral() {
+    public static Command scoreCoralNoPositionCheck() {
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(ELEVATOR::isAtTarget)
                 .andThen(CORAL_INTAKE.releaseGamePiece());
