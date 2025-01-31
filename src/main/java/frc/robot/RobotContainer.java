@@ -130,7 +130,7 @@ public class RobotContainer {
 
         DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_Y);
         DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(LEFT_X);
-        DoubleSupplier rotationSupplier =  () -> driveSign.getAsDouble() * driveController.getRawAxis(Controller.Axis.RIGHT_X);
+        DoubleSupplier rotationSupplier = () -> driveSign.getAsDouble() * driveController.getRawAxis(Controller.Axis.RIGHT_X);
 
         setupDriving(translationSupplier, strafeSupplier, rotationSupplier);
 
