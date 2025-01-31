@@ -46,14 +46,7 @@ public class PathPlannerConstants {
             2
     );
 
-    public static final PathConstraints PATHPLANNER_CAGE_CONSTRAINTS = new PathConstraints(
-            1.2,
-            1.2,
-            25.53191489361702,
-            1.2
-    );
-
-    public static final Transform2d NEXT_TO_CAGE_TRANSFORM = new Transform2d(1.5, 0, Rotation2d.kZero);
+    public static final PIDConstants PATHPLANNER_CAGE_CONSTRAINTS = new PIDConstants(0.5);
 
 
     public static void initializePathPlanner() {

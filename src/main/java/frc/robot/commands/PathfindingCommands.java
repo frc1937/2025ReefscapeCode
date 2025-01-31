@@ -1,24 +1,24 @@
 package frc.robot.commands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight;
 import frc.robot.subsystems.swerve.SwerveCommands;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.Set;
 
 import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
 import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
-import static frc.robot.RobotContainer.*;
+import static frc.robot.RobotContainer.POSE_ESTIMATOR;
+import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
-import static frc.robot.utilities.PathPlannerConstants.*;
+import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CAGE_CONSTRAINTS;
 
 public class PathfindingCommands {
     public static void setupFeederPathfinding(Trigger button) {
@@ -88,11 +88,20 @@ public class PathfindingCommands {
     private static Command pathfindToCage() {
         final Pose2d targetPose = decideCagePose();
 
-        final Command initialApproach = isRobotInProximity(targetPose, 1.5) ?
-                Commands.none() :
-                AutoBuilder.pathfindToPose(targetPose.transformBy(NEXT_TO_CAGE_TRANSFORM), PATHPLANNER_CONSTRAINTS, 1);
+        final Command alignYWithTarget = SwerveCommands.goToPosePIDWithConstraints(
+                new Pose2d(
+                        POSE_ESTIMATOR.getCurrentPose().getX(),
+                        targetPose.getY(),
+                        targetPose.getRotation()
+                ),
+                PATHPLANNER_CAGE_CONSTRAINTS
+        );
 
-        return initialApproach.andThen(AutoBuilder.pathfindToPose(targetPose, PATHPLANNER_CAGE_CONSTRAINTS).andThen(ELEVATOR.setTargetPosition(ElevatorHeight.CLIMB)));
+        return alignYWithTarget
+                .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.1)
+                .andThen(
+                        SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS)
+                );
     }
 
     private static Pose2d decideCagePose() {
