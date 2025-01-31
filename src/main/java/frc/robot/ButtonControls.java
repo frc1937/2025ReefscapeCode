@@ -78,7 +78,9 @@ public class ButtonControls {
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
+
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoral());
 
         setupOperatorKeyboardButtons();
     }
@@ -108,5 +110,6 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
+        OPERATOR_CONTROLLER.nine().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.FEEDER));
     }
 }
