@@ -105,7 +105,6 @@ public class Conversions {
         return Math.pow(thetaPower, 2) * Math.signum(thetaPower) * maxRotation;
     }
 
-
     /**
      * Converts a target output percentage output to voltage when voltage compensation is enabled.
      * The voltage compensation saturation determines what voltage represents 100% output.

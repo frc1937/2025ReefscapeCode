@@ -33,9 +33,9 @@ public class OdometryThread extends Thread {
     private final ThreadInputsAutoLogged threadInputs = new ThreadInputsAutoLogged();
 
     public static OdometryThread getInstance() {
-        if (INSTANCE == null) {
+        if (INSTANCE == null)
             INSTANCE = new OdometryThread();
-        }
+
         return INSTANCE;
     }
 

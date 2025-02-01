@@ -1,9 +1,11 @@
 package frc.lib.generic.hardware.pigeon;
 
 public enum PigeonSignal {
-    YAW(0), PITCH(1), ROLL(2);
+    YAW(0),
+    PITCH(1),
+    ROLL(2);
 
-    final int id;
+    private final int id;
 
     PigeonSignal(int id) {
         this.id = id;

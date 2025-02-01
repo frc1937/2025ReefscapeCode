@@ -43,11 +43,9 @@ public abstract class GenericSubsystem extends SubsystemBase {
         return null;
     }
 
-    public void sysIdDrive(double voltage) {
-    }
+    public void sysIdDrive(double voltage) {}
 
-    public void sysIdUpdateLog(SysIdRoutineLog log) {
-    }
+    public void sysIdUpdateLog(SysIdRoutineLog log) {}
 
     public void setIdleMode(MotorProperties.IdleMode idleMode) {}
 
