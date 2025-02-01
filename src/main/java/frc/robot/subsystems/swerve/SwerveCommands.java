@@ -1,6 +1,7 @@
 package frc.robot.subsystems.swerve;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,6 +51,18 @@ public class SwerveCommands {
         return new FunctionalCommand(
                 () -> SWERVE.initializeDrive(true),
                 () -> SWERVE.driveToPose(fixedTargetPose),
+                interrupt -> {},
+                () -> false,
+                SWERVE
+        );
+    }
+
+    public static Command goToPosePIDWithConstraints(Pose2d targetPose, PIDConstants constraints) {
+        final Pose2d fixedTargetPose = new Pose2d(targetPose.getTranslation(), Rotation2d.fromDegrees(MathUtil.inputModulus(targetPose.getRotation().getDegrees(), -180, 180)));
+
+        return new FunctionalCommand(
+                () -> SWERVE.initializeDrive(true),
+                () -> SWERVE.driveToPoseWithConstraints(fixedTargetPose, constraints),
                 interrupt -> {},
                 () -> false,
                 SWERVE

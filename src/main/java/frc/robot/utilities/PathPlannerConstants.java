@@ -8,6 +8,8 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import frc.lib.util.LocalADStarAK;
 import frc.lib.util.flippable.Flippable;
 import org.json.simple.parser.ParseException;
@@ -43,6 +45,9 @@ public class PathPlannerConstants {
             ROBOT_CONFIG.moduleConfig.maxDriveVelocityRadPerSec,
             2
     );
+
+    public static final PIDConstants PATHPLANNER_CAGE_CONSTRAINTS = new PIDConstants(0.5);
+
 
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());
