@@ -11,6 +11,7 @@ import frc.lib.generic.hardware.KeyboardController;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
+import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -82,8 +83,9 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
-
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
+
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ClimbingCommands.pathfindToCageAndClimb());
 
         setupOperatorKeyboardButtons();
     }

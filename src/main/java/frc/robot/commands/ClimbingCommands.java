@@ -1,0 +1,18 @@
+package frc.robot.commands;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import frc.robot.subsystems.elevator.ElevatorConstants;
+
+import static frc.robot.RobotContainer.ELEVATOR;
+
+public class ClimbingCommands {
+    public static Command pathfindToCageAndClimb() {
+        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToCage();
+
+        return pathfindingCommand
+                .alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L3))
+                .until(pathfindingCommand::isFinished)
+                .andThen(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.CLIMB));
+    }
+}

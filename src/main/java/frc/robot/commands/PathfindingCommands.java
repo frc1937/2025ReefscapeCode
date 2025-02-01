@@ -51,23 +51,22 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    public static Command pathfindToCage() {
-        final Pose2d targetPose = decideCagePose();
+    public static DeferredCommand pathfindToCage() {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = decideCagePose();
 
-        final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
-                new Pose2d(
-                        POSE_ESTIMATOR.getCurrentPose().getX(),
-                        targetPose.getY(),
-                        targetPose.getRotation()
-                ),
-                PATHPLANNER_CAGE_CONSTRAINTS
-        );
+            final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
+                    new Pose2d(POSE_ESTIMATOR.getCurrentPose().getX(),
+                            targetPose.getY(),
+                            targetPose.getRotation()
+                    ),
+                    PATHPLANNER_CAGE_CONSTRAINTS
+            );
 
-        return alignWithTargetY
-                .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.1)
-                .andThen(
-                        SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS)
-                );
+            return alignWithTargetY
+                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.07)
+                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS));
+        }, Set.of(SWERVE));
     }
 
     private static ReefFace decideReefFace() {
@@ -100,8 +99,7 @@ public class PathfindingCommands {
     private static Pose2d decideCagePose() {
         final Pose2d robotPose = POSE_ESTIMATOR.getCurrentPose();
 
-        final double
-                closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
+        final double closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
                 middleCageDistanceY = Math.abs(robotPose.getY() - MIDDLE_CAGE.get().getY()),
                 farCageDistanceY = Math.abs(robotPose.getY() - FAR_CAGE.get().getY());
 
@@ -112,6 +110,7 @@ public class PathfindingCommands {
 
         return FAR_CAGE.get();
     }
+
 
     private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
         return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(pose2d.getTranslation()) < thresholdMetres;
