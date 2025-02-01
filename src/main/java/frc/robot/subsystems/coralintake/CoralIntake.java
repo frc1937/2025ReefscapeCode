@@ -22,6 +22,11 @@ public class CoralIntake extends GenericSubsystem {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor);
     }
 
+    @Override
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {
+        INTAKE_MOTOR.setIdleMode(idleMode);
+    }
+
     @AutoLogOutput(key = "hasCoral")
     public boolean hasCoral() {
         return INTAKE_BEAM_BREAK.get() == 1;

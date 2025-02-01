@@ -26,6 +26,11 @@ public class AlgaeBlaster extends GenericSubsystem {
     }
 
     @Override
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {
+        BLASTER_MOTOR.setIdleMode(idleMode);
+    }
+
+    @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return BLASTER_SYSID_CONFIG;
     }

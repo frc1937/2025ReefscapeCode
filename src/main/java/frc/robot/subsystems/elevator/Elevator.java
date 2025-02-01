@@ -54,6 +54,12 @@ public class Elevator extends GenericSubsystem {
     }
 
     @Override
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {
+        MASTER_MOTOR.setIdleMode(idleMode);
+        SLAVE_MOTOR.setIdleMode(idleMode);
+    }
+
+    @Override
     public void periodic() {
         if (BOTTOM_BEAM_BREAK.get() == 1)
             MASTER_MOTOR.setMotorEncoderPosition(0);

@@ -2,12 +2,14 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.characterization.WheelRadiusCharacterization;
 import frc.lib.generic.hardware.KeyboardController;
+import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
@@ -41,6 +43,8 @@ public class ButtonControls {
     private static final Trigger USER_BUTTON = new Trigger(RobotController::getUserButton);
 
     public static void initializeButtons(ButtonLayout layout) {
+        setupUserButtonDebugging();
+
         switch (layout) {
             case TELEOP -> configureButtonsTeleop();
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
@@ -127,5 +131,22 @@ public class ButtonControls {
         hasCoral.onTrue(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_LOADED, 3)
                 .alongWith(DRIVER_CONTROLLER.rumble(0.5, 1)));
         hasCoral.onFalse(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_EMPTIED, 3));
+    }
+
+    private static void setupUserButtonDebugging() {
+        USER_BUTTON.toggleOnTrue(
+                Commands.startEnd(
+                        () -> setModeOfAllSubsystems(MotorProperties.IdleMode.COAST),
+                        () -> setModeOfAllSubsystems(MotorProperties.IdleMode.BRAKE)
+                ).alongWith(LEDS.setLEDStatus(Leds.LEDMode.DEBUG_MODE, 1500))
+                        .andThen(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0))
+        ).debounce(1);
+    }
+
+    private static void setModeOfAllSubsystems(MotorProperties.IdleMode idleMode) {
+        ELEVATOR.setIdleMode(idleMode);
+        CORAL_INTAKE.setIdleMode(idleMode);
+        ALGAE_BLASTER.setIdleMode(idleMode);
+        ALGAE_INTAKE.setIdleMode(idleMode);
     }
 }

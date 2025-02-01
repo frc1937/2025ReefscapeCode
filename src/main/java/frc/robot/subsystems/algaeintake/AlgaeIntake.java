@@ -38,6 +38,12 @@ public class AlgaeIntake extends GenericSubsystem {
     }
 
     @Override
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {
+        INTAKE_MOTOR.setIdleMode(idleMode);
+        INTAKE_ARM_MOTOR.setIdleMode(idleMode);
+    }
+
+    @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return INTAKE_ARM_SYSID_CONFIG;
     }
