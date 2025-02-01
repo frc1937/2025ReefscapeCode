@@ -33,7 +33,7 @@ public class SwerveModule {
 
     /**
      * SETS RAW VOLTAGE TO THE DRIVE MOTOR! UNSAFE! Only use FOR CHARACTERIZATION!
-     * @param voltage
+     * @param voltage The voltage the drive motor receives
      */
     protected void runDriveMotorForCharacterization(double voltage) {
         driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);

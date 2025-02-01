@@ -113,7 +113,6 @@ public class PathfindingCommands {
         return FAR_CAGE.get();
     }
 
-
     private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
         return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(pose2d.getTranslation()) < thresholdMetres;
     }
