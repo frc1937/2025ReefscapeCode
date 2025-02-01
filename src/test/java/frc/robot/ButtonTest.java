@@ -270,7 +270,8 @@ class ButtonTest {
 //TODO
 // * Look into traj generation.
 // * https://www.chiefdelphi.com/t/frc-6328-mechanical-advantage-2023-build-thread/420691/179?u=wihy
-// * ^ Coolest auton managing I've ever seen. Look into implementing something similar. Instead of having rigid routines, have setpoints to get to and performs actions at.
+// * ^ Coolest auton managing I've ever seen. Look into implementing something similar.
+// Instead of having rigid routines, have setpoints to get to and performs actions at.
 // * read when bored: https://docs.wpilib.org/en/stable/docs/software/telemetry/index.html might have useful info.
 // * End of MATCH LEDs flashing would be SOOO useful.
 // * A better LED system. Please!

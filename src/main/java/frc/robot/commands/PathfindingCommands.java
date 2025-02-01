@@ -15,6 +15,7 @@ import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
+import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CAGE_CONSTRAINTS;
 
 public class PathfindingCommands {
     private static final double PID_PATHFIND_THRESHOLD_REEF = 0.8;
@@ -50,23 +51,22 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    public static Command pathfindToCage() {
-        final Pose2d targetPose = decideCagePose();
+    public static DeferredCommand pathfindToCage() {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = decideCagePose();
 
-        final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
-                new Pose2d(
-                        POSE_ESTIMATOR.getCurrentPose().getX(),
-                        targetPose.getY(),
-                        targetPose.getRotation()
-                ),
-                PATHPLANNER_CAGE_CONSTRAINTS
-        );
+            final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
+                    new Pose2d(POSE_ESTIMATOR.getCurrentPose().getX(),
+                            targetPose.getY(),
+                            targetPose.getRotation()
+                    ),
+                    PATHPLANNER_CAGE_CONSTRAINTS
+            );
 
-        return alignWithTargetY
-                .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.1)
-                .andThen(
-                        SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS)
-                );
+            return alignWithTargetY
+                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.07)
+                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS));
+        }, Set.of(SWERVE));
     }
 
     private static ReefFace decideReefFace() {
@@ -74,14 +74,16 @@ public class PathfindingCommands {
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
+        final boolean isRedAlliance = Flippable.isRedAlliance();
 
-        if (150 <= angle || angle < -150) return Flippable.isRedAlliance() ? FACE_0 : FACE_3;
-        if (-30 <= angle && angle < 30) return Flippable.isRedAlliance() ? FACE_3 : FACE_0;
-        if (90 <= angle) return Flippable.isRedAlliance() ? FACE_1 : FACE_4;
-        if (-90 <= angle && angle < -30) return Flippable.isRedAlliance() ? FACE_4 : FACE_1;
-        if (-150 <= angle && angle < -90) return Flippable.isRedAlliance() ? FACE_5 : FACE_2;
 
-        return Flippable.isRedAlliance() ? FACE_2 : FACE_5;
+        if (angle < -150 || angle >= 150) return isRedAlliance ? FACE_0 : FACE_3;
+        if (angle < -90) return isRedAlliance ? FACE_5 : FACE_2;
+        if (angle < -30) return isRedAlliance ? FACE_4 : FACE_1;
+        if (angle < 30) return isRedAlliance ? FACE_3 : FACE_0;
+        if (angle < 90) return isRedAlliance ? FACE_2 : FACE_5;
+
+        return isRedAlliance ? FACE_1 : FACE_4;
     }
 
     private static Pose2d decideFeederPose() {
@@ -99,8 +101,7 @@ public class PathfindingCommands {
     private static Pose2d decideCagePose() {
         final Pose2d robotPose = POSE_ESTIMATOR.getCurrentPose();
 
-        final double
-                closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
+        final double closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
                 middleCageDistanceY = Math.abs(robotPose.getY() - MIDDLE_CAGE.get().getY()),
                 farCageDistanceY = Math.abs(robotPose.getY() - FAR_CAGE.get().getY());
 

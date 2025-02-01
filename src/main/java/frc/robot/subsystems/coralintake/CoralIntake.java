@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
-import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_BEAM_BREAK;
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR;
@@ -22,13 +22,14 @@ public class CoralIntake extends GenericSubsystem {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor);
     }
 
-    public boolean hasCoral() {
-        return INTAKE_BEAM_BREAK.get() == 1;
+    @Override
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {
+        INTAKE_MOTOR.setIdleMode(idleMode);
     }
 
-    @Override
-    public void periodic() {
-        Logger.recordOutput("hasCoral", hasCoral());
+    @AutoLogOutput(key = "hasCoral")
+    public boolean hasCoral() {
+        return INTAKE_BEAM_BREAK.get() == 1;
     }
 
     private void setVoltage(double voltage) {

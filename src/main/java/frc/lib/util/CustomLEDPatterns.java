@@ -51,8 +51,8 @@ public class CustomLEDPatterns {
      * the robot is from the correct position. This should be called periodically to update the indicator.
      * If a certain direction of the position is correct , it turns off that direction's LEDs.
      *
-     * @param startColor The color when the robot is at the furthest position.
-     * @param endColor   The color when the robot is at the closest position.
+     * @param startColor     The color when the robot is at the furthest position.
+     * @param endColor       The color when the robot is at the closest position.
      * @param robotPosition  The current robot position.
      * @param targetPosition The target position.
      * @return The filled buffer with corrective LED colors.
@@ -100,7 +100,7 @@ public class CustomLEDPatterns {
      * Set the buffer from the color.
      *
      * @param ledBuffer The LED buffer to set.
-     * @param buffer The color buffer.
+     * @param buffer    The color buffer.
      * @return The updated LED buffer.
      */
     public static AddressableLEDBuffer getBufferFromColors(AddressableLEDBuffer ledBuffer, Color8Bit[] buffer) {

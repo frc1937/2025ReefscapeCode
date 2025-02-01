@@ -1,5 +1,11 @@
 package frc.lib.generic;
 
+/**
+ * kS; Volts required to overcome the force of static friction <p>
+ * kV; Volts required to maintain a velocity of one unit <p>
+ * kA; Volts required to accelerate the mechanism by one unit <p>
+ * kG; Volts required to overcome the force of gravity
+ */
 public class Feedforward {
     public static class FeedForwardConstants {
         public final double kS, kV, kA, kG;
@@ -13,12 +19,14 @@ public class Feedforward {
 
         @Override
         public String toString() {
-            return "kS: " + kS + " kG: " + kG + " kA" + kA  + " Kv " + kV;
+            return "kS: " + kS + " kG: " + kG + " kA" + kA + " Kv " + kV;
         }
     }
 
     public enum Type {
-        SIMPLE, ARM, ELEVATOR
+        SIMPLE,
+        ARM,
+        ELEVATOR
     }
 
     private final FeedForwardConstants constants;
@@ -41,16 +49,11 @@ public class Feedforward {
         } else if (type == Type.ELEVATOR) {
             feedforward += constants.kG;
         }
-        
+
         return feedforward;
     }
 
     public double calculate(double velocityRPS, double accelerationRPSPS) {
         return calculate(0, velocityRPS, accelerationRPSPS);
     }
-
-    // kS; Volts required to overcome the force of static friction
-    // kV; Volts required to maintain a velocity of one unit
-    // kA; Volts required to accelerate the mechanism by one unit
-    // kG; Volts required to overcome the force of gravity
 }

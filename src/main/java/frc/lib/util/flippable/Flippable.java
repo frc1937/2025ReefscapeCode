@@ -17,13 +17,11 @@ import java.util.Optional;
  * @param <T> the type of object to flip
  */
 public abstract class Flippable<T> {
-    public static final Trigger IS_RED_ALLIANCE_TRIGGER = new Trigger(Flippable::isRedAlliance);
     private static final Timer UPDATE_ALLIANCE_TIMER = new Timer();
     private static boolean IS_RED_ALLIANCE = notCachedIsRedAlliance();
     protected final T nonFlippedObject, flippedObject;
 
     protected final boolean shouldFlipWhenRedAlliance;
-
 
     /**
      * Initializes the Flippable class. This should be called once in RobotContainer.

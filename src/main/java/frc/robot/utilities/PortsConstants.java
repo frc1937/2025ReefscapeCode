@@ -37,7 +37,7 @@ public class PortsConstants {
         public static final int ALGAE_BLASTER_MOTOR_PORT = 12;
     }
 
-    public static class ElevatorPorts {  // Fake ports
+    public static class ElevatorPorts {
         public static final int
                 MASTER_MOTOR_PORT = 7,
                 SLAVE_MOTOR_PORT = 8,

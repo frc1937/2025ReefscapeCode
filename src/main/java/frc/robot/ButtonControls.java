@@ -1,19 +1,23 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.characterization.WheelRadiusCharacterization;
 import frc.lib.generic.hardware.KeyboardController;
+import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
+import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
-import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.DoubleSupplier;
@@ -39,6 +43,8 @@ public class ButtonControls {
     private static final Trigger USER_BUTTON = new Trigger(RobotController::getUserButton);
 
     public static void initializeButtons(ButtonLayout layout) {
+        setupUserButtonDebugging();
+
         switch (layout) {
             case TELEOP -> configureButtonsTeleop();
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
@@ -50,11 +56,11 @@ public class ButtonControls {
     }
 
     private static void configureButtonsTeleop() {
-        DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
+        final DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
 
-        DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
-        DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
-        DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 3;
+        final DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
+        final DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
+        final DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 3;
 
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(
@@ -64,8 +70,6 @@ public class ButtonControls {
 
                         () -> DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).getAsBoolean()
                 ));
-
-        ALGAE_INTAKE.setDefaultCommand(ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeState.RETRACTED));
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.START).whileTrue(SwerveCommands.resetGyro());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.BACK).whileTrue(SwerveCommands.lockSwerve());
@@ -82,10 +86,13 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
-
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
 
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ClimbingCommands.pathfindToCageAndClimb()
+                .alongWith(DRIVER_CONTROLLER.rumble(0.3, 3)));
+
         setupOperatorKeyboardButtons();
+        setupTeleopLEDs();
     }
 
     private static void configureButtonsCharacterizeWheelRadius() {
@@ -114,5 +121,33 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
         OPERATOR_CONTROLLER.nine().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.FEEDER));
+    }
+
+    private static void setupTeleopLEDs() {
+        final Trigger hasCoral = new Trigger(CORAL_INTAKE::hasCoral);
+        final Trigger isEndOfMatch = new Trigger(() -> DriverStation.getMatchTime() <= 15);
+
+        hasCoral.onTrue(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_LOADED, 3)
+                .alongWith(DRIVER_CONTROLLER.rumble(0.5, 1)));
+        hasCoral.onFalse(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_EMPTIED, 3));
+
+        isEndOfMatch.onTrue(LEDS.setLEDStatus(Leds.LEDMode.END_OF_MATCH, 5));
+    }
+
+    private static void setupUserButtonDebugging() {
+        USER_BUTTON.toggleOnTrue(
+                Commands.startEnd(
+                        () -> setModeOfAllSubsystems(MotorProperties.IdleMode.COAST),
+                        () -> setModeOfAllSubsystems(MotorProperties.IdleMode.BRAKE)
+                ).alongWith(LEDS.setLEDStatus(Leds.LEDMode.DEBUG_MODE, 1500))
+                        .andThen(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0))
+        ).debounce(1);
+    }
+
+    private static void setModeOfAllSubsystems(MotorProperties.IdleMode idleMode) {
+        ELEVATOR.setIdleMode(idleMode);
+        CORAL_INTAKE.setIdleMode(idleMode);
+        ALGAE_BLASTER.setIdleMode(idleMode);
+        ALGAE_INTAKE.setIdleMode(idleMode);
     }
 }

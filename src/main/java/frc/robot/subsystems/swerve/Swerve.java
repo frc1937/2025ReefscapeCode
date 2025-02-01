@@ -242,9 +242,17 @@ public class Swerve extends GenericSubsystem {
             currentModule.stop();
     }
 
+    /**
+     * When the robot drives while rotating it skews a bit to the side.
+     * This should fix the chassis speeds, so they won't make the robot skew while rotating.
+     *
+     * @param chassisSpeeds The chassis speeds to fix skewing for
+     * @return the fixed speeds
+     */
     protected ChassisSpeeds discretize(ChassisSpeeds chassisSpeeds) {
         final double currentTimestamp = Timer.getFPGATimestamp();
         final double difference = currentTimestamp - lastTimestamp;
+
         lastTimestamp = currentTimestamp;
 
         return ChassisSpeeds.discretize(chassisSpeeds, difference);

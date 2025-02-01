@@ -1,12 +1,11 @@
 package frc.lib.generic.hardware.motor.hardware.rev;
 
-import com.revrobotics.*;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.lib.generic.Feedforward;
@@ -136,7 +135,6 @@ public class GenericSparkMax extends GenericSparkBase {
 
         sparkController.setReference(feedforwardOutput + feedbackOutput, SparkBase.ControlType.kVoltage);
     }
-
 
     protected SparkBaseConfig getSparkConfig() {
         return new SparkMaxConfig();

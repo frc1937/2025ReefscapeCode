@@ -3,7 +3,6 @@ package frc.lib.generic;
 import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 
-/** Implements a PID control loop. */
 public class PID  {
     // Factor for "proportional" control
     private double kP;

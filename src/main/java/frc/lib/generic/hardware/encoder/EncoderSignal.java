@@ -1,7 +1,8 @@
 package frc.lib.generic.hardware.encoder;
 
 public enum EncoderSignal {
-    POSITION(0), VELOCITY(1);
+    POSITION(0),
+    VELOCITY(1);
 
     final int id;
 

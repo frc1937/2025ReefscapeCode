@@ -10,17 +10,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.CustomLEDPatterns;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static frc.lib.util.CustomLEDPatterns.LEDS_COUNT;
-import static frc.lib.util.CustomLEDPatterns.generateBreathingBuffer;
-import static frc.lib.util.CustomLEDPatterns.generateCirclingBuffer;
-import static frc.lib.util.CustomLEDPatterns.generateFlashingBuffer;
-import static frc.lib.util.CustomLEDPatterns.generateOutwardsPointsBuffer;
-import static frc.lib.util.CustomLEDPatterns.generatePositionIndicatorBuffer;
-import static frc.lib.util.CustomLEDPatterns.getBufferFromColors;
-
 import static frc.lib.util.CustomLEDPatterns.*;
+import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
@@ -34,35 +28,15 @@ public class Leds extends SubsystemBase {
     }
 
     public Command setLEDStatus(LEDMode mode, double timeout) {
-        return switch (mode) {
-            case SHOOTER_LOADED -> getCommandFromColours(() -> generateFlashingBuffer(
-                    new Color8Bit(Color.kOrange),
-                    new Color8Bit(Color.kRed)
-            ), timeout);
-
-            case SHOOTER_EMPTY -> getCommandFromColours(() -> generateCirclingBuffer(
-                    new Color8Bit(Color.kCyan),
-                    new Color8Bit(Color.kWhite),
-                    new Color8Bit(Color.kDeepPink)
-            ), timeout);
-
-            case DEBUG_MODE -> getCommandFromColours(() -> generateBreathingBuffer(
-                    new Color8Bit(Color.kCyan),
-                    new Color8Bit(Color.kWhite)
-            ), timeout);
-
-            case BATTERY_LOW ->
-                    getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout);
-
-            default -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, 0);
-        };
+        return mode.getLedCommand(timeout);
     }
 
     /**
      * Sets the LED strip to indicate the robot's position relative to the target position.
      * This is command-less as the target position may change during the assignment of the autonomous.
-     * @param robotPosition - The current robot position.
-     * @param targetPosition - The target position, where the robot should be.
+     *
+     * @param robotPosition  The current robot position.
+     * @param targetPosition The target position, where the robot should be.
      */
     public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
         flashLEDStrip(
@@ -75,22 +49,46 @@ public class Leds extends SubsystemBase {
     }
 
     public enum LEDMode {
-        SHOOTER_LOADED,
-        SHOOTER_EMPTY,
-        DEBUG_MODE,
-        BATTERY_LOW,
-        DEFAULT,
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateFlashingBuffer(new Color8Bit(Color.kGreen), new Color8Bit(Color.kBlue)), timeout)),
+
+        INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateFlashingBuffer(
+                new Color8Bit(Color.kOrange),
+                new Color8Bit(Color.kRed)
+        ), timeout)),
+
+        INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateCirclingBuffer(
+                new Color8Bit(Color.kCyan),
+                new Color8Bit(Color.kWhite),
+                new Color8Bit(Color.kDeepPink)
+        ), timeout)),
+
+        DEBUG_MODE(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
+                new Color8Bit(Color.kCyan),
+                new Color8Bit(Color.kWhite)
+        ), timeout)),
+
+        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout)),
+        DEFAULT(timeout -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, 0));
+
+        private final Function<Double, Command> ledCommandFunction;
+
+        LEDMode(Function<Double, Command> ledCommandFunction) {
+            this.ledCommandFunction = ledCommandFunction;
+        }
+
+        public Command getLedCommand(double timeout) {
+            return ledCommandFunction.apply(timeout);
+        }
     }
 
-    private Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
+    private static Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
         if (timeout == 0)
-            return Commands.run(() -> flashLEDStrip(colours.get()), this).ignoringDisable(true);
+            return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).ignoringDisable(true);
 
-        return Commands.run(
-                () -> flashLEDStrip(colours.get()), this).withTimeout(timeout).ignoringDisable(true);
+        return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
     }
 
-    private void flashLEDStrip(Color8Bit[] colours) {
+    private static void flashLEDStrip(Color8Bit[] colours) {
         ledstrip.setData(getBufferFromColors(buffer, colours));
     }
 }
