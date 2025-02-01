@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -124,10 +125,13 @@ public class ButtonControls {
 
     private static void setupTeleopLEDs() {
         final Trigger hasCoral = new Trigger(CORAL_INTAKE::hasCoral);
+        final Trigger isEndOfMatch = new Trigger(() -> DriverStation.getMatchTime() <= 15);
 
         hasCoral.onTrue(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_LOADED, 3)
                 .alongWith(DRIVER_CONTROLLER.rumble(0.5, 1)));
         hasCoral.onFalse(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_EMPTIED, 3));
+
+        isEndOfMatch.onTrue(LEDS.setLEDStatus(Leds.LEDMode.END_OF_MATCH, 5));
     }
 
     private static void setupUserButtonDebugging() {

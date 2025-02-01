@@ -49,6 +49,8 @@ public class Leds extends SubsystemBase {
     }
 
     public enum LEDMode {
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateFlashingBuffer(new Color8Bit(Color.kGreen), new Color8Bit(Color.kBlue)), timeout)),
+
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateFlashingBuffer(
                 new Color8Bit(Color.kOrange),
                 new Color8Bit(Color.kRed)
@@ -83,8 +85,7 @@ public class Leds extends SubsystemBase {
         if (timeout == 0)
             return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).ignoringDisable(true);
 
-        return Commands.run(
-                () -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
+        return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
     }
 
     private static void flashLEDStrip(Color8Bit[] colours) {
