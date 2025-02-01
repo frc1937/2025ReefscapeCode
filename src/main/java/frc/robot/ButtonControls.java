@@ -15,7 +15,6 @@ import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
-import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -70,8 +69,6 @@ public class ButtonControls {
 
                         () -> DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).getAsBoolean()
                 ));
-
-        ALGAE_INTAKE.setDefaultCommand(ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeState.RETRACTED));
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.START).whileTrue(SwerveCommands.resetGyro());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.BACK).whileTrue(SwerveCommands.lockSwerve());
