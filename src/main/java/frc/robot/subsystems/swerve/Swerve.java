@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.OdometryThread;
 import frc.lib.generic.PID;
@@ -26,18 +28,57 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
+    public boolean isAtPose(Pose2d target) {
+        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < 0.1 && SWERVE_ROTATION_CONTROLLER.atGoal();
+    }
+
+    @Override
+    public SysIdRoutine.Config getSysIdConfig() {
+        return SYSID_DRIVE_CONFIG;
+    }
+
+    @Override
+    public void sysIdDrive(double voltage) {
+        for (SwerveModule module : MODULES) {
+            module.runDriveMotorForCharacterization(voltage);
+        }
+    }
+
+    @Override
+    public void sysIdUpdateLog(SysIdRoutineLog log) {
+        MODULES[0].logForSysId(log);
+    }
+
     public void setGyroHeading(Rotation2d heading) {
-        GYRO.setGyroYaw(heading.getDegrees());
+        GYRO.setGyroYaw(heading.getRotations());
+    }
+
+    public double getGyroHeading() {
+        return GYRO.getYawRotations();
     }
 
     public ChassisSpeeds getRobotRelativeVelocity() {
         return ROBOT_CONFIG.toChassisSpeeds(getModuleStates());
     }
 
+    public void runDriveMotorWheelCharacterization(double voltage) {
+        for (SwerveModule module : MODULES)
+            module.runDriveMotorForCharacterization(voltage);
+    }
+
+    public double[] getDriveWheelPositionsRadians() {
+        final double[] driveWheelPositions = new double[MODULES.length];
+
+        for (int i = 0; i < MODULES.length; i++)
+            driveWheelPositions[i] = MODULES[i].getDriveWheelPositionRadians();
+
+        return driveWheelPositions;
+    }
+
     @Override
     public void periodic() {
-        final double[] odometryUpdatesYawDegrees = GYRO.getInputs().threadGyroYawDegrees;
-        final int odometryUpdates = odometryUpdatesYawDegrees.length;
+        final double[] odometryUpdatesYawRotations = GYRO.getInputs().threadGyroYawRotations;
+        final int odometryUpdates = odometryUpdatesYawRotations.length;
 
         if (OdometryThread.getInstance().getLatestTimestamps().length == 0) return;
 
@@ -46,7 +87,7 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < odometryUpdates; i++) {
             swerveWheelPositions[i] = getSwerveWheelPositions(i);
-            gyroRotations[i] = Rotation2d.fromDegrees(odometryUpdatesYawDegrees[i]);
+            gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
         POSE_ESTIMATOR.updateFromOdometry(

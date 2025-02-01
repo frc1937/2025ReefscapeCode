@@ -11,7 +11,7 @@ import static frc.robot.utilities.PortsConstants.IntakePorts.INTAKE_MOTOR_PORT;
 
 public class CoralIntakeConstants {
     protected static final Motor INTAKE_MOTOR = MotorFactory.createTalonFX("INTAKE_MOTOR", INTAKE_MOTOR_PORT);
-    protected static final Sensor BEAM_BREAK_SENSOR = SensorFactory.createDigitalInput("BEAM_BREAK", BEAM_BREAK_DIO_PORT);
+    protected static final Sensor INTAKE_BEAM_BREAK = SensorFactory.createDigitalInput("INTAKE_BEAM_BREAK", BEAM_BREAK_DIO_PORT);
 
     static {
         configureIntakeMotorConfiguration();

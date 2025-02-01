@@ -10,11 +10,11 @@ public class PigeonUtilities {
         if (signalQueueList.isEmpty()) return;
 
         if (signalQueueList.get("yaw") != null)
-            inputs.threadGyroYawDegrees = signalQueueList.get("yaw").stream().mapToDouble(Double::doubleValue).toArray();
+            inputs.threadGyroYawRotations = signalQueueList.get("yaw").stream().mapToDouble(Double::doubleValue).toArray();
         if (signalQueueList.get("pitch") != null)
-            inputs.threadGyroPitchDegrees = signalQueueList.get("pitch").stream().mapToDouble(Double::doubleValue).toArray();
+            inputs.threadGyroPitchRotations = signalQueueList.get("pitch").stream().mapToDouble(Double::doubleValue).toArray();
         if (signalQueueList.get("roll") != null)
-            inputs.threadGyroRollDegrees = signalQueueList.get("roll").stream().mapToDouble(Double::doubleValue).toArray();
+            inputs.threadGyroRollRotations = signalQueueList.get("roll").stream().mapToDouble(Double::doubleValue).toArray();
 
         signalQueueList.forEach((k, v) -> v.clear());
     }

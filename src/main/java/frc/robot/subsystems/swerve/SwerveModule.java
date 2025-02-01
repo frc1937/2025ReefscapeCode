@@ -3,6 +3,7 @@ package frc.robot.subsystems.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.lib.generic.hardware.encoder.Encoder;
 import frc.lib.generic.hardware.encoder.EncoderInputs;
 import frc.lib.generic.hardware.motor.Motor;
@@ -11,6 +12,7 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.math.Conversions;
 import frc.lib.math.Optimizations;
 
+import static edu.wpi.first.units.Units.*;
 import static frc.lib.math.Conversions.rotationsToMetres;
 import static frc.robot.GlobalConstants.VOLTAGE_COMPENSATION_SATURATION;
 import static frc.robot.subsystems.swerve.SwerveConstants.WHEEL_DIAMETER;
@@ -29,9 +31,24 @@ public class SwerveModule {
         this.steerEncoder = steerEncoder;
     }
 
-    public double getDriveWheelPositionRadians() {
+    /**
+     * SETS RAW VOLTAGE TO THE DRIVE MOTOR! UNSAFE! Only use FOR CHARACTERIZATION!
+     * @param voltage
+     */
+    protected void runDriveMotorForCharacterization(double voltage) {
+        driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+    }
+
+    protected double getDriveWheelPositionRadians() {
         return 2 * Math.PI * getDriveMotorInputs().threadSystemPosition[
                 getDriveMotorInputs().threadSystemPosition.length - 1];
+    }
+
+    protected void logForSysId(SysIdRoutineLog log) {
+        log.motor("DRIVE_MOTOR_SWERVE" + driveMotor.getDeviceID())
+                .voltage(Volts.of(driveMotor.getVoltage()))
+                .angularPosition(Rotations.of(driveMotor.getSystemPosition()))
+                .angularVelocity(RotationsPerSecond.of(driveMotor.getSystemVelocity()));
     }
 
     protected void setTargetState(SwerveModuleState state) {

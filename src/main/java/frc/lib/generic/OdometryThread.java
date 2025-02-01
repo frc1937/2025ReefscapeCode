@@ -1,19 +1,7 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.lib.generic;
 
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
@@ -77,7 +65,7 @@ public class OdometryThread extends Thread {
     private void periodic() {
         FASTER_THREAD_LOCK.lock();
 
-        timestamps.offer(Logger.getRealTimestamp() / 1.0e6);
+        timestamps.offer(RobotController.getFPGATime() / 1.0e6);
 
         try {
             for (int i = 0; i < signals.size(); i++) {

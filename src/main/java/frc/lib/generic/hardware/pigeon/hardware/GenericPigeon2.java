@@ -13,11 +13,7 @@ import frc.lib.generic.hardware.pigeon.PigeonConfiguration;
 import frc.lib.generic.hardware.pigeon.PigeonInputs;
 import frc.lib.generic.hardware.pigeon.PigeonSignal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.lib.generic.hardware.pigeon.PigeonInputs.PIGEON_INPUTS_LENGTH;
@@ -63,8 +59,8 @@ public class GenericPigeon2 extends Pigeon {
     }
 
     @Override
-    public void setGyroYaw(double yawDegrees) {
-        pigeon.setYaw(yawDegrees);
+    public void setGyroYaw(double yawRotations) {
+        pigeon.setYaw(yawRotations * 360);
     }
 
     @Override
@@ -102,9 +98,9 @@ public class GenericPigeon2 extends Pigeon {
 
         BaseStatusSignal.refreshAll(signalsToUpdateList.toArray(new BaseStatusSignal[0]));
 
-        inputs.gyroYawDegrees = getYawPrivate();
-        inputs.gyroRollDegrees = getRollPrivate();
-        inputs.gyroPitchDegrees = getPitchPrivate();
+        inputs.gyroYawRotations = getYawPrivate();
+        inputs.gyroRollRotations = getRollPrivate();
+        inputs.gyroPitchRotations = getPitchPrivate();
 
         handleThreadedInputs(inputs, signalQueueList);
     }

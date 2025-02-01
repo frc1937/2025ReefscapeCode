@@ -37,8 +37,8 @@ public class GenericIMU extends Pigeon {
     }
 
     @Override
-    public void setGyroYaw(double yawDegrees) {
-        pigeon.setYaw(yawDegrees);
+    public void setGyroYaw(double yawRotations) {
+        pigeon.setYaw(yawRotations * 360);
     }
 
     @Override
@@ -62,9 +62,9 @@ public class GenericIMU extends Pigeon {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        inputs.gyroYawDegrees = pigeon.getYaw();
-        inputs.gyroRollDegrees = pigeon.getRoll();
-        inputs.gyroPitchDegrees = pigeon.getPitch();
+        inputs.gyroYawRotations = pigeon.getYaw() / 360.0;
+        inputs.gyroRollRotations = pigeon.getRoll() / 360.0;
+        inputs.gyroPitchRotations = pigeon.getPitch() / 360.0;
 
         handleThreadedInputs(inputs, signalQueueList);
     }
