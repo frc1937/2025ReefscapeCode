@@ -20,15 +20,11 @@ import java.util.List;
 
 import static frc.robot.GlobalConstants.*;
 
-//Credit to team 418 for this
 public enum HardwareManager {
     INSTANCE;
 
     private static final boolean IS_PRACTICE = true;
-    private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100000000 /*100 MB*/: 1000000000 /*1 GB*/;
-
-    HardwareManager() {
-    }
+    private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100000000 /*100 MB*/ : 1000000000 /*1 GB*/;
 
     private static final List<LoggableHardware> hardware = new ArrayList<>();
     private static final List<Runnable> periodicRunnable = new ArrayList<>();
@@ -43,7 +39,7 @@ public enum HardwareManager {
      * @param robot Robot object
      */
     public static void initialize(LoggedRobot robot) {
-        String logPath = CURRENT_MODE == Mode.REAL ?"/home/lvuser/logs" : "logs";
+        String logPath = CURRENT_MODE == Mode.REAL ? "/home/lvuser/logs" : "logs";
 
         final File logsDirectory = new File(logPath);
 

@@ -60,10 +60,10 @@ public class Motor implements LoggableHardware {
      * over the motor. The control mode determines how the output value is interpreted and applied
      * to the motor. The supported control modes include:
      * <ul>
-     *   <li>{@link MotorProperties.ControlMode#CURRENT CURRENT} - Achieve a specific current.
-     *   <li>{@link MotorProperties.ControlMode#VOLTAGE VOLTAGE} - Achieve a specific voltage.
-     *   <li>{@link MotorProperties.ControlMode#POSITION POSITION} - Achieve a specific position using advanced control.
-     *   <li>{@link MotorProperties.ControlMode#VELOCITY VELOCITY} - Achieve a specific velocity using advanced control.
+     *   <li>{@link MotorProperties.ControlMode#CURRENT CURRENT} Achieve a specific current.
+     *   <li>{@link MotorProperties.ControlMode#VOLTAGE VOLTAGE} Achieve a specific voltage.
+     *   <li>{@link MotorProperties.ControlMode#POSITION POSITION} Achieve a specific position using advanced control.
+     *   <li>{@link MotorProperties.ControlMode#VELOCITY VELOCITY} Achieve a specific velocity using advanced control.
      * </ul>
      * </p>
      *
@@ -86,10 +86,10 @@ public class Motor implements LoggableHardware {
      * over the motor. The control mode determines how the output value is interpreted and applied
      * to the motor. The supported control modes include:
      * <ul>
-     *   <li>{@link MotorProperties.ControlMode#CURRENT CURRENT} - Achieve a specific current.
-     *   <li>{@link MotorProperties.ControlMode#VOLTAGE VOLTAGE} - Achieve a specific voltage.
-     *   <li>{@link MotorProperties.ControlMode#POSITION POSITION} - Achieve a specific position using advanced control.
-     *   <li>{@link MotorProperties.ControlMode#VELOCITY VELOCITY} - Achieve a specific velocity using advanced control.
+     *   <li>{@link MotorProperties.ControlMode#CURRENT CURRENT} Achieve a specific current.
+     *   <li>{@link MotorProperties.ControlMode#VOLTAGE VOLTAGE} Achieve a specific voltage.
+     *   <li>{@link MotorProperties.ControlMode#POSITION POSITION} Achieve a specific position using advanced control.
+     *   <li>{@link MotorProperties.ControlMode#VELOCITY VELOCITY} Achieve a specific velocity using advanced control.
      * </ul>
      * </p>
      *
@@ -284,9 +284,9 @@ public class Motor implements LoggableHardware {
     private void printSignalError(String signalName) {
         if (CURRENT_MODE == GlobalConstants.Mode.REPLAY) return;
 
-        new NoSuchElementException("--------------\n" +
-                "ERROR - TRYING TO RETRIEVE UNINITIALIZED SIGNAL " + signalName + "| AT " + getClass().getName() + name +
-                "\n--------------")
+        new NoSuchElementException("--------------------\n" +
+                "ERROR: TRYING TO RETRIEVE UNINITIALIZED SIGNAL " + signalName + "| AT " + getClass().getName() + name +
+                "\n--------------------")
                 .printStackTrace();
     }
 }

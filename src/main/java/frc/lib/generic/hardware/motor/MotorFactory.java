@@ -18,10 +18,13 @@ public class MotorFactory {
     public static Motor createSpark(String name, int port, MotorProperties.SparkType type) {
         final Motor motor = createSimOrReplayMotor(name, port);
 
-        if (motor != null) return motor;
+        if (motor != null)
+            return motor;
 
-        if (type == MotorProperties.SparkType.FLEX) return new GenericSparkFlex(name, port);
-        else return new GenericSparkMax(name, port);
+        if (type == MotorProperties.SparkType.FLEX)
+            return new GenericSparkFlex(name, port);
+        else
+            return new GenericSparkMax(name, port);
     }
 
     public static Motor createTalonFX(String name, int port) {
@@ -32,15 +35,20 @@ public class MotorFactory {
 
     public static Motor createTalonSRX(String name, int port) {
         final Motor motor = createSimOrReplayMotor(name, port);
-        if (motor != null) return motor;
+
+        if (motor != null)
+            return motor;
+
         return new GenericTalonSRX(name, port);
     }
 
     private static Motor createSimOrReplayMotor(String name, int port) {
         if (CURRENT_MODE == GlobalConstants.Mode.REPLAY)
             return new Motor(name);
+
         if (CURRENT_MODE == GlobalConstants.Mode.SIMULATION) {
             final SimulatedTalonMotor simulation = new SimulatedTalonMotor(name, port);
+
             REGISTERED_SIMULATIONS.add(simulation);
             return simulation;
         }

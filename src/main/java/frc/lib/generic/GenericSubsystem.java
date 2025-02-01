@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.lib.generic.hardware.motor.MotorProperties;
 
 import static edu.wpi.first.units.Units.Volts;
 
@@ -42,11 +43,11 @@ public abstract class GenericSubsystem extends SubsystemBase {
         return null;
     }
 
-    public void sysIdDrive(double voltage) {
-    }
+    public void sysIdDrive(double voltage) {}
 
-    public void sysIdUpdateLog(SysIdRoutineLog log) {
-    }
+    public void sysIdUpdateLog(SysIdRoutineLog log) {}
+
+    public void setIdleMode(MotorProperties.IdleMode idleMode) {}
 
     private SysIdRoutine generateSysIdRoutine() {
         if (getSysIdConfig() == null)

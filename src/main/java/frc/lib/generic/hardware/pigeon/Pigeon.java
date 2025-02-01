@@ -22,22 +22,22 @@ public class Pigeon implements LoggableHardware {
 
     public void configurePigeon(PigeonConfiguration pigeonConfiguration) {}
 
-    public double getYaw() {
+    public double getYawRotations() {
         if (!getSignalsToLog()[0]) printSignalError("YAW");
-        return inputs.gyroYawDegrees;
+        return inputs.gyroYawRotations;
     }
 
-    public double getRoll() {
+    public double getRollRotations() {
         if (!getSignalsToLog()[1]) printSignalError("ROLL");
-        return inputs.gyroRollDegrees;
+        return inputs.gyroRollRotations;
     }
 
-    public double getPitch() {
+    public double getPitchRotations() {
         if (!getSignalsToLog()[2]) printSignalError("PITCH");
-        return inputs.gyroPitchDegrees;
+        return inputs.gyroPitchRotations;
     }
 
-    public void setGyroYaw(double yawDegrees) {}
+    public void setGyroYaw(double yawRotations) {}
 
     /**
      * Signals are lazily loaded - only these explicity called will be updated. Thus you must call this method. when using a signal.

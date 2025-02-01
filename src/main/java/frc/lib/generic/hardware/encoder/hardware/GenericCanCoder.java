@@ -59,14 +59,12 @@ public class GenericCanCoder extends Encoder {
         }
 
         if (!useFasterThread) return;
-//        C:\Users\Public\wpilib\visualvm_2110\bin\visualvm.exe --jdkhome "C:\Program Files (x86)\Eclipse Adoptium\jdk-11.0.22.7-hotspot\bin\java.exe"
+
         signalsToLog[signal.getId() + ENCODER_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
+            case POSITION -> signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
+            case VELOCITY -> signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
         }
     }
 
@@ -78,7 +76,7 @@ public class GenericCanCoder extends Encoder {
                 SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
 
         canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
-                encoderConfiguration.sensorRange == EncoderProperties.SensorRange.ZeroToOne
+                encoderConfiguration.sensorRange == EncoderProperties.SensorRange.ZERO_TO_ONE
 
                 ? 1 : 0.5;
 

@@ -6,7 +6,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.subsystems.swerve.SwerveConstants;
-import org.littletonrobotics.junction.Logger;
 
 import java.util.Arrays;
 
@@ -68,21 +67,6 @@ public class Optimizations {
     }
 
     /**
-     * When the robot drives while rotating it skews a bit to the side.
-     * This should fix the chassis speeds, so they won't make the robot skew while rotating.
-     *
-     * @param chassisSpeeds The chassis speeds to fix skewing for
-     * @param lastTimestamp The timestamp of the last loop
-     * @return the fixed speeds
-     */
-    public static ChassisSpeeds discretize(ChassisSpeeds chassisSpeeds, double lastTimestamp) {
-        final double currentTimestamp = Logger.getTimestamp();
-        final double difference = currentTimestamp - lastTimestamp;
-
-        return ChassisSpeeds.discretize(chassisSpeeds, difference);
-    }
-
-    /**
      * Returns whether the given chassis speeds are considered to be "still" by the swerve neutral deadband.
      *
      * @param chassisSpeeds the chassis speeds to check
@@ -113,7 +97,6 @@ public class Optimizations {
         }
         return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
     }
-
 
     /**
      * @param scopeReference Current Angle

@@ -19,5 +19,6 @@ public class DigitalInput extends Sensor {
         inputs.currentValue = digitalInput.get() ? 1 : 0;
 
         //todo: add support for faster akit inputs
+        // LOL!!! Our intake runs at 100HZ ahhh comment
     }
 }

@@ -25,7 +25,9 @@ public class GlobalConstants {
     public static final Mode CURRENT_MODE;
 
     public enum Mode {
-        REAL, SIMULATION, REPLAY
+        REAL,
+        SIMULATION,
+        REPLAY
     }
 
     static {

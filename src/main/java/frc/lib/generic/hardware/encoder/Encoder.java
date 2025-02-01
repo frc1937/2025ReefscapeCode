@@ -32,6 +32,7 @@ public class Encoder implements LoggableHardware {
         if (!getSignalsToLog()[0]) printSignalError("POSITION");
         return inputs.position;
     }
+
     public double getEncoderVelocity() {
         if (!getSignalsToLog()[1]) printSignalError("VELOCITY");
         return inputs.velocity;

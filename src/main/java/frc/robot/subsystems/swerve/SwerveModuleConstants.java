@@ -94,7 +94,7 @@ public class SwerveModuleConstants {
         final EncoderConfiguration encoderConfiguration = new EncoderConfiguration();
 
         encoderConfiguration.invert = CAN_CODER_INVERT;
-        encoderConfiguration.sensorRange = EncoderProperties.SensorRange.ZeroToOne;
+        encoderConfiguration.sensorRange = EncoderProperties.SensorRange.ZERO_TO_ONE;
         encoderConfiguration.offsetRotations = -angleOffset.getRotations();
 
         steerEncoder.configure(encoderConfiguration);

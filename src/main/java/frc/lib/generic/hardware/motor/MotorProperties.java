@@ -2,15 +2,19 @@ package frc.lib.generic.hardware.motor;
 
 public class MotorProperties {
     public enum IdleMode {
-        COAST, BRAKE
+        COAST,
+        BRAKE
     }
 
     public enum SparkType {
-        MAX, FLEX;
+        MAX,
+        FLEX;
     }
 
     public enum GravityType {
-        SIMPLE, ARM, ELEVATOR
+        SIMPLE,
+        ARM,
+        ELEVATOR
     }
 
     /**
@@ -44,9 +48,6 @@ public class MotorProperties {
          * <p>Units: Rotations per second (RPS)</p>
          */
         VELOCITY();
-
-        ControlMode() {
-        }
     }
 
     public static final class Slot {

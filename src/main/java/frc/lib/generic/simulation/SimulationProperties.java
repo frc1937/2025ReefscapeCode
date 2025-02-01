@@ -5,7 +5,9 @@ import edu.wpi.first.math.system.plant.DCMotor;
 
 public class SimulationProperties {
     public enum SimulationType {
-        SIMPLE_MOTOR, ELEVATOR, ARM
+        SIMPLE_MOTOR,
+        ELEVATOR,
+        ARM
     }
 
     public static class Slot {
