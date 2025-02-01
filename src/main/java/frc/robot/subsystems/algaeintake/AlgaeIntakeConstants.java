@@ -15,13 +15,33 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_ARM_MOTOR_PORT
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_PORT;
 
 public class AlgaeIntakeConstants {
+    public enum IntakeState {
+        EXTENDED(0.03, -2),
+        RETRACTED(0.25, 0);
+
+        private final double armTargetPosition;
+        private final double intakeSpeed;
+
+        IntakeState(double armTargetPosition, double intakeSpeed) {
+            this.armTargetPosition = armTargetPosition;
+            this.intakeSpeed = intakeSpeed;
+        }
+
+        public double getTargetArmPositionRotations() {
+            return armTargetPosition;
+        }
+        public double getRollerVoltage() {
+            return intakeSpeed;
+        }
+    }
+
     protected static final SysIdRoutine.Config INTAKE_ARM_SYSID_CONFIG = new SysIdRoutine.Config(
             Volts.per(Second).of(1),
             Volts.of(2),
             Second.of(7)
     );
-
     protected static final Motor INTAKE_ARM_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);
+
     protected static final Motor INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
 
     protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("INTAKE_ARM_MECHANISM", 3);
@@ -69,25 +89,5 @@ public class AlgaeIntakeConstants {
         intakeMotorConfiguration.supplyCurrentLimit = 20;
 
         INTAKE_MOTOR.configure(intakeMotorConfiguration);
-    }
-
-    public enum IntakeState {
-        EXTENDED(0.03, -2),
-        RETRACTED(0.25, 0);
-
-        private final double armTargetPosition;
-        private final double intakeSpeed;
-
-        IntakeState(double armTargetPosition, double intakeSpeed) {
-            this.armTargetPosition = armTargetPosition;
-            this.intakeSpeed = intakeSpeed;
-        }
-
-        public double getTargetArmPositionRotations() {
-            return armTargetPosition;
-        }
-        public double getRollerVoltage() {
-            return intakeSpeed;
-        }
     }
 }

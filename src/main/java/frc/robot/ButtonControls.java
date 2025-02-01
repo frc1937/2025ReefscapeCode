@@ -52,11 +52,11 @@ public class ButtonControls {
     }
 
     private static void configureButtonsTeleop() {
-        DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
+        final DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
 
-        DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
-        DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
-        DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 3;
+        final DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
+        final DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
+        final DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 3;
 
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(

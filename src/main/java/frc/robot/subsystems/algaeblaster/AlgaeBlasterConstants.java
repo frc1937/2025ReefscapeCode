@@ -14,6 +14,22 @@ import static frc.lib.generic.hardware.motor.MotorProperties.SparkType.MAX;
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_BLASTER_MOTOR_PORT;
 
 public class AlgaeBlasterConstants {
+    public enum BlasterArmState {
+        VERTICAL(Rotation2d.kCW_90deg),
+        HORIZONTAL_IN(Rotation2d.k180deg),
+        HORIZONTAL_OUT(Rotation2d.kZero);
+
+        private final Rotation2d rotation;
+
+        BlasterArmState(Rotation2d rotation) {
+            this.rotation = rotation;
+        }
+
+        public Rotation2d getRotation2d() {
+            return rotation;
+        }
+    }
+
     protected static final SysIdRoutine.Config BLASTER_SYSID_CONFIG = new SysIdRoutine.Config(
             Volts.per(Second).of(1),
             Volts.of(2),
@@ -21,9 +37,9 @@ public class AlgaeBlasterConstants {
     );
 
     protected static final Motor BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
-
     protected static final Rotation2d
-            MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
+    MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
+
             MAXIMUM_ROTATION = Rotation2d.fromDegrees(180);
 
     protected static final SingleJointedArmMechanism2d BLASTER_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_BLASTER_MECHANISM", 4);
@@ -52,21 +68,5 @@ public class AlgaeBlasterConstants {
         blasterMotorConfiguration.supplyCurrentLimit = 30;
 
         BLASTER_MOTOR.configure(blasterMotorConfiguration);
-    }
-
-    public enum BlasterArmState {
-        VERTICAL(Rotation2d.kCW_90deg),
-        HORIZONTAL_IN(Rotation2d.k180deg),
-        HORIZONTAL_OUT(Rotation2d.kZero);
-
-        private final Rotation2d rotation;
-
-        BlasterArmState(Rotation2d rotation) {
-            this.rotation = rotation;
-        }
-
-        public Rotation2d getRotation2d() {
-            return rotation;
-        }
     }
 }

@@ -16,16 +16,22 @@ public class Sensor implements LoggableHardware {
         HardwareManager.addHardware(this);
     }
 
-    public int get() { return inputs.currentValue; }
+    public int get() {
+        return inputs.currentValue;
+    }
 
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Sensors/"+name, inputs);
+        Logger.processInputs("Sensors/" + name, inputs);
     }
 
-    public SensorInputsAutoLogged getInputs() { return inputs; }
-    public void refreshInputs(SensorInputsAutoLogged inputs) { }
+    public SensorInputsAutoLogged getInputs() {
+        return inputs;
+    }
+
+    public void refreshInputs(SensorInputsAutoLogged inputs) {
+    }
 
     @AutoLog
     public static class SensorInputs {
