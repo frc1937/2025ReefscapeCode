@@ -88,7 +88,7 @@ public class PathfindingCommands {
     private static Command pathfindToCage() {
         final Pose2d targetPose = decideCagePose();
 
-        final Command alignYWithTarget = SwerveCommands.goToPosePIDWithConstraints(
+        final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
                 new Pose2d(
                         POSE_ESTIMATOR.getCurrentPose().getX(),
                         targetPose.getY(),
@@ -97,7 +97,7 @@ public class PathfindingCommands {
                 PATHPLANNER_CAGE_CONSTRAINTS
         );
 
-        return alignYWithTarget
+        return alignWithTargetY
                 .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.1)
                 .andThen(
                         SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS)
