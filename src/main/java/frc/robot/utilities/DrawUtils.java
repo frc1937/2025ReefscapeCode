@@ -24,12 +24,14 @@ public class DrawUtils {
                     radius * Math.sin(theta)
             ).rotateBy(centerPose.getRotation());
 
+
             circlePoses[i] = new Pose2d(
                     centerPose.getTranslation().plus(radial),
                     new Rotation2d(radial.getX(), radial.getY()).plus(Rotation2d.fromDegrees(90))
             );
         }
 
-        Logger.recordOutput("TargetCircle", circlePoses);
+        Logger.recordOutput("DrawingUtils/", circlePoses);
     }
+
 }
