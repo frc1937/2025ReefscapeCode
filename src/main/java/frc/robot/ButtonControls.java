@@ -15,6 +15,7 @@ import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.DoubleSupplier;
@@ -85,9 +86,11 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
 
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ClimbingCommands.pathfindToCageAndClimb());
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ClimbingCommands.pathfindToCageAndClimb()
+                .alongWith(DRIVER_CONTROLLER.rumble(0.3, 3)));
 
         setupOperatorKeyboardButtons();
+        setupTeleopLEDs();
     }
 
     private static void configureButtonsCharacterizeWheelRadius() {
@@ -116,5 +119,13 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
         OPERATOR_CONTROLLER.nine().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.FEEDER));
+    }
+
+    private static void setupTeleopLEDs() {
+        final Trigger hasCoral = new Trigger(CORAL_INTAKE::hasCoral);
+
+        hasCoral.onTrue(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_LOADED, 3)
+                .alongWith(DRIVER_CONTROLLER.rumble(0.5, 1)));
+        hasCoral.onFalse(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_EMPTIED, 3));
     }
 }

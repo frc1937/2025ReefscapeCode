@@ -5,13 +5,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Controller {
-    private Command stopRumblingCommand = null;
-
     public enum Inputs {
         A(1), B(2), X(3), Y(4),
         LEFT_BUMPER(5), RIGHT_BUMPER(6),
@@ -98,13 +97,19 @@ public class Controller {
         return MathUtil.applyDeadband(DriverStation.getStickAxis(port, axis.value), 0.02);
     }
 
-    public void rumble(double intensity, double durationSeconds) {
-        if (stopRumblingCommand != null) stopRumblingCommand.cancel();
-
-        stopRumblingCommand = new WaitCommand(durationSeconds).andThen(() -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, 0));
-        stopRumblingCommand.schedule();
-
-        xboxController.setRumble(GenericHID.RumbleType.kBothRumble, intensity);
+    /**
+     * Rumbles the controller. Note - doesn't work in sim for some reaosn.
+     * @param intensity - how hard to rumble the controller.
+     * @param durationSeconds - how long to rumble for
+     * @return
+     */
+    public Command rumble(double intensity, double durationSeconds) {
+        return new FunctionalCommand(
+                () -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, intensity),
+                () -> {},
+                interrupt -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, 0),
+                () -> false
+        ).raceWith(new WaitCommand(durationSeconds));
     }
 
     public XboxController getXboxController() {
