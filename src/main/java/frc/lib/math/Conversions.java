@@ -34,8 +34,8 @@ public class Conversions {
     /**
      * Returns tangential velocity in metres per second.
      *
-     * @param rpm           - rotations per minute
-     * @param wheelDiameter - wheel diameter in metres
+     * @param rpm           rotations per minute
+     * @param wheelDiameter wheel diameter in metres
      * @return the tangential velocity in metres per second
      */
     public static double rpmToMps(double rpm, double wheelDiameter) {
@@ -45,8 +45,8 @@ public class Conversions {
     /**
      * Returns the rotations per minute
      *
-     * @param tangentialVelocityMPS - The tangential velocity in metres per second
-     * @param wheelDiameterMetres   - wheel diameter in metres
+     * @param tangentialVelocityMPS The tangential velocity in metres per second
+     * @param wheelDiameterMetres   wheel diameter in metres
      * @return rotations per minute
      */
     public static double mpsToRPM(double tangentialVelocityMPS, double wheelDiameterMetres) {
@@ -104,7 +104,6 @@ public class Conversions {
     public static double proportionalPowerToRotation(double thetaPower, double maxRotation) {
         return Math.pow(thetaPower, 2) * Math.signum(thetaPower) * maxRotation;
     }
-
 
 
     /**

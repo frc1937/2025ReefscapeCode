@@ -12,9 +12,15 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Controller {
     public enum Inputs {
-        A(1), B(2), X(3), Y(4),
-        LEFT_BUMPER(5), RIGHT_BUMPER(6),
-        BACK(7), START(8);
+        A(1),
+        B(2),
+        X(3),
+        Y(4),
+        LEFT_BUMPER(5),
+        RIGHT_BUMPER(6),
+        BACK(7),
+        START(8);
+
         public final int id;
 
         Inputs(int id) {
@@ -23,15 +29,24 @@ public class Controller {
     }
 
     public enum Stick {
-        LEFT_STICK(2), RIGHT_STICK(3);
+        LEFT_STICK(2),
+        RIGHT_STICK(3);
+
         public final int value;
 
         Stick(int value) {
             this.value = value;
         }
     }
+
     public enum Axis {
-        LEFT_X(0), RIGHT_X(4), LEFT_Y(1), RIGHT_Y(3), LEFT_STICK(2), RIGHT_STICK(5);
+        LEFT_X(0),
+        RIGHT_X(4),
+        LEFT_Y(1),
+        RIGHT_Y(3),
+        LEFT_STICK(2),
+        RIGHT_STICK(5);
+
         public final int value;
 
         Axis(int value) {
@@ -40,7 +55,15 @@ public class Controller {
     }
 
     public enum DPad {
-        UP(0), UP_RIGHT(45), RIGHT(90), DOWN_RIGHT(135), DOWN(180), DOWN_LEFT(225), LEFT(270), UP_LEFT(315);
+        UP(0),
+        UP_RIGHT(45),
+        RIGHT(90),
+        DOWN_RIGHT(135),
+        DOWN(180),
+        DOWN_LEFT(225),
+        EFT(270),
+        UP_LEFT(315);
+
         public final int angle;
 
         DPad(int angle) {
@@ -59,7 +82,7 @@ public class Controller {
     /**
      * Returns a trigger that is active when the stick is pushed past 50%
      *
-     * @param button - the button to create a trigger for, must be a stick
+     * @param button the button to create a trigger for, must be a stick
      * @return a trigger that is active when the stick is pushed past 50%
      */
     public Trigger getStick(Stick button) {
@@ -69,7 +92,7 @@ public class Controller {
     /**
      * Returns a trigger who is conditioned to the DPad
      *
-     * @param padAngle - the angle of the DPad to create a trigger for
+     * @param padAngle the angle of the DPad to create a trigger for
      * @return a trigger who is conditioned to the DPad
      */
     public Trigger getDPad(DPad padAngle) {
@@ -79,7 +102,7 @@ public class Controller {
     /**
      * Returns a trigger that is active when the button is pressed
      *
-     * @param button - the button to create a trigger for, must not be a stick
+     * @param button the button to create a trigger for, must not be a stick
      * @return a trigger that is active when the button is pressed
      */
     public Trigger getButton(Inputs button) {
@@ -90,29 +113,27 @@ public class Controller {
      * Returns the value of the axis, after applying deadband.
      * We assume no deviation is ever wanted in the controller, womp womp.
      *
-     * @param axis - The axis to return
-     * @return - The deadbanded value of the axis
+     * @param axis The axis to return
+     * @return The deadbanded value of the axis
      */
     public double getRawAxis(Axis axis) {
-        return MathUtil.applyDeadband(DriverStation.getStickAxis(port, axis.value), 0.02);
+        return MathUtil.applyDeadband(DriverStation.getStickAxis(port, axis.value), 0.002);
     }
 
     /**
-     * Rumbles the controller. Note - doesn't work in sim for some reaosn.
-     * @param intensity - how hard to rumble the controller.
-     * @param durationSeconds - how long to rumble for
-     * @return
+     * Rumbles the controller. Note doesn't work in sim for some reaosn.
+     *
+     * @param intensity       how hard to rumble the controller.
+     * @param durationSeconds how long to rumble for
+     * @return a command that rumbles the controller
      */
     public Command rumble(double intensity, double durationSeconds) {
         return new FunctionalCommand(
                 () -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, intensity),
-                () -> {},
+                () -> {
+                },
                 interrupt -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, 0),
                 () -> false
         ).raceWith(new WaitCommand(durationSeconds));
-    }
-
-    public XboxController getXboxController() {
-        return xboxController;
     }
 }

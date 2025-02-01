@@ -35,8 +35,8 @@ public class Leds extends SubsystemBase {
      * Sets the LED strip to indicate the robot's position relative to the target position.
      * This is command-less as the target position may change during the assignment of the autonomous.
      *
-     * @param robotPosition  - The current robot position.
-     * @param targetPosition - The target position, where the robot should be.
+     * @param robotPosition  The current robot position.
+     * @param targetPosition The target position, where the robot should be.
      */
     public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
         flashLEDStrip(
