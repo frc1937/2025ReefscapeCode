@@ -15,9 +15,10 @@ public class DrawUtils {
      */
     public static void drawCircle(double radius, Pose2d centerPose, int numPoints) {
         final Pose2d[] circlePoses = new Pose2d[numPoints];
+        final double twoPi = 2 * Math.PI;
 
         for (int i = 0; i < numPoints; i++) {
-            final double theta = 2 * Math.PI * i / (numPoints - 1);
+            final double theta = twoPi * i / (numPoints - 1);
 
             final Translation2d radial = new Translation2d(
                     radius * Math.cos(theta),
