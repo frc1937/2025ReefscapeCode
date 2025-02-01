@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.OdometryThread;
+import frc.lib.generic.PID;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -89,10 +91,10 @@ public class Swerve extends GenericSubsystem {
         }
 
         POSE_ESTIMATOR.updateFromOdometry(
-                        swerveWheelPositions,
-                        gyroRotations,
-                        OdometryThread.getInstance().getLatestTimestamps()
-                );
+                swerveWheelPositions,
+                gyroRotations,
+                OdometryThread.getInstance().getLatestTimestamps()
+        );
     }
 
     public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
@@ -144,6 +146,28 @@ public class Swerve extends GenericSubsystem {
                 ),
 
                 SWERVE_TRANSLATION_CONTROLLER.calculate(
+                        currentPose.getY(),
+                        target.getY()
+                ),
+
+                SWERVE_ROTATION_CONTROLLER.calculate(
+                        currentPose.getRotation().getDegrees(),
+                        target.getRotation().getDegrees()
+                )
+        );
+    }
+
+    protected void driveToPoseWithConstraints(Pose2d target, PIDConstants constraints) {
+        final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
+        final PID PATHFINDING_TRANSLATION_CONTROLLER = new PID(constraints);
+
+        driveFieldRelative(
+                PATHFINDING_TRANSLATION_CONTROLLER.calculate(
+                        currentPose.getX(),
+                        target.getX()
+                ),
+
+                PATHFINDING_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getY(),
                         target.getY()
                 ),

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -49,6 +50,25 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
+    public static Command pathfindToCage() {
+        final Pose2d targetPose = decideCagePose();
+
+        final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
+                new Pose2d(
+                        POSE_ESTIMATOR.getCurrentPose().getX(),
+                        targetPose.getY(),
+                        targetPose.getRotation()
+                ),
+                PATHPLANNER_CAGE_CONSTRAINTS
+        );
+
+        return alignWithTargetY
+                .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.1)
+                .andThen(
+                        SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS)
+                );
+    }
+
     private static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
@@ -74,6 +94,22 @@ public class PathfindingCommands {
             originalPose = flipAboutYAxis(originalPose);
 
         return originalPose;
+    }
+
+    private static Pose2d decideCagePose() {
+        final Pose2d robotPose = POSE_ESTIMATOR.getCurrentPose();
+
+        final double
+                closeCageDistanceY = Math.abs(robotPose.getY() - CLOSE_CAGE.get().getY()),
+                middleCageDistanceY = Math.abs(robotPose.getY() - MIDDLE_CAGE.get().getY()),
+                farCageDistanceY = Math.abs(robotPose.getY() - FAR_CAGE.get().getY());
+
+        if (closeCageDistanceY < farCageDistanceY && closeCageDistanceY < middleCageDistanceY)
+            return CLOSE_CAGE.get();
+        else if (middleCageDistanceY < farCageDistanceY)
+            return MIDDLE_CAGE.get();
+
+        return FAR_CAGE.get();
     }
 
     private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
