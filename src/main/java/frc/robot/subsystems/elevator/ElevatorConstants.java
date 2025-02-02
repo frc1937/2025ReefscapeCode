@@ -16,26 +16,6 @@ import static frc.robot.GlobalConstants.CURRENT_MODE;
 import static frc.robot.utilities.PortsConstants.ElevatorPorts.*;
 
 public class ElevatorConstants {
-    protected static final SysIdRoutine.Config ELEVATOR_CONFIG = new SysIdRoutine.Config(
-            Volts.per(Second).of(1),
-            Volts.of(2),
-            Second.of(7)
-    );
-
-    protected static final Motor
-            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
-            SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
-
-    protected static final Sensor
-            TOP_BEAM_BREAK = SensorFactory.createDigitalInput("TOP_BEAM_BREAKER", TOP_BEAM_BREAK_DIO_PORT),
-            BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("BUTTON_BEAM_BREAKER", BOTTOM_BEAM_BREAK_DIO_PORT);
-
-    protected static final double
-            ELEVATOR_MAX_EXTENSION_METERS = 0.86,
-            WHEEL_DIAMETER = 0.04;
-
-    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = new ElevatorMechanism2d("Elevator Mechanism", 1);
-
     public enum ElevatorHeight {
         L1(0.457),
         L2(0.793),
@@ -60,19 +40,42 @@ public class ElevatorConstants {
         }
     }
 
+    protected static final SysIdRoutine.Config ELEVATOR_CONFIG = new SysIdRoutine.Config(
+            Volts.per(Second).of(1),
+            Volts.of(2),
+            Second.of(7)
+    );
+
+    protected static final Motor MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
+            SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
+
+    protected static final Sensor
+            TOP_BEAM_BREAK = SensorFactory.createDigitalInput("TOP_BEAM_BREAKER", TOP_BEAM_BREAK_DIO_PORT),
+            BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("BUTTON_BEAM_BREAKER", BOTTOM_BEAM_BREAK_DIO_PORT);
+
+    protected static final double
+            ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.5, //TODO: TUNE
+            ELEVATOR_MIN_EXTENSION_ROTATIONS = 0, //TODO: TUNE
+            WHEEL_DIAMETER = 0.04;
+
+    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = new ElevatorMechanism2d("Elevator Mechanism", 1);
+
     static {
-        configureMotorConfiguration();
+        configureMotors();
     }
 
-    private static void configureMotorConfiguration() {
+    private static void configureMotors() {
         final MotorConfiguration ELEVATOR_MOTORS_CONFIGURATION = new MotorConfiguration();
 
         SLAVE_MOTOR.setFollowerOf(MASTER_MOTOR, true);
 
+        ELEVATOR_MOTORS_CONFIGURATION.forwardSoftLimit = ELEVATOR_MAX_EXTENSION_ROTATIONS;
+        ELEVATOR_MOTORS_CONFIGURATION.reverseSoftLimit = ELEVATOR_MIN_EXTENSION_ROTATIONS; //ASSUMING FORWARD IS +Voltage. TODO TUNE
+
         ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
-        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(12.33, 0, 2.5, 0, 0,  1.311, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
+        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(12.33, 0, 2.5, 0, 0, 1.311, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 25;
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 25;
