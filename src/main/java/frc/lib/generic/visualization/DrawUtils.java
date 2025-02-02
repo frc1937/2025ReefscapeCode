@@ -6,6 +6,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.Logger;
 
 public class DrawUtils {
+    private static final double twoPi = 2 * Math.PI;
+
     /**
      * Draws a circle made out of Pose2d.
      *
@@ -16,7 +18,6 @@ public class DrawUtils {
      */
     public static void drawCircle(double radius, Pose2d centerPose, int numPoints, String name) {
         final Pose2d[] circlePoses = new Pose2d[numPoints];
-        final double twoPi = 2 * Math.PI;
 
         for (int i = 0; i < numPoints; i++) {
             final double theta = twoPi * i / (numPoints - 1);
@@ -46,9 +47,8 @@ public class DrawUtils {
         Pose2d[] linePoses = new Pose2d[2];
 
         linePoses[0] = new Pose2d(startPoint, Rotation2d.kZero);
-        linePoses[1] = new Pose2d(endPoint,Rotation2d.kZero);
+        linePoses[1] = new Pose2d(endPoint, Rotation2d.kZero);
 
         Logger.recordOutput("DrawingUtils/" + name, linePoses);
     }
-
 }
