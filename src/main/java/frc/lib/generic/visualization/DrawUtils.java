@@ -6,7 +6,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import org.littletonrobotics.junction.Logger;
 
 public class DrawUtils {
-    private static final double twoPi = 2 * Math.PI;
+    private static final double TWO_PI = 2 * Math.PI;
+    private static final String LOG_DIRECTORY = "DrawingUtils/";
 
     /**
      * Draws a circle made out of Pose2d.
@@ -20,7 +21,7 @@ public class DrawUtils {
         final Pose2d[] circlePoses = new Pose2d[numPoints];
 
         for (int i = 0; i < numPoints; i++) {
-            final double theta = twoPi * i / (numPoints - 1);
+            final double theta = TWO_PI * i / (numPoints - 1);
 
             final Translation2d radial = new Translation2d(
                     radius * Math.cos(theta),
@@ -33,7 +34,7 @@ public class DrawUtils {
             );
         }
 
-        Logger.recordOutput("DrawingUtils/" + name, circlePoses);
+        Logger.recordOutput(LOG_DIRECTORY + name, circlePoses);
     }
 
     /**
@@ -49,6 +50,6 @@ public class DrawUtils {
         linePoses[0] = new Pose2d(startPoint, Rotation2d.kZero);
         linePoses[1] = new Pose2d(endPoint, Rotation2d.kZero);
 
-        Logger.recordOutput("DrawingUtils/" + name, linePoses);
+        Logger.recordOutput(LOG_DIRECTORY + name, linePoses);
     }
 }
