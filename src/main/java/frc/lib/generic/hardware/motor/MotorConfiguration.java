@@ -8,12 +8,8 @@ import frc.lib.generic.simulation.SimulationProperties;
  * <p>This class holds various motor settings, including inversion, control modes,
  * simulation properties, ramp rates, soft limits, motion profile constraints,
  * and closed-loop control settings.</p>
- *
- * <p>It is designed to be used with motor controllers in robotics applications,
- * providing a structured way to define and modify motor behavior.</p>
  */
 public class MotorConfiguration {
-
     /** Determines whether the motor output is inverted. Default: {@code false}. */
     public boolean inverted = false;
 
@@ -23,11 +19,11 @@ public class MotorConfiguration {
     /** PID slot configuration for closed-loop control. */
     public MotorProperties.Slot slot = new MotorProperties.Slot(0, 0, 0, 0, 0, 0, 0, null);
 
-    /** Simulation-specific motor properties. */
-    public SimulationProperties.Slot simulationProperties = new SimulationProperties.Slot(null, null, 0, 0);
-
     /** Separate PID slot for simulation use. */
     public MotorProperties.Slot simulationSlot = new MotorProperties.Slot(0, 0, 0, 0, 0, 0, 0, null);
+
+    /** Simulation-specific motor properties. */
+    public SimulationProperties.Slot simulationProperties = new SimulationProperties.Slot(null, null, 0, 0);
 
     /**
      * Time to ramp from 0% to 100% output in open-loop mode.
