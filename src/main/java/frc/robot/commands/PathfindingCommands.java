@@ -76,7 +76,6 @@ public class PathfindingCommands {
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
         final boolean isRedAlliance = Flippable.isRedAlliance();
 
-
         if (angle < -150 || angle >= 150) return isRedAlliance ? FACE_0 : FACE_3;
         if (angle < -90) return isRedAlliance ? FACE_5 : FACE_2;
         if (angle < -30) return isRedAlliance ? FACE_4 : FACE_1;
