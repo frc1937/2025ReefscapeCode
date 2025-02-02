@@ -32,7 +32,6 @@ def turn_off_keys_with_delay():
             if time.time() - keys_dict[key] > minimum_press_time:
                 table.putBoolean(key, False)
                 keys_dict.pop(key, None)
-                print("Has pressed: " + key)
                 break
         lock.release()
 
