@@ -5,13 +5,7 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.StrictFollower;
-import com.ctre.phoenix6.controls.VelocityVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -19,18 +13,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.*;
 import frc.lib.generic.OdometryThread;
-import frc.lib.generic.hardware.motor.Motor;
-import frc.lib.generic.hardware.motor.MotorConfiguration;
-import frc.lib.generic.hardware.motor.MotorInputs;
-import frc.lib.generic.hardware.motor.MotorProperties;
-import frc.lib.generic.hardware.motor.MotorSignal;
+import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.function.DoubleSupplier;
 
 import static edu.wpi.first.units.Units.*;
@@ -107,7 +93,8 @@ public class GenericTalonFX extends Motor {
                     talonFX.setControl(velocityVoltageRequest.withVelocity(output).withSlot(0));
             }
 
-            case CURRENT -> new UnsupportedOperationException("CTRE LOVES money and wants $150!!! dollars for this.. wtf.").printStackTrace();
+            case CURRENT ->
+                    new UnsupportedOperationException("CTRE LOVES money and wants $150!!! dollars for this.. wtf.").printStackTrace();
         }
     }
 
@@ -139,7 +126,7 @@ public class GenericTalonFX extends Motor {
 
     @Override
     public void stopMotor() {
-        this.setOutput(MotorProperties.ControlMode.VOLTAGE,0);
+        this.setOutput(MotorProperties.ControlMode.VOLTAGE, 0);
     }
 
     @Override
@@ -195,6 +182,7 @@ public class GenericTalonFX extends Motor {
 
         setConfig0();
         applyCurrentLimits();
+        applySoftwarePositionLimits();
 
         talonConfig.ClosedLoopGeneral.ContinuousWrap = configuration.closedLoopContinuousWrap;
 
@@ -247,6 +235,18 @@ public class GenericTalonFX extends Motor {
         }
     }
 
+    private void applySoftwarePositionLimits() {
+        if (currentConfiguration.forwardSoftLimit != null) {
+            talonConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            talonConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = currentConfiguration.forwardSoftLimit;
+        }
+
+        if (currentConfiguration.reverseSoftLimit != null) {
+            talonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+            talonConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = currentConfiguration.reverseSoftLimit;
+        }
+    }
+
     private boolean applyConfig() {
         int counter = 10;
         StatusCode statusCode = null;
@@ -278,12 +278,18 @@ public class GenericTalonFX extends Motor {
         signalsToLog[signal.getId() + MotorInputs.MOTOR_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case VELOCITY -> signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
-            case POSITION -> signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
-            case ACCELERATION -> signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getSystemAccelerationPrivate));
-            case VOLTAGE -> signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
-            case CURRENT -> signalQueueList.put("current", OdometryThread.getInstance().registerSignal(this::getCurrentPrivate));
-            case TEMPERATURE -> signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(this::getTemperaturePrivate));
+            case VELOCITY ->
+                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
+            case POSITION ->
+                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
+            case ACCELERATION ->
+                    signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getSystemAccelerationPrivate));
+            case VOLTAGE ->
+                    signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
+            case CURRENT ->
+                    signalQueueList.put("current", OdometryThread.getInstance().registerSignal(this::getCurrentPrivate));
+            case TEMPERATURE ->
+                    signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(this::getTemperaturePrivate));
         }
     }
 
@@ -319,7 +325,9 @@ public class GenericTalonFX extends Motor {
         return velocitySignal.getValue().in(RotationsPerSecond);
     }
 
-    private double getSystemAccelerationPrivate() { return accelerationSignal.getValue().in(RotationsPerSecondPerSecond); }
+    private double getSystemAccelerationPrivate() {
+        return accelerationSignal.getValue().in(RotationsPerSecondPerSecond);
+    }
 
     private double getVoltagePrivate() {
         return voltageSignal.getValue().in(Volts);

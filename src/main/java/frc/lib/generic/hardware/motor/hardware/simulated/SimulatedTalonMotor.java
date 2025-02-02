@@ -113,10 +113,9 @@ public class SimulatedTalonMotor extends Motor {
         configureMotionMagic();
         configurePIDSlot();
 
-        talonConfig.ClosedLoopGeneral.ContinuousWrap = configuration.closedLoopContinuousWrap;
+        applySoftwarePositionLimits();
 
-        talonConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
-        talonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+        talonConfig.ClosedLoopGeneral.ContinuousWrap = configuration.closedLoopContinuousWrap;
 
         return talonConfigurator.apply(talonConfig) == StatusCode.OK;
     }
@@ -131,6 +130,18 @@ public class SimulatedTalonMotor extends Motor {
         talonConfig.MotionMagic.MotionMagicJerk = currentConfiguration.profileMaxJerk;
 
         shouldUseProfile = true;
+    }
+
+    private void applySoftwarePositionLimits() {
+        if (currentConfiguration.forwardSoftLimit != null) {
+            talonConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            talonConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = currentConfiguration.forwardSoftLimit;
+        }
+
+        if (currentConfiguration.reverseSoftLimit != null) {
+            talonConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+            talonConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = currentConfiguration.reverseSoftLimit;
+        }
     }
 
     private void configurePIDSlot() {
