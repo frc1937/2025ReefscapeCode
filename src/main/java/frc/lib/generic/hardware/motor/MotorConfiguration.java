@@ -3,108 +3,123 @@ package frc.lib.generic.hardware.motor;
 import frc.lib.generic.simulation.SimulationProperties;
 
 /**
- * Generic configurations class with default values
+ * Represents a generic motor configuration with default values.
+ *
+ * <p>This class holds various motor settings, including inversion, control modes,
+ * simulation properties, ramp rates, soft limits, motion profile constraints,
+ * and closed-loop control settings.</p>
+ *
+ * <p>It is designed to be used with motor controllers in robotics applications,
+ * providing a structured way to define and modify motor behavior.</p>
  */
 public class MotorConfiguration {
+
+    /** Determines whether the motor output is inverted. Default: {@code false}. */
     public boolean inverted = false;
+
+    /** The motor's idle mode, determining its behavior when no input is applied. Default: {@code BRAKE}. */
     public MotorProperties.IdleMode idleMode = MotorProperties.IdleMode.BRAKE;
 
+    /** PID slot configuration for closed-loop control. */
     public MotorProperties.Slot slot = new MotorProperties.Slot(0, 0, 0, 0, 0, 0, 0, null);
 
+    /** Simulation-specific motor properties. */
     public SimulationProperties.Slot simulationProperties = new SimulationProperties.Slot(null, null, 0, 0);
+
+    /** Separate PID slot for simulation use. */
     public MotorProperties.Slot simulationSlot = new MotorProperties.Slot(0, 0, 0, 0, 0, 0, 0, null);
 
     /**
-     * If non-zero, this determines how much time to ramp from 0% output to 100% during open-loop modes.
+     * Time to ramp from 0% to 100% output in open-loop mode.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 1
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> sec
+     *   <li><b>Range:</b> 0 to 1</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> seconds</li>
      * </ul>
      */
     public double dutyCycleOpenLoopRampPeriod = 0;
 
     /**
-     * If non-zero, this determines how much time to ramp from 0% output to 100% during closed-loop modes.
+     * Time to ramp from 0% to 100% output in closed-loop mode.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 1
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> sec
+     *   <li><b>Range:</b> 0 to 1</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> seconds</li>
      * </ul>
      */
     public double dutyCycleClosedLoopRampPeriod = 0;
 
     /**
-     * Wrap position error within [-0.5,+0.5) mechanism rotations. Typically used for continuous position closed-loops like swerve azimuth.
-     * This uses the mechanism rotation value. If there is a gear ratio between the sensor and the mechanism, make sure to apply a SensorToMechanismRatio so the closed loop operates on the full rotation.
-     * Default Value: False
+     * Enables continuous wrap for closed-loop position control.
+     * <p>Used for mechanisms like swerve azimuth to handle continuous rotations.</p>
+     * <p><b>Default:</b> {@code false}</p>
      */
     public boolean closedLoopContinuousWrap = false;
 
+    /** Current limits for supply and stator. Default: {@code -1} (disabled). */
     public double supplyCurrentLimit = -1, statorCurrentLimit = -1;
 
     /**
-     * Convert between 1 system rotation to motor rotation.
+     * Gear ratio defining the conversion between system rotations and motor rotations.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> > 0
-     *   <li> <b>Default Value:</b> 1
-     *   <li> <b>Units:</b> SYSTEM/MOTOR (ratio)
+     *   <li><b>Minimum:</b> > 0</li>
+     *   <li><b>Default:</b> 1</li>
+     *   <li><b>Units:</b> SYSTEM/MOTOR (ratio)</li>
      * </ul>
      */
     public double gearRatio = 1;
 
     /**
-     * This is the maximum velocity of the motion profile. Only set this if a profile is desired.
+     * Maximum velocity for motion profiling.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rps
+     *   <li><b>Range:</b> 0 to 9999</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> rotations per second (rps)</li>
      * </ul>
      */
     public double profileMaxVelocity = 0;
 
     /**
-     * This is the target acceleration the motion profile will try to honour.
-     * Only set this if a profile is desired.
+     * Target acceleration for motion profiling.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rot per sec²
+     *   <li><b>Range:</b> 0 to 9999</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> rotations per second²</li>
      * </ul>
      */
     public double profileMaxAcceleration = 0;
 
     /**
-     * This is the maximum jerk the motion profile will try to honour.
+     * Maximum jerk for motion profiling.
      *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Maximum Value:</b> 9999
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rot per sec²
+     *   <li><b>Range:</b> 0 to 9999</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> rotations per second²</li>
      * </ul>
      */
     public double profileMaxJerk = 0;
 
     /**
-     * Tolerance for closed-loop control, used for determining if the target is reached.
-     * If this is not set, {@link Motor#isAtPositionSetpoint()} and {@link Motor#isAtVelocitySetpoint()} will throw an exception
+     * Tolerance for closed-loop control, used to determine if the target is reached.
+     *
+     * <p>If not set, {@link Motor#isAtPositionSetpoint()} and {@link Motor#isAtVelocitySetpoint()} will throw an exception.</p>
+     *
      * <ul>
-     *   <li> <b>Minimum Value:</b> 0
-     *   <li> <b>Default Value:</b> 0
-     *   <li> <b>Units:</b> rotations
+     *   <li><b>Minimum:</b> 0</li>
+     *   <li><b>Default:</b> 0</li>
+     *   <li><b>Units:</b> rotations</li>
      * </ul>
      *
-     * <p>Ignored if set to 0. Used for checking isAtTarget.</p>
+     * <p>Ignored if set to 0.</p>
      */
     public double closedLoopTolerance = 0;
+
+    /** Forward and reverse soft limits for motor movement. Default: {@code 0}. */
+    public Double forwardSoftLimit = null, reverseSoftLimit = null;
 }

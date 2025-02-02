@@ -1,6 +1,11 @@
 package frc.lib.generic.hardware.motor;
 
 public class MotorProperties {
+    public enum LimitDirection {
+        MOTOR_FORWARD,
+        MOTOR_REVERSE
+    }
+
     public enum IdleMode {
         COAST,
         BRAKE
