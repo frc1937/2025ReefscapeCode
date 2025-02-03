@@ -54,10 +54,10 @@ public class SwerveModule {
     protected void setTargetState(SwerveModuleState state) {
         this.targetState = Optimizations.optimize(state, getCurrentAngle());
 
-        final double optimizedVelocity = Optimizations.reduceSkew(targetState.speedMetersPerSecond, targetState.angle, getCurrentAngle());
+        targetState.speedMetersPerSecond = Optimizations.reduceSkew(targetState.speedMetersPerSecond, targetState.angle, getCurrentAngle());
 
         setTargetAngle(targetState.angle);
-        setTargetVelocity(optimizedVelocity, openLoop);
+        setTargetVelocity(targetState.speedMetersPerSecond, openLoop);
     }
 
     /**
@@ -90,7 +90,9 @@ public class SwerveModule {
         if (!isTemperatureOkay()) System.out.println("SWERVE MODULE " + driveMotor.getDeviceID() + " is TOO HOT!" );
 
         if (openLoop) {
-            final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
+            final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION *
+                    (velocityMetresPerSecond / ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
+
             driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, targetPowerOpenLoop);
         } else {
             final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
@@ -104,7 +106,7 @@ public class SwerveModule {
     }
 
     protected SwerveModuleState getCurrentState() {
-        return new SwerveModuleState(driveMotor.getSystemVelocity(), getCurrentAngle());
+        return new SwerveModuleState(Conversions.rpsToMps(driveMotor.getSystemVelocity(), WHEEL_DIAMETER), getCurrentAngle());
     }
 
     protected SwerveModuleState getTargetState() {
@@ -125,9 +127,11 @@ public class SwerveModule {
 
     private double[] getDriveMetersTraveled(double[] rotationsPositions) {
         final double[] metersTraveled = new double[rotationsPositions.length];
+
         for (int i = 0; i < rotationsPositions.length; i++) {
             metersTraveled[i] = rotationsToMetres(rotationsPositions[i], WHEEL_DIAMETER);
         }
+
         return metersTraveled;
     }
 
