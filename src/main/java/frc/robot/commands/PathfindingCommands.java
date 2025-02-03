@@ -9,7 +9,6 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
 import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -44,11 +43,26 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToFace(ReefFace face) {
-        return new DeferredCommand(() -> isRobotInProximity(face.getPose(), PID_PATHFIND_THRESHOLD_REEF) ?
-                SwerveCommands.goToPosePID(face.getPose())
-                        .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - face.getPose().getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
-                SwerveCommands.goToPoseBezier(face.getPose()), Set.of(SWERVE));
+    public static DeferredCommand pathfindToLeftBranch(ReefFace face) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = face.getLeftBranch();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToRightBranch(ReefFace face) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = face.getRightBranch();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
     }
 
     public static DeferredCommand pathfindToFeeder() {
@@ -110,10 +124,10 @@ public class PathfindingCommands {
     }
 
     private static Pose2d decideFeederPose() {
-        Pose2d originalPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
+        Pose2d originalPose = Feeder.BOTTOM_FEEDER.getPose();
 
         if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
-            originalPose = flipAboutXAxis(originalPose);
+            originalPose = Feeder.TOP_FEEDER.getPose();
 
         if (Flippable.isRedAlliance())
             originalPose = flipAboutYAxis(originalPose);

@@ -3,6 +3,7 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.utilities.FieldConstants;
 
 import static frc.robot.RobotContainer.CORAL_INTAKE;
 import static frc.robot.RobotContainer.ELEVATOR;
@@ -34,6 +35,12 @@ public class CoralManipulationCommands {
         return pathfindingCommand.alongWith(eatFromFeeder());
     }
 
+    public static Command pathfindToFeederAndEat(FieldConstants.Feeder feeder) {
+        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeeder(feeder);
+
+        return pathfindingCommand.alongWith(eatFromFeeder());
+    }
+
     public static Command eatFromFeeder() {
         return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
                 .alongWith(CORAL_INTAKE.prepareGamePiece());
@@ -43,5 +50,11 @@ public class CoralManipulationCommands {
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(ELEVATOR::isAtTarget)
                 .andThen(CORAL_INTAKE.releaseGamePiece());
+    }
+
+    public static Command scoreGamePiece(ElevatorConstants.ElevatorHeight elevatorHeight) {
+        return ELEVATOR.setTargetHeight(elevatorHeight).alongWith(
+                CORAL_INTAKE.prepareGamePiece()).andThen(
+                CORAL_INTAKE.releaseGamePiece());
     }
 }
