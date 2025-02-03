@@ -41,9 +41,29 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
+    public static DeferredCommand pathfindToFace(ReefFace face) {
+        return new DeferredCommand(() -> isRobotInProximity(face.getPose(), PID_PATHFIND_THRESHOLD_REEF) ?
+                SwerveCommands.goToPosePID(face.getPose()) :
+                SwerveCommands.goToPoseBezier(face.getPose()), Set.of(SWERVE));
+    }
+
     public static DeferredCommand pathfindToFeeder() {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = decideFeederPose();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
+                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToFeeder(boolean shouldGoForTop) {
+        return new DeferredCommand(() -> {
+            Pose2d targetPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
+
+            if (shouldGoForTop) targetPose = flipAboutXAxis(targetPose);
+
+            if (Flippable.isRedAlliance()) targetPose = flipAboutYAxis(targetPose);
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
                     SwerveCommands.goToPosePID(targetPose) :
