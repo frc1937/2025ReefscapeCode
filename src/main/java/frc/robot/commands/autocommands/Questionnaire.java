@@ -29,8 +29,8 @@ public class Questionnaire {
         QUESTION_1.addOption("Face 5", ReefFace.FACE_5);
 
         QUESTION_2 = new LoggedDashboardChooser<>("Which Branch?");
-        QUESTION_2.addOption("Left Branch", PathfindingCommands.pathfindToLeftBranch());
-        QUESTION_2.addOption("Right Branch", PathfindingCommands.pathfindToRightBranch());
+        QUESTION_2.addOption("Left Branch", PathfindingCommands.pathfindToLeftBranch(QUESTION_1.get()));
+        QUESTION_2.addOption("Right Branch", PathfindingCommands.pathfindToRightBranch(QUESTION_1.get()));
 
         QUESTION_3 = new LoggedDashboardChooser<>("Should Remove Algae?");
         QUESTION_3.addOption("Yes", AlgaeManipulationCommands.blastAlgaeOffReef());
