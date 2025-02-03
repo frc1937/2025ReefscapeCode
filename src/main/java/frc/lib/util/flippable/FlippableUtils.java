@@ -34,8 +34,8 @@ public class FlippableUtils {
      * @param pose The pose to rotate
      * @return The rotated pose
      */
-    public static Pose2d flipAboutBothAxis(Pose2d pose) {
-        return new Pose2d(FIELD_LENGTH - pose.getX(), FIELD_WIDTH - pose.getY(), pose.getRotation().minus(Rotation2d.kPi));
+    public static Pose2d flipAboutBothAxes(Pose2d pose) {
+        return new Pose2d(FIELD_LENGTH - pose.getX(), FIELD_WIDTH - pose.getY(), pose.getRotation().minus(Rotation2d.k180deg));
     }
 
     /**
@@ -64,8 +64,8 @@ public class FlippableUtils {
      * @param rotation The rotation to rotate
      * @return The rotated rotation
      */
-    public static Rotation2d flipAboutBothAxis(Rotation2d rotation) {
-        return rotation.minus(Rotation2d.kPi);
+    public static Rotation2d flipAboutBothAxes(Rotation2d rotation) {
+        return rotation.minus(Rotation2d.k180deg);
     }
 
     /**
@@ -94,7 +94,7 @@ public class FlippableUtils {
      * @param translation The translation to rotate
      * @return The rotated translation
      */
-    public static Translation2d flipAboutBothAxis(Translation2d translation) {
+    public static Translation2d flipAboutBothAxes(Translation2d translation) {
         return new Translation2d(FIELD_LENGTH - translation.getX(), FIELD_WIDTH - translation.getY());
     }
 }

@@ -149,6 +149,6 @@ public class KeyboardController {
     }
 
     private Trigger createKeyTrigger(String key) {
-        return new Trigger(new LoggedNetworkBoolean("/SmartDashboard/keyboard/" + key, false)::get);
+        return new Trigger(new LoggedNetworkBoolean("/SmartDashboard/keyboard/" + key)::get);
     }
 }

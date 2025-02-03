@@ -41,6 +41,11 @@ public class CameraPositionCharacterization extends Command {
 
         final Pose2d currentPose = cameraPoseSupplier.get();
 
+        if (initialPose == null) {
+            initialPose = currentPose;
+            return;
+        }
+
         if (currentPose != null)
             endPose = currentPose;
 
