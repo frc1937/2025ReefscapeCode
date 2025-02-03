@@ -1,4 +1,4 @@
-package frc.robot.utilities;
+package frc.robot.commands.autocommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
