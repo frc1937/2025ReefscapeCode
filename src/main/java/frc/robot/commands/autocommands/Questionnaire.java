@@ -34,7 +34,7 @@ public class Questionnaire {
 
         QUESTION_3 = new LoggedDashboardChooser<>("Should Remove Algae?");
         QUESTION_3.addOption("Yes", ALGAE_BLASTER.setAlgaeBlasterArmState(BlasterArmState.HORIZONTAL_OUT));
-        QUESTION_3.addOption("No", ALGAE_BLASTER.setAlgaeBlasterArmState(BlasterArmState.HORIZONTAL_IN));
+        QUESTION_3.addOption("No", Commands.none());
 
         QUESTION_4 = new LoggedDashboardChooser<>("Which Scoring Level?");
         QUESTION_4.addOption("L1",
@@ -62,7 +62,7 @@ public class Questionnaire {
                 QUESTION_3.get(),
                 QUESTION_4.get(),
                 QUESTION_5.get()
-        );
+        ).repeatedly();
     }
 
     public String getSelected() {
