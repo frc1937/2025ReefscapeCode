@@ -18,6 +18,7 @@ import static frc.robot.utilities.FieldConstants.ReefFace.*;
 import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CAGE_CONSTRAINTS;
 
 public class PathfindingCommands {
+    public static final double PID_PATHFIND_ACCURACY_THRESHOLD = 0.07;
     private static final double PID_PATHFIND_THRESHOLD_REEF = 0.8;
     private static final double PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
 
@@ -26,7 +27,8 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideReefFace().getLeftBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -36,14 +38,16 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideReefFace().getRightBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
     public static DeferredCommand pathfindToFace(ReefFace face) {
         return new DeferredCommand(() -> isRobotInProximity(face.getPose(), PID_PATHFIND_THRESHOLD_REEF) ?
-                SwerveCommands.goToPosePID(face.getPose()) :
+                SwerveCommands.goToPosePID(face.getPose())
+                        .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - face.getPose().getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
                 SwerveCommands.goToPoseBezier(face.getPose()), Set.of(SWERVE));
     }
 
@@ -52,21 +56,19 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideFeederPose();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToFeeder(boolean shouldGoForTop) {
+    public static DeferredCommand pathfindToFeeder(Feeder feeder) {
         return new DeferredCommand(() -> {
-            Pose2d targetPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
-
-            if (shouldGoForTop) targetPose = flipAboutXAxis(targetPose);
-
-            if (Flippable.isRedAlliance()) targetPose = flipAboutYAxis(targetPose);
+            final Pose2d targetPose = feeder.getPose();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -84,8 +86,9 @@ public class PathfindingCommands {
             );
 
             return alignWithTargetY
-                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.07)
-                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS));
+                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD)
+                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS))
+                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD);
         }, Set.of(SWERVE));
     }
 
