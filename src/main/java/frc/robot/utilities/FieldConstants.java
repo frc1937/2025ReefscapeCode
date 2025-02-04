@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
+import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 
 public class FieldConstants {
     private static final Transform2d ROBOT_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
@@ -60,7 +60,7 @@ public class FieldConstants {
 
     public enum Feeder {
         TOP_FEEDER(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))),
-        BOTTOM_FEEDER(flipAboutXAxis(TOP_FEEDER.getPose()));
+        BOTTOM_FEEDER(flipAboutYAxis(TOP_FEEDER.getPose()));
 
         private final FlippablePose2d feederPose;
 
