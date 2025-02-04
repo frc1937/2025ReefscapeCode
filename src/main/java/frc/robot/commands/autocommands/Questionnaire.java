@@ -11,35 +11,35 @@ import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Questionnaire {
-    private final LoggedDashboardChooser<ReefFace> CYCLE_1_QUESTION_1, CYCLE_2_QUESTION_1, CYCLE_3_QUESTION_1;
-    private final LoggedDashboardChooser<String> CYCLE_1_QUESTION_2, CYCLE_2_QUESTION_2, CYCLE_3_QUESTION_2;
-    private final LoggedDashboardChooser<Command>
-            CYCLE_1_QUESTION_3, CYCLE_1_QUESTION_4, CYCLE_1_QUESTION_5,
-            CYCLE_2_QUESTION_3, CYCLE_2_QUESTION_4, CYCLE_2_QUESTION_5,
-            CYCLE_3_QUESTION_3, CYCLE_3_QUESTION_4, CYCLE_3_QUESTION_5;
+    private final Cycle
+            CYCLE_1,
+            CYCLE_2,
+            CYCLE_3;
 
     public Questionnaire() {
-        CYCLE_1_QUESTION_1 = createReefFaceQuestion("Cycle 1");
-        CYCLE_1_QUESTION_2 = createBranchQuestion("Cycle 1");
-        CYCLE_1_QUESTION_3 = createAlgaeQuestion("Cycle 1");
-        CYCLE_1_QUESTION_4 = createScoringQuestion("Cycle 1");
-        CYCLE_1_QUESTION_5 = createFeederQuestion("Cycle 1");
+        CYCLE_1 = new Cycle(
+                createReefFaceQuestion("Cycle 1"),
+                createBranchQuestion("Cycle 1"),
+                createAlgaeQuestion("Cycle 1"),
+                createScoringQuestion("Cycle 1"),
+                createFeederQuestion("Cycle 1")
+        );
 
-        CYCLE_2_QUESTION_1 = createReefFaceQuestion("Cycle 2");
-        CYCLE_2_QUESTION_2 = createBranchQuestion("Cycle 2");
-        CYCLE_2_QUESTION_3 = createAlgaeQuestion("Cycle 2");
-        CYCLE_2_QUESTION_4 = createScoringQuestion("Cycle 2");
-        CYCLE_2_QUESTION_5 = createFeederQuestion("Cycle 2");
+        CYCLE_2 = new Cycle(createReefFaceQuestion("Cycle 2"),
+                createBranchQuestion("Cycle 2"),
+                createAlgaeQuestion("Cycle 2"),
+                createScoringQuestion("Cycle 2"),
+                createFeederQuestion("Cycle 2"));
 
-        CYCLE_3_QUESTION_1 = createReefFaceQuestion("Cycle 3");
-        CYCLE_3_QUESTION_2 = createBranchQuestion("Cycle 3");
-        CYCLE_3_QUESTION_3 = createAlgaeQuestion("Cycle 3");
-        CYCLE_3_QUESTION_4 = createScoringQuestion("Cycle 3");
-        CYCLE_3_QUESTION_5 = createFeederQuestion("Cycle 3");
+        CYCLE_3 = new Cycle(createReefFaceQuestion("Cycle 3"),
+                createBranchQuestion("Cycle 3"),
+                createAlgaeQuestion("Cycle 3"),
+                createScoringQuestion("Cycle 3"),
+                createFeederQuestion("Cycle 3"));
     }
 
-    private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleName) {
-        final LoggedDashboardChooser<ReefFace> question = new LoggedDashboardChooser<>(cycleName + ", Which Reef Face?");
+    private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<ReefFace> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Reef Face?");
 
         for (ReefFace face : ReefFace.values()) {
             question.addOption("Face " + face.ordinal(), face);
@@ -48,8 +48,8 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<String> createBranchQuestion(String cycleName) {
-        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleName + ", Which Branch?");
+    private LoggedDashboardChooser<String> createBranchQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Branch?");
 
         question.addOption("Left Branch", "LEFT");
         question.addOption("Right Branch", "RIGHT");
@@ -57,8 +57,8 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<Command> createAlgaeQuestion(String cycleName) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleName + ", Should Remove Algae?");
+    private LoggedDashboardChooser<Command> createAlgaeQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Should Remove Algae?");
 
         question.addOption("Yes", AlgaeManipulationCommands.blastAlgaeOffReef());
         question.addOption("No", Commands.none());
@@ -66,8 +66,8 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<Command> createScoringQuestion(String cycleName) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleName + ", Which Scoring Level?");
+    private LoggedDashboardChooser<Command> createScoringQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Scoring Level?");
 
         question.addOption("L1", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L1));
         question.addOption("L2", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L2));
@@ -76,8 +76,8 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<Command> createFeederQuestion(String cycleName) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleName + ", Which Feeder?");
+    private LoggedDashboardChooser<Command> createFeederQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Feeder?");
 
         question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER));
         question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER));
@@ -85,35 +85,39 @@ public class Questionnaire {
         return question;
     }
 
-    private Command createCycle(LoggedDashboardChooser<ReefFace> reefFaceQuestion,
-                                LoggedDashboardChooser<String> branchQuestion,
-                                LoggedDashboardChooser<Command> algaeQuestion,
-                                LoggedDashboardChooser<Command> scoringHeightQuestion,
-                                LoggedDashboardChooser<Command> feederQuestion) {
-        final ReefFace selectedReefFace = reefFaceQuestion.get();
-        final String selectedBranch = branchQuestion.get();
+    private Command createCycleSequence(Cycle cycle) {
+        final ReefFace selectedReefFace = cycle.reefFaceQuestion.get();
+        final String selectedBranch = cycle.branchQuestion.get();
 
-        Command goToBranch = selectedBranch.equals("LEFT") ?
+        final Command goToBranch = selectedBranch.equals("LEFT") ?
                 PathfindingCommands.pathfindToLeftBranch(selectedReefFace) :
                 PathfindingCommands.pathfindToRightBranch(selectedReefFace);
 
         return Commands.sequence(
                 goToBranch,
-                algaeQuestion.get(),
-                scoringHeightQuestion.get(),
-                feederQuestion.get()
+                cycle.algaeQuestion.get(),
+                cycle.scoringHeightQuestion.get(),
+                cycle.feederQuestion.get()
         );
     }
 
     public Command getCommand() {
         return Commands.sequence(
-                createCycle(CYCLE_1_QUESTION_1, CYCLE_1_QUESTION_2, CYCLE_1_QUESTION_3, CYCLE_1_QUESTION_4, CYCLE_1_QUESTION_5),
-                createCycle(CYCLE_2_QUESTION_1, CYCLE_2_QUESTION_2, CYCLE_2_QUESTION_3, CYCLE_2_QUESTION_4, CYCLE_2_QUESTION_5),
-                createCycle(CYCLE_3_QUESTION_1, CYCLE_3_QUESTION_2, CYCLE_3_QUESTION_3, CYCLE_3_QUESTION_4, CYCLE_3_QUESTION_5)
+                createCycleSequence(CYCLE_1),
+                createCycleSequence(CYCLE_2),
+                createCycleSequence(CYCLE_3)
         );
     }
 
     public String getSelected() {
         return "None";
+    }
+
+    private record Cycle(
+            LoggedDashboardChooser<ReefFace> reefFaceQuestion,
+            LoggedDashboardChooser<String> branchQuestion,
+            LoggedDashboardChooser<Command> algaeQuestion,
+            LoggedDashboardChooser<Command> scoringHeightQuestion,
+            LoggedDashboardChooser<Command> feederQuestion) {
     }
 }
