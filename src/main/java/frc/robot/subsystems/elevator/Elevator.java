@@ -28,8 +28,8 @@ public class Elevator extends GenericSubsystem {
                     if (CURRENT_MODE != REAL)
                         printPose(levelSupplier.get().getMeters());
                 },
-                interrupt -> stopMotors(), // MASTER_MOTOR::isAtPositionSetpoint, TODO: Check if elevator can sustain itself on REAL.
-                () -> false,
+                interrupt -> stopMotors(),
+                MASTER_MOTOR::isAtPositionSetpoint,
                 this
         );
     }
@@ -43,8 +43,8 @@ public class Elevator extends GenericSubsystem {
                     if (CURRENT_MODE != REAL)
                         printPose(level.getMeters());
                 },
-                interrupt -> stopMotors(), // MASTER_MOTOR::isAtPositionSetpoint, TODO: Check if elevator can sustain itself on REAL.
-                () -> false,
+                interrupt -> stopMotors(),
+                MASTER_MOTOR::isAtPositionSetpoint,
                 this
         );
     }

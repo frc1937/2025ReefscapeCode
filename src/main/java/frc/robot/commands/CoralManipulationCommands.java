@@ -53,8 +53,7 @@ public class CoralManipulationCommands {
     }
 
     public static Command scoreGamePiece(ElevatorConstants.ElevatorHeight elevatorHeight) {
-        return ELEVATOR.setTargetHeight(elevatorHeight).alongWith(
-                CORAL_INTAKE.prepareGamePiece()).andThen(
-                CORAL_INTAKE.releaseGamePiece());
+        return ELEVATOR.setTargetHeight(elevatorHeight).andThen(
+                CORAL_INTAKE.releaseGamePiece()).andThen(CORAL_INTAKE.stop());
     }
 }
