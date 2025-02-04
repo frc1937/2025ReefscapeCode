@@ -18,6 +18,8 @@ import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import java.util.function.BooleanSupplier;
+
 import static frc.lib.math.Conversions.proportionalPowerToMps;
 import static frc.lib.math.MathUtils.getAngleFromPoseToPose;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
@@ -111,6 +113,10 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < MODULES.length; i++)
             MODULES[i].setTargetState(swerveModuleStates[i]);
+    }
+
+    public BooleanSupplier isRobotInThreshold(Pose2d targetPose) {
+        return () -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD;
     }
 
     protected void driveOrientationBased(double xPower, double yPower, double thetaPower, boolean robotCentric) {
