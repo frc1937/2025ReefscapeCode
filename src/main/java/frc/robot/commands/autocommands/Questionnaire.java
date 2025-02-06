@@ -46,19 +46,21 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<ReefFace> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Reef Face?");
+    private LoggedDashboardChooser<String> createReefFaceQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + "Which Reef Face?");
 
+        question.addDefaultOption("None", "None");
         for (ReefFace face : ReefFace.values()) {
-            question.addOption("Face " + face.ordinal(), face);
+            question.addOption("Face " + face.ordinal(), face.name());
         }
 
         return question;
     }
 
     private LoggedDashboardChooser<String> createBranchQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Branch?");
+        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + "Which Branch?");
 
+        question.addDefaultOption("None", "None");
         question.addOption("Left Branch", "LEFT");
         question.addOption("Right Branch", "RIGHT");
 
@@ -66,8 +68,9 @@ public class Questionnaire {
     }
 
     private LoggedDashboardChooser<Command> createAlgaeQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Should Remove Algae?");
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Should Remove Algae?");
 
+        question.addDefaultOption("None", Commands.none());
         question.addOption("Yes", AlgaeManipulationCommands.blastAlgaeOffReef());
         question.addOption("No", Commands.none());
 
@@ -75,8 +78,9 @@ public class Questionnaire {
     }
 
     private LoggedDashboardChooser<Command> createScoringQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Scoring Level?");
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
 
+        question.addDefaultOption("None", Commands.none());
         question.addOption("L1", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L1));
         question.addOption("L2", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L2));
         question.addOption("L3", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L3));
@@ -85,8 +89,9 @@ public class Questionnaire {
     }
 
     private LoggedDashboardChooser<Command> createFeederQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Feeder?");
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Feeder?");
 
+        question.addDefaultOption("None", Commands.none());
         question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER)
                 .withTimeout(3).unless(CORAL_INTAKE::hasCoral));
         question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER)
@@ -96,12 +101,14 @@ public class Questionnaire {
     }
 
     private Command createCycleSequence(Cycle cycle) {
-        final ReefFace selectedReefFace = cycle.reefFaceQuestion.get();
+        final String selectedReefFace = cycle.reefFaceQuestion.get();
         final String selectedBranch = cycle.branchQuestion.get();
 
-        final Command goToBranch = selectedBranch.equals("LEFT") ?
-                PathfindingCommands.pathfindToLeftBranch(selectedReefFace) :
-                PathfindingCommands.pathfindToRightBranch(selectedReefFace);
+        final Command goToBranch = selectedBranch.equals("None") || selectedReefFace.equals("None") ?
+                Commands.none() :
+                selectedBranch.equals("LEFT") ?
+                        PathfindingCommands.pathfindToLeftBranch(ReefFace.valueOf(selectedReefFace)) :
+                        PathfindingCommands.pathfindToRightBranch(ReefFace.valueOf(selectedReefFace));
 
         return Commands.sequence(
                 goToBranch,
@@ -126,7 +133,7 @@ public class Questionnaire {
     }
 
     private record Cycle(
-            LoggedDashboardChooser<ReefFace> reefFaceQuestion,
+            LoggedDashboardChooser<String> reefFaceQuestion,
             LoggedDashboardChooser<String> branchQuestion,
             LoggedDashboardChooser<Command> algaeQuestion,
             LoggedDashboardChooser<Command> scoringHeightQuestion,
