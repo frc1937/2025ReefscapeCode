@@ -19,6 +19,8 @@ import static frc.robot.utilities.PortsConstants.SwervePorts.GYRO_PORT;
 public class SwerveConstants {
     public static final SwerveDriveKinematics SWERVE_KINEMATICS = new SwerveDriveKinematics(ROBOT_CONFIG.moduleLocations);
 
+    public static final double PID_PATHFIND_ACCURACY_THRESHOLD = 0.07;
+
     protected static final SysIdRoutine.Config SYSID_DRIVE_CONFIG = new SysIdRoutine.Config(
             Volts.per(Second).of(1),
             Volts.of(2),
