@@ -10,6 +10,8 @@ import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import static frc.robot.RobotContainer.CORAL_INTAKE;
+
 public class Questionnaire {
     private final LoggedDashboardChooser<Command> PRESET_QUESTION;
     private final Cycle
@@ -85,8 +87,10 @@ public class Questionnaire {
     private LoggedDashboardChooser<Command> createFeederQuestion(String cycleNumber) {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + ", Which Feeder?");
 
-        question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER));
-        question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER));
+        question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER)
+                .withTimeout(3).unless(CORAL_INTAKE::hasCoral));
+        question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER)
+                .withTimeout(3).unless(CORAL_INTAKE::hasCoral));
 
         return question;
     }
