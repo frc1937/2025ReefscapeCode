@@ -9,7 +9,6 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
 import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -26,7 +25,8 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideReefFace().getLeftBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -36,7 +36,30 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideReefFace().getRightBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToLeftBranch(ReefFace face) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = face.getLeftBranch();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToRightBranch(ReefFace face) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = face.getRightBranch();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -46,7 +69,19 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideFeederPose();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
-                    SwerveCommands.goToPosePID(targetPose) :
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
+                    SwerveCommands.goToPoseBezier(targetPose);
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToFeeder(Feeder feeder) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = feeder.getPose();
+
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
+                    SwerveCommands.goToPosePID(targetPose)
+                            .until(SWERVE.isRobotInThreshold(targetPose)) :
                     SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -64,8 +99,9 @@ public class PathfindingCommands {
             );
 
             return alignWithTargetY
-                    .until(() -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < 0.07)
-                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS));
+                    .until(SWERVE.isRobotInThreshold(targetPose))
+                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS))
+                    .until(SWERVE.isRobotInThreshold(targetPose));
         }, Set.of(SWERVE));
     }
 
@@ -86,10 +122,10 @@ public class PathfindingCommands {
     }
 
     private static Pose2d decideFeederPose() {
-        Pose2d originalPose = BLUE_BOTTOM_FEEDER_INTAKE_POSE;
+        Pose2d originalPose = Feeder.BOTTOM_FEEDER.getPose();
 
         if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
-            originalPose = flipAboutXAxis(originalPose);
+            originalPose = Feeder.TOP_FEEDER.getPose();
 
         if (Flippable.isRedAlliance())
             originalPose = flipAboutYAxis(originalPose);

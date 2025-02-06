@@ -1,10 +1,10 @@
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.autocommands.Questionnaire;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
@@ -14,7 +14,6 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.utilities.PathPlannerConstants;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
 
@@ -32,8 +31,7 @@ public class RobotContainer {
     public static final AlgaeBlaster ALGAE_BLASTER = new AlgaeBlaster();
     public static final AlgaeIntake ALGAE_INTAKE = new AlgaeIntake();
     public static final Leds LEDS = new Leds();
-
-    private LoggedDashboardChooser<Command> autoChooser;
+    public static final Questionnaire QUESTIONNAIRE = new Questionnaire();
 
     public RobotContainer() {
         DriverStation.silenceJoystickConnectionWarning(true);
@@ -41,18 +39,17 @@ public class RobotContainer {
         Flippable.init();
         PathPlannerConstants.initializePathPlanner();
 
-        setupAutonomous();
         setupLEDs();
 
         ButtonControls.initializeButtons(ButtonControls.ButtonLayout.TELEOP);
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.get();
+        return QUESTIONNAIRE.getCommand();
     }
 
     public String getAutoName() {
-        return autoChooser.getSendableChooser().getSelected();
+        return QUESTIONNAIRE.getSelected();
     }
 
     private void setupLEDs() {
@@ -69,9 +66,5 @@ public class RobotContainer {
         });
 
         batteryLowTrigger.onTrue(LEDS.setLEDStatus(Leds.LEDMode.BATTERY_LOW, 5));
-    }
-
-    private void setupAutonomous() {
-        autoChooser = new LoggedDashboardChooser<>("AutoChooser", AutoBuilder.buildAutoChooser(""));
     }
 }

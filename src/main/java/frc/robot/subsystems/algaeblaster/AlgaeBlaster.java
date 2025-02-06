@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
@@ -12,9 +13,14 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 
 public class AlgaeBlaster extends GenericSubsystem {
-    public Command setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState state) {
-        return Commands.run(() -> BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this)
-                .andThen(stopAlgaeBlasterArm());
+    public Command setAlgaeBlasterArmState(BlasterArmState state) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()),
+                interrupt -> BLASTER_MOTOR.stopMotor(),
+                BLASTER_MOTOR::isAtPositionSetpoint,
+                this
+        );
     }
 
     public Command stopAlgaeBlasterArm() {

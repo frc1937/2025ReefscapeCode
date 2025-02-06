@@ -7,14 +7,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
+import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
+
 public class FieldConstants {
     private static final Transform2d ROBOT_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
 
     private static final Transform2d LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -0.1643, Rotation2d.kZero);
     private static final Transform2d RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, 0.1643, Rotation2d.kZero);
-
-    public static final Pose2d BLUE_BOTTOM_FEEDER_INTAKE_POSE = new Pose2d(new Translation2d(0.84319, 0.65078),
-                    Rotation2d.fromDegrees(54)).transformBy(ROBOT_TRANSFORM);
 
     public static final double FIELD_WIDTH = 8.05;
     public static final double FIELD_LENGTH = 17.55;
@@ -56,6 +55,21 @@ public class FieldConstants {
 
         public Pose2d getRightBranch() {
             return rightBranch.get();
+        }
+    }
+
+    public enum Feeder {
+        TOP_FEEDER(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))),
+        BOTTOM_FEEDER(flipAboutYAxis(TOP_FEEDER.getPose()));
+
+        private final FlippablePose2d feederPose;
+
+        Feeder(Pose2d pose) {
+            this.feederPose = new FlippablePose2d(pose.transformBy(ROBOT_TRANSFORM), true);
+        }
+
+        public Pose2d getPose() {
+            return feederPose.get();
         }
     }
 }
