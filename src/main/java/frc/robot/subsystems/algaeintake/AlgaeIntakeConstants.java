@@ -30,6 +30,7 @@ public class AlgaeIntakeConstants {
         public double getTargetArmPositionRotations() {
             return armTargetPosition;
         }
+
         public double getRollerVoltage() {
             return intakeSpeed;
         }

@@ -15,17 +15,17 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_BLASTER_MOTOR_
 
 public class AlgaeBlasterConstants {
     public enum BlasterArmState {
-        VERTICAL(Rotation2d.kCW_90deg),
-        HORIZONTAL_IN(Rotation2d.k180deg),
-        HORIZONTAL_OUT(Rotation2d.kZero);
+        VERTICAL(0.25),
+        HORIZONTAL_IN(0.5),
+        HORIZONTAL_OUT(0);
 
-        private final Rotation2d rotation;
+        private final double rotation;
 
-        BlasterArmState(Rotation2d rotation) {
+        BlasterArmState(double rotation) {
             this.rotation = rotation;
         }
 
-        public Rotation2d getRotation2d() {
+        public double getRotations() {
             return rotation;
         }
     }
