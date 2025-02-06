@@ -116,11 +116,13 @@ public class Questionnaire {
     }
 
     public Command getCommand() {
-        return Commands.sequence(
-                createCycleSequence(CYCLE_1),
-                createCycleSequence(CYCLE_2),
-                createCycleSequence(CYCLE_3)
-        );
+        return PRESET_QUESTION.getSendableChooser().getSelected().equals("None") ?
+                Commands.sequence(
+                        createCycleSequence(CYCLE_1),
+                        createCycleSequence(CYCLE_2),
+                        createCycleSequence(CYCLE_3)
+                ) :
+                PRESET_QUESTION.get();
     }
 
     public String getSelected() {
