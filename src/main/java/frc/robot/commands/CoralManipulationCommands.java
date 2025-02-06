@@ -38,7 +38,7 @@ public class CoralManipulationCommands {
     public static Command pathfindToFeederAndEat(FieldConstants.Feeder feeder) {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeeder(feeder);
 
-        return pathfindingCommand.alongWith(eatFromFeeder());
+        return pathfindingCommand.alongWith(eatFromFeeder().withTimeout(3).unless(CORAL_INTAKE::hasCoral));
     }
 
     public static Command eatFromFeeder() {

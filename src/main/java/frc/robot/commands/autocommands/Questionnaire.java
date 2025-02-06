@@ -92,10 +92,8 @@ public class Questionnaire {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Feeder?");
 
         question.addDefaultOption("None", Commands.none());
-        question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER)
-                .withTimeout(3).unless(CORAL_INTAKE::hasCoral));
-        question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER)
-                .withTimeout(3).unless(CORAL_INTAKE::hasCoral));
+        question.addOption("Top Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.TOP_FEEDER));
+        question.addOption("Bottom Feeder", CoralManipulationCommands.pathfindToFeederAndEat(Feeder.BOTTOM_FEEDER));
 
         return question;
     }
