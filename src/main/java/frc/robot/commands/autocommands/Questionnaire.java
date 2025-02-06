@@ -17,25 +17,17 @@ public class Questionnaire {
             CYCLE_3;
 
     public Questionnaire() {
-        CYCLE_1 = new Cycle(
-                createReefFaceQuestion("Cycle 1"),
-                createBranchQuestion("Cycle 1"),
-                createAlgaeQuestion("Cycle 1"),
-                createScoringQuestion("Cycle 1"),
-                createFeederQuestion("Cycle 1")
-        );
+        CYCLE_1 = initializeCycleFromKey("Cycle1/");
+        CYCLE_2 = initializeCycleFromKey("Cycle2/");
+        CYCLE_3 = initializeCycleFromKey("Cycle3/");
+    }
 
-        CYCLE_2 = new Cycle(createReefFaceQuestion("Cycle 2"),
-                createBranchQuestion("Cycle 2"),
-                createAlgaeQuestion("Cycle 2"),
-                createScoringQuestion("Cycle 2"),
-                createFeederQuestion("Cycle 2"));
-
-        CYCLE_3 = new Cycle(createReefFaceQuestion("Cycle 3"),
-                createBranchQuestion("Cycle 3"),
-                createAlgaeQuestion("Cycle 3"),
-                createScoringQuestion("Cycle 3"),
-                createFeederQuestion("Cycle 3"));
+    private Cycle initializeCycleFromKey(String key) {
+        return new Cycle(createReefFaceQuestion(key),
+                createBranchQuestion(key),
+                createAlgaeQuestion(key),
+                createScoringQuestion(key),
+                createFeederQuestion(key));
     }
 
     private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
