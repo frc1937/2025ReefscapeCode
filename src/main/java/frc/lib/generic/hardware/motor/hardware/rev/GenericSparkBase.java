@@ -407,15 +407,24 @@ public abstract class GenericSparkBase extends Motor {
 
         sparkConfig.inverted(configuration.inverted);
 
-        if (master != null)
-            sparkConfig.follow(master, invert);
+        if (master != null) sparkConfig.follow(master, invert);
 
         if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
         if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
 
-        configureFeedforward(configuration.slot);
+        if (currentConfiguration.forwardSoftLimit != null) {
+            sparkConfig.softLimit.forwardSoftLimitEnabled(true);
+            sparkConfig.softLimit.forwardSoftLimit(currentConfiguration.forwardSoftLimit * 1.0 / configuration.gearRatio);
+        }
 
+        if (currentConfiguration.reverseSoftLimit != null) {
+            sparkConfig.softLimit.reverseSoftLimitEnabled(true);
+            sparkConfig.softLimit.reverseSoftLimit(currentConfiguration.reverseSoftLimit * 1.0 / configuration.gearRatio);
+        }
+
+        configureFeedforward(configuration.slot);
         configureProfile(configuration);
+
         sparkConfig = configureExtras(configuration, sparkConfig);
 
         int i = 0;

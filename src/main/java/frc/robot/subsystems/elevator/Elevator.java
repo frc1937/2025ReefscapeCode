@@ -65,7 +65,7 @@ public class Elevator extends GenericSubsystem {
             MASTER_MOTOR.setMotorEncoderPosition(0);
 
         if (TOP_BEAM_BREAK.get() == 1)
-            MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_METERS);
+            MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS);
     }
 
     @Override
