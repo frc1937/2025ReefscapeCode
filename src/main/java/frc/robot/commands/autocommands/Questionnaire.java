@@ -11,12 +11,15 @@ import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class Questionnaire {
+    private final LoggedDashboardChooser<Command> PRESET_QUESTION;
     private final Cycle
             CYCLE_1,
             CYCLE_2,
             CYCLE_3;
 
     public Questionnaire() {
+        PRESET_QUESTION = createPresetQuestion();
+
         CYCLE_1 = new Cycle(
                 createReefFaceQuestion("Cycle 1"),
                 createBranchQuestion("Cycle 1"),
@@ -36,6 +39,17 @@ public class Questionnaire {
                 createAlgaeQuestion("Cycle 3"),
                 createScoringQuestion("Cycle 3"),
                 createFeederQuestion("Cycle 3"));
+    }
+
+    private LoggedDashboardChooser<Command> createPresetQuestion() {
+        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>("Which Auto Preset?");
+
+        question.addDefaultOption("None", Commands.none());
+        question.addOption("go and distract on other alliance", Commands.none());
+        question.addOption("run into a wall", Commands.none());
+        question.addOption("spin around the reef", Commands.none());
+
+        return question;
     }
 
     private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
