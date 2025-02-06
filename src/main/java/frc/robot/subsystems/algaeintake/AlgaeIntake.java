@@ -61,9 +61,11 @@ public class AlgaeIntake extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(INTAKE_ARM_MOTOR.getSystemVelocity()));
     }
 
+    private void printPose() {
+        final Pose3d current3dPose = new Pose3d(Pose3d.kZero.getTranslation(), new Rotation3d(0, getCurrentArmPosition().getRotations(), 0));
 
-    @Override
-    public void periodic() {
+        Logger.recordOutput("Components/IntakeArmPose", current3dPose);
+
         if (INTAKE_ARM_MECHANISM != null) {
             INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
             INTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());

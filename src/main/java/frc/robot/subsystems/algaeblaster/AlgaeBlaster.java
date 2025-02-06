@@ -1,6 +1,8 @@
 package frc.robot.subsystems.algaeblaster;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -8,15 +10,23 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.GlobalConstants.CURRENT_MODE;
+import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 
 public class AlgaeBlaster extends GenericSubsystem {
     public Command setAlgaeBlasterArmState(BlasterArmState state) {
         return new FunctionalCommand(
                 () -> {},
-                () -> BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()),
+                () -> {
+                    BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations());
+
+                    if (CURRENT_MODE != REAL)
+                        printPose(state.getRotations());
+                },
                 interrupt -> BLASTER_MOTOR.stopMotor(),
                 BLASTER_MOTOR::isAtPositionSetpoint,
                 this
@@ -54,8 +64,12 @@ public class AlgaeBlaster extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(BLASTER_MOTOR.getSystemVelocity()));
     }
 
-    @Override
-    public void periodic() {
+
+    private void printPose(double targetPosition) {
+        final Pose3d current3dPose = new Pose3d(Pose3d.kZero.getTranslation(), new Rotation3d(0, getCurrentArmPosition().getRotations(), 0));
+
+        Logger.recordOutput("Components/IntakeArmPose", current3dPose);
+
         if (BLASTER_ARM_MECHANISM != null) {
             BLASTER_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
             BLASTER_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());

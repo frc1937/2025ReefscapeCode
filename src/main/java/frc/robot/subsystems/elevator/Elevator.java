@@ -26,7 +26,7 @@ public class Elevator extends GenericSubsystem {
                     setMotorPosition(levelSupplier.get().getRotations());
 
                     if (CURRENT_MODE != REAL)
-                        printPose(levelSupplier.get().getMeters());
+                        printPose();
                 },
                 interrupt -> stopMotors(),
                 MASTER_MOTOR::isAtPositionSetpoint,
@@ -41,7 +41,7 @@ public class Elevator extends GenericSubsystem {
                     setMotorPosition(level.getRotations());
 
                     if (CURRENT_MODE != REAL)
-                        printPose(level.getMeters());
+                        printPose();
                 },
                 interrupt -> stopMotors(),
                 MASTER_MOTOR::isAtPositionSetpoint,
@@ -86,14 +86,15 @@ public class Elevator extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(MASTER_MOTOR.getSystemVelocity()));
     }
 
-    private void printPose(double targetPositionMeters) {
+    private void printPose() {
         final double currentElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
+        final double targetElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getClosedLoopTarget(), WHEEL_DIAMETER);
         final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition, new Rotation3d(0, 0, 0));
 
-        Logger.recordOutput("ElevatorPose", current3dPose);
+        Logger.recordOutput("Components/ElevatorPose", current3dPose);
 
         ELEVATOR_MECHANISM.updateCurrentPosition(currentElevatorPosition);
-        ELEVATOR_MECHANISM.updateTargetPosition(targetPositionMeters);
+        ELEVATOR_MECHANISM.updateTargetPosition(targetElevatorPosition);
     }
 
     private void setMotorPosition(double targetPosition) {
