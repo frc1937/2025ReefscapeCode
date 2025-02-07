@@ -22,9 +22,9 @@ public class AlgaeManipulationCommands {
     }
 
     public static Command blastAlgaeOffReef() {
-        return ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
+        return ALGAE_BLASTER.setAlgaeBlasterState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
                 .until(ALGAE_BLASTER::isArmAtTarget)
                 .andThen(new WaitCommand(0.4))
-                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+                .andThen(ALGAE_BLASTER.setAlgaeBlasterState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 }

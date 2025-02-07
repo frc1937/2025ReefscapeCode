@@ -16,6 +16,7 @@ import java.util.function.Supplier;
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 import static frc.robot.GlobalConstants.Mode.REAL;
+import static frc.robot.RobotContainer.ALGAE_BLASTER;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 public class Elevator extends GenericSubsystem {
@@ -26,8 +27,10 @@ public class Elevator extends GenericSubsystem {
                 () -> {
                     setMotorPosition(levelSupplier.get().getRotations());
 
-                    if (CURRENT_MODE != REAL)
+                    if (CURRENT_MODE != REAL) {
                         printPose();
+                        ALGAE_BLASTER.printPose();
+                    }
                 },
                 interrupt -> stopMotors(),
                 MASTER_MOTOR::isAtPositionSetpoint,
@@ -42,8 +45,10 @@ public class Elevator extends GenericSubsystem {
                 () -> {
                     setMotorPosition(level.getRotations());
 
-                    if (CURRENT_MODE != REAL)
+                    if (CURRENT_MODE != REAL) {
                         printPose();
+                        ALGAE_BLASTER.printPose();
+                    }
                 },
                 interrupt -> stopMotors(),
                 MASTER_MOTOR::isAtPositionSetpoint,
@@ -53,6 +58,10 @@ public class Elevator extends GenericSubsystem {
 
     public boolean isAtTarget() {
         return MASTER_MOTOR.isAtPositionSetpoint();
+    }
+
+    public double getCurrentHeight() {
+        return Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
     }
 
     @Override
@@ -88,15 +97,17 @@ public class Elevator extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(MASTER_MOTOR.getSystemVelocity()));
     }
 
-    private void printPose() {
-        final double currentElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
-        final double targetElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getClosedLoopTarget(), WHEEL_DIAMETER);
-        final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition, new Rotation3d(0, 0, 0));
+    public void printPose() {
+        if (ELEVATOR_MECHANISM != null) {
+            final double currentElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
+            final double targetElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getClosedLoopTarget(), WHEEL_DIAMETER);
+            final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition, new Rotation3d(0, 0, 0));
 
-        Logger.recordOutput("Components/ElevatorPose", current3dPose);
+            Logger.recordOutput("Components/ElevatorPose", current3dPose);
 
-        ELEVATOR_MECHANISM.updateCurrentPosition(currentElevatorPosition);
-        ELEVATOR_MECHANISM.updateTargetPosition(targetElevatorPosition);
+            ELEVATOR_MECHANISM.updateCurrentPosition(currentElevatorPosition);
+            ELEVATOR_MECHANISM.updateTargetPosition(targetElevatorPosition);
+        }
     }
 
     private void setMotorPosition(double targetPosition) {

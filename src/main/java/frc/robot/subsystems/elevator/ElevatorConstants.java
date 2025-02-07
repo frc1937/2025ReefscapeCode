@@ -7,6 +7,7 @@ import frc.lib.generic.hardware.sensors.Sensor;
 import frc.lib.generic.hardware.sensors.SensorFactory;
 import frc.lib.generic.simulation.SimulationProperties;
 import frc.lib.generic.visualization.mechanisms.ElevatorMechanism2d;
+import frc.lib.generic.visualization.mechanisms.MechanismFactory;
 import frc.lib.math.Conversions;
 import frc.robot.GlobalConstants;
 
@@ -59,7 +60,7 @@ public class ElevatorConstants {
             ELEVATOR_MIN_EXTENSION_ROTATIONS = 0, //TODO: TUNE
             WHEEL_DIAMETER = 0.04;
 
-    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = new ElevatorMechanism2d("Elevator Mechanism", 1);
+    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = MechanismFactory.createElevatorMechanism("Elevator Mechanism", 1);
 
     static {
         configureMotors();
