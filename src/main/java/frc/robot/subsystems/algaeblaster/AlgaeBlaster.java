@@ -14,8 +14,6 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.GlobalConstants.CURRENT_MODE;
-import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.RobotContainer.ELEVATOR;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 
@@ -24,14 +22,9 @@ public class AlgaeBlaster extends GenericSubsystem {
         return new FunctionalCommand(
                 () -> {
                 },
-                () -> {
-                    BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations());
-
-                    if (CURRENT_MODE != REAL)
-                        printPose();
-                },
+                () -> BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations()),
                 interrupt -> BLASTER_MOTOR.stopMotor(),
-                BLASTER_MOTOR::isAtPositionSetpoint,
+                () -> false,
                 this
         );
     }
@@ -70,7 +63,7 @@ public class AlgaeBlaster extends GenericSubsystem {
 
     public void printPose() {
         if (BLASTER_ARM_MECHANISM != null) {
-            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0, ELEVATOR.getCurrentHeight() - 0.1), new Rotation3d(getCurrentArmPosition().getRadians(), 0, Math.PI / 2));
+            final Pose3d current3dPose = new Pose3d(new Translation3d(0.279, 0.31, ELEVATOR.getCurrentHeight() + 0.81), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
 
             Logger.recordOutput("Components/BlasterArmPose", current3dPose);
 

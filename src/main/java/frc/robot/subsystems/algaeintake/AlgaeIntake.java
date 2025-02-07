@@ -14,8 +14,6 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.GlobalConstants.CURRENT_MODE;
-import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.subsystems.algaeintake.AlgaeIntakeConstants.*;
 
 public class AlgaeIntake extends GenericSubsystem {
@@ -26,15 +24,12 @@ public class AlgaeIntake extends GenericSubsystem {
                 () -> {
                     INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
                     INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());
-
-                    if (CURRENT_MODE != REAL)
-                        printPose();
                 },
                 interrupt -> {
                     INTAKE_MOTOR.stopMotor();
                     INTAKE_ARM_MOTOR.stopMotor();
                 },
-                this::isArmAtTarget,
+                () -> false,
                 this
         );
     }
@@ -73,7 +68,7 @@ public class AlgaeIntake extends GenericSubsystem {
 
     public void printPose() {
         if (INTAKE_ARM_MECHANISM != null) {
-            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0, 0.05), new Rotation3d(getCurrentArmPosition().getRadians(), 0, Math.PI / 2));
+            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0.28, 0.15), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
 
             Logger.recordOutput("Components/IntakeArmPose", current3dPose);
 

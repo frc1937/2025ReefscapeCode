@@ -14,9 +14,6 @@ import org.littletonrobotics.junction.Logger;
 import java.util.function.Supplier;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.GlobalConstants.CURRENT_MODE;
-import static frc.robot.GlobalConstants.Mode.REAL;
-import static frc.robot.RobotContainer.ALGAE_BLASTER;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 public class Elevator extends GenericSubsystem {
@@ -24,16 +21,9 @@ public class Elevator extends GenericSubsystem {
         return new FunctionalCommand(
                 () -> {
                 },
-                () -> {
-                    setMotorPosition(levelSupplier.get().getRotations());
-
-                    if (CURRENT_MODE != REAL) {
-                        printPose();
-                        ALGAE_BLASTER.printPose();
-                    }
-                },
+                () -> setMotorPosition(levelSupplier.get().getRotations()),
                 interrupt -> stopMotors(),
-                MASTER_MOTOR::isAtPositionSetpoint,
+                () -> false,
                 this
         );
     }
@@ -42,14 +32,7 @@ public class Elevator extends GenericSubsystem {
         return new FunctionalCommand(
                 () -> {
                 },
-                () -> {
-                    setMotorPosition(level.getRotations());
-
-                    if (CURRENT_MODE != REAL) {
-                        printPose();
-                        ALGAE_BLASTER.printPose();
-                    }
-                },
+                () -> setMotorPosition(level.getRotations()),
                 interrupt -> stopMotors(),
                 MASTER_MOTOR::isAtPositionSetpoint,
                 this

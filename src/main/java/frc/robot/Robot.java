@@ -23,8 +23,6 @@ public class Robot extends LoggedRobot {
     public void robotInit() {
         robotContainer = new RobotContainer();
         HardwareManager.initialize(this);
-
-        robotContainer.setupComponents();
     }
 
     @Override
@@ -72,5 +70,7 @@ public class Robot extends LoggedRobot {
     public void simulationPeriodic() {
         HardwareManager.updateSimulation();
         VISION_SIMULATION.updateRobotPose(POSE_ESTIMATOR.getOdometryPose());
+
+        robotContainer.updateComponents();
     }
 }
