@@ -21,7 +21,8 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 public class Elevator extends GenericSubsystem {
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> {
                     setMotorPosition(levelSupplier.get().getRotations());
 
@@ -36,7 +37,8 @@ public class Elevator extends GenericSubsystem {
 
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> {
                     setMotorPosition(level.getRotations());
 

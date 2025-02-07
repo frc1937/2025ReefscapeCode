@@ -37,7 +37,9 @@ public class AlgaeBlasterConstants {
     );
 
     protected static final Motor BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
-    protected static final Rotation2d ARM_MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
+
+    protected static final Rotation2d
+            ARM_MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
             ARM_MAXIMUM_ROTATION = Rotation2d.fromDegrees(180);
 
     protected static final SingleJointedArmMechanism2d BLASTER_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_BLASTER_MECHANISM", 4);

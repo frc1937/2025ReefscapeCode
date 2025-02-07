@@ -20,7 +20,8 @@ import static frc.robot.subsystems.algaeintake.AlgaeIntakeConstants.*;
 public class AlgaeIntake extends GenericSubsystem {
     public Command setAlgaeIntakeState(IntakeState state) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> {
                     INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
                     INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());

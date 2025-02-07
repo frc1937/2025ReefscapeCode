@@ -20,7 +20,8 @@ import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 public class AlgaeBlaster extends GenericSubsystem {
     public Command setAlgaeBlasterArmState(BlasterArmState state) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> {
                     BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations());
 
