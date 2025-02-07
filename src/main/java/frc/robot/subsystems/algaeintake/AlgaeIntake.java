@@ -19,7 +19,7 @@ import static frc.robot.GlobalConstants.Mode.REAL;
 import static frc.robot.subsystems.algaeintake.AlgaeIntakeConstants.*;
 
 public class AlgaeIntake extends GenericSubsystem {
-    public Command setAlgaeIntakeState(IntakeState state) {
+    public Command setAlgaeIntakeState(IntakeArmState state) {
         return new FunctionalCommand(
                 () -> {
                 },

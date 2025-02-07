@@ -15,7 +15,7 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_ARM_MOTOR_PORT
 import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_PORT;
 
 public class AlgaeIntakeConstants {
-    public enum IntakeState {
+    public enum IntakeArmState {
         EXTENDED(0.03, -2),
         RETRACTED(0.25, 0);
 
@@ -23,7 +23,7 @@ public class AlgaeIntakeConstants {
                 armTargetPosition,
                 intakeSpeed;
 
-        IntakeState(double armTargetPosition, double intakeSpeed) {
+        IntakeArmState(double armTargetPosition, double intakeSpeed) {
             this.armTargetPosition = armTargetPosition;
             this.intakeSpeed = intakeSpeed;
         }
