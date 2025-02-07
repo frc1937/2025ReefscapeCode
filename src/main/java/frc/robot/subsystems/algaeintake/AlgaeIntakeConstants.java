@@ -19,8 +19,9 @@ public class AlgaeIntakeConstants {
         EXTENDED(0.03, -2),
         RETRACTED(0.25, 0);
 
-        private final double armTargetPosition;
-        private final double intakeSpeed;
+        private final double
+                armTargetPosition,
+                intakeSpeed;
 
         IntakeState(double armTargetPosition, double intakeSpeed) {
             this.armTargetPosition = armTargetPosition;
@@ -42,13 +43,15 @@ public class AlgaeIntakeConstants {
             Second.of(7)
     );
 
-    protected static final Motor INTAKE_ARM_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX);
-    protected static final Motor INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
+    protected static final Motor
+            INTAKE_ARM_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_ARM_MOTOR", ALGAE_ARM_MOTOR_PORT, MAX),
+            INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
 
-    protected static final double ARM_MAXIMUM_POSITION_ROTATIONS = 0.7, //TODO TUNE
-                            ARM_MINIMUM_POSITION_ROTATIONS = -0.01; //TODO TUNE
+    protected static final double
+            ARM_MAXIMUM_POSITION_ROTATIONS = 0.7, //TODO TUNE
+            ARM_MINIMUM_POSITION_ROTATIONS = -0.01; //TODO TUNE
 
-    protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("INTAKE_ARM_MECHANISM", 3);
+    protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("IntakeArmMechanism", 3);
 
     static {
         configureIntakeArmMotor();

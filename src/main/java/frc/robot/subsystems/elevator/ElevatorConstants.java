@@ -46,7 +46,8 @@ public class ElevatorConstants {
             Second.of(7)
     );
 
-    protected static final Motor MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
+    protected static final Motor
+            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
             SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
 
     protected static final Sensor
