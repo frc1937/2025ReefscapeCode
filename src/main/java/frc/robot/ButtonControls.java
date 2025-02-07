@@ -83,10 +83,10 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ClimbingCommands.pathfindToCageAndClimb()
                 .alongWith(DRIVER_CONTROLLER.rumble(0.3, 3)));
