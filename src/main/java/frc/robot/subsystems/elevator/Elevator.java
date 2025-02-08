@@ -84,7 +84,7 @@ public class Elevator extends GenericSubsystem {
         if (ELEVATOR_MECHANISM != null) {
             final double currentElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
             final double targetElevatorPosition = Conversions.rotationsToMetres(MASTER_MOTOR.getClosedLoopTarget(), WHEEL_DIAMETER);
-            final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition, new Rotation3d(0, 0, 0));
+            final Pose3d current3dPose = new Pose3d(0, 0, currentElevatorPosition / 2, new Rotation3d(0, 0, 0));
 
             Logger.recordOutput("Components/ElevatorPose", current3dPose);
 
