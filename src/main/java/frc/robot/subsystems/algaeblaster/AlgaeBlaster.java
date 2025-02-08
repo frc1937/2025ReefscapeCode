@@ -60,10 +60,9 @@ public class AlgaeBlaster extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(BLASTER_MOTOR.getSystemVelocity()));
     }
 
-
     public void printPose() {
         if (BLASTER_ARM_MECHANISM != null) {
-            final Pose3d current3dPose = new Pose3d(new Translation3d(0.279, 0.31, ELEVATOR.getCurrentHeight() + 0.81), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
+            final Pose3d current3dPose = new Pose3d(new Translation3d(0.279, 0.31, ELEVATOR.getCurrentHeight() + 0.81), new Rotation3d(0, getCurrentArmPosition().getRadians() - Math.PI / 2, Math.PI / 2));
 
             Logger.recordOutput("Components/BlasterArmPose", current3dPose);
 

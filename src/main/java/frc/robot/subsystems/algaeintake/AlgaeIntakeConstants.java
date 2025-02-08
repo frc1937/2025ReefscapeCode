@@ -17,7 +17,7 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_INTAKE_MOTOR_P
 public class AlgaeIntakeConstants {
     public enum IntakeArmState {
         EXTENDED(0.03, -2),
-        RETRACTED(0.25, 0);
+        RETRACTED(-0.25, 0);
 
         private final double
                 armTargetPosition,

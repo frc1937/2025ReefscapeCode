@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.autocommands.Questionnaire;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.autocommands.Questionnaire;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
 import frc.robot.subsystems.algaeintake.AlgaeIntake;
@@ -68,7 +68,7 @@ public class RobotContainer {
         batteryLowTrigger.onTrue(LEDS.setLEDStatus(Leds.LEDMode.BATTERY_LOW, 5));
     }
 
-    public void updateComponents(){
+    public void updateComponents() {
         ALGAE_BLASTER.printPose();
         ALGAE_INTAKE.printPose();
         ELEVATOR.printPose();
