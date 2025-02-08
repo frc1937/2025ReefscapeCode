@@ -1,28 +1,23 @@
 package frc.lib.generic.hardware.motor;
 
-import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.advantagekit.LoggableHardware;
+import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.hardware.encoder.Encoder;
-import frc.robot.GlobalConstants;
+import frc.lib.generic.hardware.signals.InputsBase;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.NoSuchElementException;
 import java.util.function.DoubleSupplier;
-
-import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
-import static frc.robot.GlobalConstants.CURRENT_MODE;
 
 /**
  * Custom Motor class to allow switching and replacing motors quickly,
  * in addition of better uniformity across the code.
  */
 public class Motor implements LoggableHardware {
-    private final MotorInputs inputs = new MotorInputs();
     private final String name;
 
     private MotorConfiguration configuration;
 
-    public Motor(String name) { //every motor has a port. reflect this here.
+    public Motor(String name) {
         this.name = name;
 
         periodic();
@@ -172,8 +167,7 @@ public class Motor implements LoggableHardware {
      * @Units In volts
      */
     public double getVoltage() {
-        if (!getSignalsToLog()[0]) printSignalError("VOLTAGE");
-        return inputs.voltage;
+        return getInputs().getSignal(MotorSignal.VOLTAGE);
     }
 
     /**
@@ -182,8 +176,7 @@ public class Motor implements LoggableHardware {
      * @Units In amps
      */
     public double getCurrent() {
-        if (!getSignalsToLog()[1]) printSignalError("CURRENT");
-        return inputs.current;
+        return getInputs().getSignal(MotorSignal.CURRENT);
     }
 
     /**
@@ -191,16 +184,14 @@ public class Motor implements LoggableHardware {
      * @Units In celsius
      */
     public double getTemperature() {
-        if (!getSignalsToLog()[2]) printSignalError("TEMPERATURE");
-        return inputs.temperature;
+        return getInputs().getSignal(MotorSignal.TEMPERATURE);
     }
 
     /**
      * Get the current target of the closed-loop PID
      */
     public double getClosedLoopTarget() {
-        if (!getSignalsToLog()[3]) printSignalError("CLOSED_LOOP_TARGET");
-        return inputs.target;
+        return getInputs().getSignal(MotorSignal.CLOSED_LOOP_TARGET);
     }
 
     /**
@@ -209,8 +200,7 @@ public class Motor implements LoggableHardware {
      * @Units In rotations
      */
     public double getSystemPosition() {
-        if (!getSignalsToLog()[4]) printSignalError("POSITION");
-        return inputs.systemPosition;
+        return getInputs().getSignal(MotorSignal.POSITION);
     }
 
     /**
@@ -219,8 +209,7 @@ public class Motor implements LoggableHardware {
      * @Units In rotations per second
      */
     public double getSystemVelocity() {
-        if (!getSignalsToLog()[5]) printSignalError("VELOCITY");
-        return inputs.systemVelocity;
+        return getInputs().getSignal(MotorSignal.VELOCITY);
     }
 
     /**
@@ -229,16 +218,14 @@ public class Motor implements LoggableHardware {
      * @Units In rotations per second
      */
     public double getSystemAcceleration() {
-        if (!getSignalsToLog()[6]) printSignalError("ACCELERATION");
-        return inputs.systemAcceleration;
+        return getInputs().getSignal(MotorSignal.ACCELERATION);
     }
 
     public void setFollowerOf(Motor motor, boolean invert) { }
 
-    /** Signals are lazily loaded - only these explicitly called will be updated. Thus you must call this method. when using a signal.*/
-    public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) { }
+    public void registerSignal(MotorSignal signal, boolean useFasterThread) {}
 
-    public void setupSignalUpdates(MotorSignal signal) { setupSignalUpdates(signal, false); }
+    public void registerSignal(MotorSignal signal) { registerSignal(signal, false); }
 
     public boolean configure(MotorConfiguration configuration) {
         this.configuration = configuration;
@@ -266,27 +253,15 @@ public class Motor implements LoggableHardware {
         return Math.abs(getClosedLoopTarget() - getSystemVelocity()) < getCurrentConfiguration().closedLoopTolerance;
     }
 
-    protected void refreshInputs(MotorInputs inputs) { }
-
-    protected boolean[] getSignalsToLog() { return new boolean[MOTOR_INPUTS_LENGTH]; }
-
     @Override
     public void periodic() {
-        refreshInputs(inputs);
-        Logger.processInputs("Motors/" + name, inputs);
+        if (getInputs() != null) {
+            Logger.processInputs("Motors/" + name, getInputs());
+        }
     }
 
     @Override
-    public MotorInputs getInputs() {
-        return inputs;
-    }
-
-    private void printSignalError(String signalName) {
-        if (CURRENT_MODE == GlobalConstants.Mode.REPLAY) return;
-
-        new NoSuchElementException("--------------------\n" +
-                "ERROR: TRYING TO RETRIEVE UNINITIALIZED SIGNAL " + signalName + "| AT " + getClass().getName() + name +
-                "\n--------------------")
-                .printStackTrace();
+    public InputsBase getInputs() {
+        return null;
     }
 }

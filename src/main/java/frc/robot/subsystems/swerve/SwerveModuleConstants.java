@@ -108,21 +108,21 @@ public class SwerveModuleConstants {
     }
 
     private static void configureDriveMotor(Motor driveMotor) {
-        driveMotor.setupSignalUpdates(POSITION, true);
+        driveMotor.registerSignal(POSITION, true);
 
-        driveMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
-        driveMotor.setupSignalUpdates(VOLTAGE);
-        driveMotor.setupSignalUpdates(VELOCITY);
-        driveMotor.setupSignalUpdates(TEMPERATURE);
+        driveMotor.registerSignal(CLOSED_LOOP_TARGET);
+        driveMotor.registerSignal(VOLTAGE);
+        driveMotor.registerSignal(VELOCITY);
+        driveMotor.registerSignal(TEMPERATURE);
 
         driveMotor.configure(driveMotorConfiguration);
     }
 
     private static void configureSteerMotor(Motor steerMotor, Encoder encoder) {
-        steerMotor.setupSignalUpdates(POSITION);
-        steerMotor.setupSignalUpdates(VELOCITY);
-        steerMotor.setupSignalUpdates(VOLTAGE);
-        steerMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
+        steerMotor.registerSignal(POSITION);
+        steerMotor.registerSignal(VELOCITY);
+        steerMotor.registerSignal(VOLTAGE);
+        steerMotor.registerSignal(CLOSED_LOOP_TARGET);
         steerMotor.configure(steerMotorConfiguration);
 
         steerMotor.setExternalPositionSupplier(encoder::getEncoderPosition);

@@ -1,4 +1,4 @@
-package frc.lib.generic;
+package frc.lib.generic.hardware.signals;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
@@ -23,23 +23,23 @@ import static frc.robot.GlobalConstants.ODOMETRY_FREQUENCY_HERTZ;
  * <p>This version is intended for devices like the SparkMax that require polling rather than a
  * blocking thread. A Notifier thread is used to gather samples with consistent timing.
  */
-public class OdometryThread extends Thread {
+public class FasterSignalsThread extends Thread {
     private final List<DoubleSupplier> signals = new ArrayList<>();
     private final List<Queue<Double>> queues = new ArrayList<>();
     private final Queue<Double> timestamps = new ArrayBlockingQueue<>(100);
 
-    private static OdometryThread INSTANCE = null;
+    private static FasterSignalsThread INSTANCE = null;
 
     private final ThreadInputsAutoLogged threadInputs = new ThreadInputsAutoLogged();
 
-    public static OdometryThread getInstance() {
+    public static FasterSignalsThread getInstance() {
         if (INSTANCE == null)
-            INSTANCE = new OdometryThread();
+            INSTANCE = new FasterSignalsThread();
 
         return INSTANCE;
     }
 
-    private OdometryThread() {
+    private FasterSignalsThread() {
         if (CURRENT_MODE == Mode.REPLAY) return;
 
         Notifier notifier = new Notifier(this::periodic);

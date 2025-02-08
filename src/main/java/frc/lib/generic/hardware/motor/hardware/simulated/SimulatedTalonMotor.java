@@ -9,20 +9,22 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.generic.hardware.motor.*;
+import frc.lib.generic.hardware.motor.Motor;
+import frc.lib.generic.hardware.motor.MotorConfiguration;
+import frc.lib.generic.hardware.motor.MotorProperties;
+import frc.lib.generic.hardware.motor.MotorSignal;
+import frc.lib.generic.hardware.signals.ctre.CTREInputs;
 import frc.lib.generic.simulation.GenericPhysicsSimulation;
 import frc.robot.GlobalConstants;
 
-import static edu.wpi.first.units.Units.Volts;
-import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
 import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 
 public class SimulatedTalonMotor extends Motor {
+    private final CTREInputs inputs;
+
     private MotorConfiguration currentConfiguration;
     private GenericPhysicsSimulation simulation;
-
-    private final boolean[] signalsToLog = new boolean[MOTOR_INPUTS_LENGTH];
 
     private final TalonFX talonFX;
     private final TalonFXSimState talonFXSimState;
@@ -57,6 +59,8 @@ public class SimulatedTalonMotor extends Motor {
 
         if (CURRENT_MODE != GlobalConstants.Mode.SIMULATION)
             new RuntimeException("DO NOT Initialize THIS MOTOR! Use the factory methods instead!").printStackTrace();
+
+        inputs = new CTREInputs(name);
     }
 
     @Override
@@ -164,43 +168,16 @@ public class SimulatedTalonMotor extends Motor {
     }
 
     @Override
-    public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
-        if (useFasterThread)
-            signalsToLog[signal.getId() + MOTOR_INPUTS_LENGTH / 2] = true;
-
-        signalsToLog[signal.getId()] = true;
-    }
-
-    @Override
-    protected boolean[] getSignalsToLog() {
-        return signalsToLog;
-    }
-
-    @Override
-    protected void refreshInputs(MotorInputs inputs) {
-        if (CURRENT_MODE != GlobalConstants.Mode.SIMULATION) {
-            new RuntimeException("This motor should NEVER be initialized manually! Use the factory methods instead!").printStackTrace();
+    public void registerSignal(MotorSignal signal, boolean useFasterThread) {
+        switch (signal) {
+            case VOLTAGE -> inputs.registerCTRESignal(signal, voltageSignal, 50);
+            case CURRENT -> inputs.registerSupplierForSimulation(MotorSignal.CURRENT, () -> simulation.getCurrent());
+            case TEMPERATURE -> inputs.registerSupplierForSimulation(MotorSignal.TEMPERATURE, () -> 0);
+            case CLOSED_LOOP_TARGET -> inputs.registerSupplierForSimulation(MotorSignal.CLOSED_LOOP_TARGET, () -> target);
+            case POSITION -> inputs.registerSupplierForSimulation(MotorSignal.POSITION, this::getSimulationPosition);
+            case VELOCITY -> inputs.registerSupplierForSimulation(MotorSignal.VELOCITY, this::getSimulationVelocity);
+            case ACCELERATION -> inputs.registerSupplierForSimulation(MotorSignal.ACCELERATION, this::getSimulationAcceleration);
         }
-
-        if (simulation == null) return;
-
-        inputs.setSignalsToLog(signalsToLog);
-
-        inputs.voltage = voltageSignal.refresh().getValue().in(Volts);
-        inputs.current = simulation.getCurrent();
-        inputs.temperature = 0;
-        inputs.target = target;
-        inputs.systemPosition = simulation.getSystemPositionRotations();
-        inputs.systemVelocity = simulation.getSystemVelocityRotationsPerSecond();
-        inputs.systemAcceleration = simulation.getSystemAccelerationRotationsPerSecondSquared();
-
-        inputs.threadVoltage = new double[]{inputs.voltage};
-        inputs.threadCurrent = new double[]{inputs.current};
-        inputs.threadTemperature = new double[]{inputs.temperature};
-        inputs.threadTarget = new double[]{inputs.target};
-        inputs.threadSystemPosition = new double[]{inputs.systemPosition};
-        inputs.threadSystemVelocity = new double[]{inputs.systemVelocity};
-        inputs.threadSystemAcceleration = new double[]{inputs.systemAcceleration};
     }
 
     public void updateSimulation() {
@@ -210,5 +187,25 @@ public class SimulatedTalonMotor extends Motor {
         talonFXSimState.setRawRotorPosition(simulation.getMotorPositionRotations());
         talonFXSimState.setRotorVelocity(simulation.getMotorVelocityRotationsPerSecond());
         talonFXSimState.setRotorAcceleration(simulation.getMotorAccelerationRotationsPerSecondSquared());
+    }
+
+    private double getSimulationAcceleration() {
+        if (simulation == null) return 0;
+        return simulation.getSystemAccelerationRotationsPerSecondSquared();
+    }
+
+    private double getSimulationVelocity() {
+        if (simulation == null) return 0;
+        return simulation.getSystemVelocityRotationsPerSecond();
+    }
+
+    private double getSimulationPosition() {
+        if (simulation == null) return 0;
+        return simulation.getSystemPositionRotations();
+    }
+
+    @Override
+    public CTREInputs getInputs() {
+        return inputs;
     }
 }

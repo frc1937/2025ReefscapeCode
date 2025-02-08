@@ -7,7 +7,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
-import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.signals.FasterSignalsThread;
 import frc.lib.generic.hardware.pigeon.Pigeon;
 import frc.lib.generic.hardware.pigeon.PigeonConfiguration;
 import frc.lib.generic.hardware.pigeon.PigeonInputs;
@@ -84,9 +84,9 @@ public class GenericPigeon2 extends Pigeon {
         signalsToLog[signal.getId() + PIGEON_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case YAW -> signalQueueList.put("yaw", OdometryThread.getInstance().registerSignal(this::getYawPrivate));
-            case ROLL -> signalQueueList.put("roll", OdometryThread.getInstance().registerSignal(this::getRollPrivate));
-            case PITCH -> signalQueueList.put("pitch", OdometryThread.getInstance().registerSignal(this::getPitchPrivate));
+            case YAW -> signalQueueList.put("yaw", FasterSignalsThread.getInstance().registerSignal(this::getYawPrivate));
+            case ROLL -> signalQueueList.put("roll", FasterSignalsThread.getInstance().registerSignal(this::getRollPrivate));
+            case PITCH -> signalQueueList.put("pitch", FasterSignalsThread.getInstance().registerSignal(this::getPitchPrivate));
         }
     }
 

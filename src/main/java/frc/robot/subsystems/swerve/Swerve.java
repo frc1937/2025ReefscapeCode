@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
-import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.signals.FasterSignalsThread;
 import frc.lib.generic.PID;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
@@ -79,10 +79,12 @@ public class Swerve extends GenericSubsystem {
 
     @Override
     public void periodic() {
+        if (Timer.getTimestamp() - 3 < 0) return;
+
         final double[] odometryUpdatesYawRotations = GYRO.getInputs().threadGyroYawRotations;
         final int odometryUpdates = odometryUpdatesYawRotations.length;
 
-        if (OdometryThread.getInstance().getLatestTimestamps().length == 0) return;
+        if (FasterSignalsThread.getInstance().getLatestTimestamps().length == 0) return;
 
         final SwerveModulePosition[][] swerveWheelPositions = new SwerveModulePosition[odometryUpdates][];
         final Rotation2d[] gyroRotations = new Rotation2d[odometryUpdates];
@@ -95,7 +97,7 @@ public class Swerve extends GenericSubsystem {
         POSE_ESTIMATOR.updateFromOdometry(
                 swerveWheelPositions,
                 gyroRotations,
-                OdometryThread.getInstance().getLatestTimestamps()
+                FasterSignalsThread.getInstance().getLatestTimestamps()
         );
     }
 

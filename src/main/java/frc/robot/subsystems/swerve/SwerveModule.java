@@ -7,8 +7,9 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import frc.lib.generic.hardware.encoder.Encoder;
 import frc.lib.generic.hardware.encoder.EncoderInputs;
 import frc.lib.generic.hardware.motor.Motor;
-import frc.lib.generic.hardware.motor.MotorInputs;
 import frc.lib.generic.hardware.motor.MotorProperties;
+import frc.lib.generic.hardware.motor.MotorSignal;
+import frc.lib.generic.hardware.signals.InputsBase;
 import frc.lib.math.Conversions;
 import frc.lib.math.Optimizations;
 
@@ -40,8 +41,8 @@ public class SwerveModule {
     }
 
     protected double getDriveWheelPositionRadians() {
-        return 2 * Math.PI * getDriveMotorInputs().threadSystemPosition[
-                getDriveMotorInputs().threadSystemPosition.length - 1];
+        double[] signal = getDriveMotorInputs().getThreadedSignal(MotorSignal.POSITION);
+        return 2 * Math.PI * signal[signal.length - 1];
     }
 
     protected void logForSysId(SysIdRoutineLog log) {
@@ -68,12 +69,12 @@ public class SwerveModule {
      * @return the position of the module at the given odometry update index
      */
     protected SwerveModulePosition getOdometryPosition(int odometryUpdateIndex) {
-        if (getDriveMotorInputs().threadSystemPosition.length != getSteerEncoderInputs().threadPosition.length) {
-            return null;
-        }
+//        if (getDriveMotorInputs().getThreadedSignal(MotorSignal.POSITION).length != getSteerEncoderInputs().threadPosition.length) {
+//            return null;
+//        }
 
         return new SwerveModulePosition(
-                getDriveMetersTraveled(getDriveMotorInputs().threadSystemPosition)[odometryUpdateIndex],
+                getDriveMetersTraveled(getDriveMotorInputs().getThreadedSignal(MotorSignal.POSITION))[odometryUpdateIndex],
                 Rotation2d.fromRotations(getSteerEncoderInputs().threadPosition[odometryUpdateIndex])
         );
     }
@@ -121,7 +122,7 @@ public class SwerveModule {
         return steerEncoder.getInputs();
     }
 
-    private MotorInputs getDriveMotorInputs() {
+    private InputsBase getDriveMotorInputs() {
         return driveMotor.getInputs();
     }
 

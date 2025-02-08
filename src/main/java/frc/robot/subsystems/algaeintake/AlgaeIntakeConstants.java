@@ -71,10 +71,10 @@ public class AlgaeIntakeConstants {
         intakeArmMotorConfiguration.supplyCurrentLimit = 30;
         intakeArmMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
-        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
-        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-        INTAKE_ARM_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+        INTAKE_ARM_MOTOR.registerSignal(MotorSignal.POSITION);
+        INTAKE_ARM_MOTOR.registerSignal(MotorSignal.VELOCITY);
+        INTAKE_ARM_MOTOR.registerSignal(MotorSignal.VOLTAGE);
+        INTAKE_ARM_MOTOR.registerSignal(MotorSignal.CLOSED_LOOP_TARGET);
 
         INTAKE_ARM_MOTOR.configure(intakeArmMotorConfiguration);
     }
@@ -83,7 +83,7 @@ public class AlgaeIntakeConstants {
         final MotorConfiguration intakeMotorConfiguration = new MotorConfiguration();
         intakeMotorConfiguration.idleMode = MotorProperties.IdleMode.COAST;
 
-        INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        INTAKE_MOTOR.registerSignal(MotorSignal.VOLTAGE);
 
         intakeMotorConfiguration.slot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);
         intakeMotorConfiguration.simulationSlot = new MotorProperties.Slot(0.1, 0.0, 0.0, 0.0, 0.0, 0.0);

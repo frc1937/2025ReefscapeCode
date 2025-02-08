@@ -9,23 +9,23 @@ import com.revrobotics.spark.config.SignalsConfig;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.lib.generic.Feedforward;
-import frc.lib.generic.OdometryThread;
-import frc.lib.generic.hardware.motor.*;
+import frc.lib.generic.hardware.motor.Motor;
+import frc.lib.generic.hardware.motor.MotorConfiguration;
+import frc.lib.generic.hardware.motor.MotorProperties;
+import frc.lib.generic.hardware.motor.MotorSignal;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
+import frc.lib.generic.hardware.signals.rev.REVInputs;
 import frc.lib.math.Conversions;
 import frc.lib.scurve.InputParameter;
 import frc.lib.scurve.OutputParameter;
 import frc.lib.scurve.SCurveGenerator;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
-import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
-
 public abstract class GenericSparkBase extends Motor {
+    private final REVInputs inputs;
+
     private MotorUtilities.MotionType motionType;
 
     private final SparkBase spark;
@@ -34,9 +34,6 @@ public abstract class GenericSparkBase extends Motor {
     private final int deviceId;
 
     private final SignalsConfig signalsConfig = new SignalsConfig();
-
-    private final boolean[] signalsToLog = new boolean[MOTOR_INPUTS_LENGTH];
-    private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
 
     private DoubleSupplier externalPositionSupplier, externalVelocitySupplier;
     private Feedforward feedforward;
@@ -61,6 +58,8 @@ public abstract class GenericSparkBase extends Motor {
         sparkController = getSparkController();
 
         optimizeBusUsage();
+
+        inputs = new REVInputs(name);
     }
 
     @Override
@@ -84,8 +83,10 @@ public abstract class GenericSparkBase extends Motor {
 
         switch (mode) {
             case POSITION, VELOCITY -> handleSmoothMotion(motionType, goalState, motionProfile, this.feedforward);
-            case VOLTAGE -> sparkController.setReference(output, SparkBase.ControlType.kVoltage, ClosedLoopSlot.kSlot0, 0);
-            case CURRENT -> sparkController.setReference(output, SparkBase.ControlType.kCurrent, ClosedLoopSlot.kSlot0, 0);
+            case VOLTAGE ->
+                    sparkController.setReference(output, SparkBase.ControlType.kVoltage, ClosedLoopSlot.kSlot0, 0);
+            case CURRENT ->
+                    sparkController.setReference(output, SparkBase.ControlType.kCurrent, ClosedLoopSlot.kSlot0, 0);
         }
     }
 
@@ -121,7 +122,7 @@ public abstract class GenericSparkBase extends Motor {
     @Override
     public void stopMotor() {
         hasStoppedOccurred = true;
-        this.setOutput(MotorProperties.ControlMode.VOLTAGE,0);
+        this.setOutput(MotorProperties.ControlMode.VOLTAGE, 0);
     }
 
     @Override
@@ -162,10 +163,8 @@ public abstract class GenericSparkBase extends Motor {
      * Explanation here: <a href="https://docs.revrobotics.com/brushless/spark-max/control-interfaces">REV DOCS</a>
      */
     @Override
-    public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
+    public void registerSignal(MotorSignal signal, boolean useFasterThread) {
         final int ms = 1000 / (useFasterThread ? 200 : 50);
-
-        signalsToLog[signal.getId()] = true;
 
         switch (signal) {
             case CURRENT -> signalsConfig.outputCurrentPeriodMs(ms);
@@ -187,52 +186,29 @@ public abstract class GenericSparkBase extends Motor {
             }
         }
 
-        if (!useFasterThread) return;
-
-        signalsToLog[signal.getId() + MOTOR_INPUTS_LENGTH / 2] = true;
-
-        switch (signal) {
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
-            case CURRENT ->
-                    signalQueueList.put("current", OdometryThread.getInstance().registerSignal(spark::getOutputCurrent));
-            case VOLTAGE ->
-                    signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
-            case TEMPERATURE ->
-                    signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(spark::getMotorTemperature));
-            case CLOSED_LOOP_TARGET ->
-                    signalQueueList.put("target", OdometryThread.getInstance().registerSignal(() -> goalState.position));
-            case ACCELERATION ->
-                    signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getEffectiveAcceleration));
+        if (useFasterThread) {
+            switch (signal) {
+                case POSITION -> inputs.registerThreadedREVSignal(signal, this::getSystemPositionPrivate);
+                case VELOCITY -> inputs.registerThreadedREVSignal(signal, this::getSystemVelocityPrivate);
+                case CURRENT -> inputs.registerThreadedREVSignal(signal, spark::getOutputCurrent);
+                case VOLTAGE -> inputs.registerThreadedREVSignal(signal, this::getVoltagePrivate);
+                case TEMPERATURE -> inputs.registerThreadedREVSignal(signal, spark::getMotorTemperature);
+                case CLOSED_LOOP_TARGET -> inputs.registerThreadedREVSignal(signal, () -> goalState.position);
+                case ACCELERATION -> inputs.registerThreadedREVSignal(signal, this::getEffectiveAcceleration);
+            }
+        } else {
+            switch (signal) {
+                case POSITION -> inputs.registerREVSignal(signal, this::getSystemPositionPrivate);
+                case VELOCITY -> inputs.registerREVSignal(signal, this::getSystemVelocityPrivate);
+                case ACCELERATION -> inputs.registerREVSignal(signal, this::getEffectiveAcceleration);
+                case VOLTAGE -> inputs.registerREVSignal(signal, this::getVoltagePrivate);
+                case CURRENT -> inputs.registerREVSignal(signal, spark::getOutputCurrent);
+                case TEMPERATURE -> inputs.registerREVSignal(signal, spark::getMotorTemperature);
+                case CLOSED_LOOP_TARGET -> inputs.registerREVSignal(signal, () -> goalState.position);
+            }
         }
 
         configure(currentConfiguration);
-    }
-
-    @Override
-    protected boolean[] getSignalsToLog() {
-        return signalsToLog;
-    }
-
-    @Override
-    protected void refreshInputs(MotorInputs inputs) {
-        if (spark == null) return;
-
-        refreshExtras();
-
-        inputs.setSignalsToLog(signalsToLog);
-
-        inputs.voltage = getVoltagePrivate();
-        inputs.current = spark.getOutputCurrent();
-        inputs.temperature = spark.getMotorTemperature();
-        if (goalState != null) inputs.target = goalState.position;
-        inputs.systemPosition = getEffectivePosition();
-        inputs.systemVelocity = getEffectiveVelocity();
-        inputs.systemAcceleration = getEffectiveAcceleration();
-
-        MotorUtilities.handleThreadedInputs(inputs, signalQueueList);
     }
 
     private double getVoltagePrivate() {
@@ -285,11 +261,11 @@ public abstract class GenericSparkBase extends Motor {
         } else if (configuration.profileMaxAcceleration != 0 && configuration.profileMaxJerk != 0) {
             motionProfile =
                     new TrapezoidProfile(
-                        new TrapezoidProfile.Constraints(
-                            configuration.profileMaxAcceleration,
-                            configuration.profileMaxJerk
-                        )
-                );
+                            new TrapezoidProfile.Constraints(
+                                    configuration.profileMaxAcceleration,
+                                    configuration.profileMaxJerk
+                            )
+                    );
 
             motionType = MotorUtilities.MotionType.VELOCITY_TRAPEZOIDAL;
         } else if (feedforward.getConstants().kG != 0 && feedforward.getConstants().kV == 0 && feedforward.getConstants().kA == 0 && feedforward.getConstants().kS == 0) {
@@ -409,8 +385,10 @@ public abstract class GenericSparkBase extends Motor {
 
         if (master != null) sparkConfig.follow(master, invert);
 
-        if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
-        if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
+        if (configuration.statorCurrentLimit != -1)
+            sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
+        if (configuration.supplyCurrentLimit != -1)
+            sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
 
         if (currentConfiguration.forwardSoftLimit != null) {
             sparkConfig.softLimit.forwardSoftLimitEnabled(true);
@@ -434,5 +412,10 @@ public abstract class GenericSparkBase extends Motor {
         }
 
         return spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
+    }
+
+    @Override
+    public REVInputs getInputs() {
+        return inputs;
     }
 }

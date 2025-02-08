@@ -1,8 +1,9 @@
 package frc.lib.generic.hardware;
 
-import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.signals.FasterSignalsThread;
 import frc.lib.generic.advantagekit.LoggableHardware;
 import frc.lib.generic.hardware.motor.MotorFactory;
+import frc.lib.generic.hardware.signals.ctre.CTREInputs;
 import frc.robot.GlobalConstants;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -98,7 +99,9 @@ public enum HardwareManager {
     public static void update() {
         FASTER_THREAD_LOCK.lock();
 
-        OdometryThread.getInstance().updateLatestTimestamps();
+        FasterSignalsThread.getInstance().updateLatestTimestamps();
+
+        CTREInputs.refreshAllCTRESignals();
 
         for (LoggableHardware loggableHardware : hardware) {
             loggableHardware.periodic();

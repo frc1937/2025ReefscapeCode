@@ -5,28 +5,29 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import frc.lib.generic.hardware.motor.*;
+import frc.lib.generic.hardware.signals.ctre.LegacySRXInputs;
 
 import java.util.function.DoubleSupplier;
 
 public class GenericTalonSRX extends Motor {
+    private final LegacySRXInputs inputs;
+
     private final WPI_TalonSRX talonSRX;
 
     private DoubleSupplier externalPositionSupplier, externalVelocitySupplier;
     private MotorConfiguration currentConfiguration;
 
-    private double closedLoopTarget = 0;
     private double conversionFactor = 1;
 
     public GenericTalonSRX(String name, int deviceNumber) {
         super(name);
 
         talonSRX = new WPI_TalonSRX(deviceNumber);
+        inputs = new LegacySRXInputs(name);
     }
 
     @Override
     public void setOutput(MotorProperties.ControlMode controlMode, double output) {
-        closedLoopTarget = output;
-
         switch (controlMode) {
             case POSITION -> talonSRX.set(ControlMode.Position, output);
             case VELOCITY -> talonSRX.set(ControlMode.Velocity, output);
@@ -71,11 +72,6 @@ public class GenericTalonSRX extends Motor {
     @Override
     public double getClosedLoopTarget() {
         return talonSRX.getClosedLoopTarget();
-    }
-
-    @Override
-    public double getTemperature() {
-        return talonSRX.getTemperature();
     }
 
     @Override
@@ -125,8 +121,26 @@ public class GenericTalonSRX extends Motor {
     }
 
     @Override
-    public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
-        new UnsupportedOperationException("Talon SRX does NOT use signals. Use GenericTalonFX instead").printStackTrace();
+    public void registerSignal(MotorSignal signal, boolean useFasterThread) {
+        if (useFasterThread) {
+            switch (signal) {
+                case POSITION -> inputs.registerThreadedSRXSignal(signal, externalPositionSupplier);
+                case VELOCITY -> inputs.registerThreadedSRXSignal(signal, externalVelocitySupplier);
+                case VOLTAGE -> inputs.registerThreadedSRXSignal(signal, talonSRX::getMotorOutputVoltage);
+                case CURRENT -> inputs.registerThreadedSRXSignal(signal, talonSRX::getStatorCurrent);
+                case CLOSED_LOOP_TARGET -> inputs.registerThreadedSRXSignal(signal, talonSRX::getClosedLoopTarget);
+                case TEMPERATURE -> inputs.registerThreadedSRXSignal(signal, talonSRX::getTemperature);
+            }
+        } else {
+            switch (signal) {
+                case POSITION -> inputs.registerSRXSignal(signal, externalPositionSupplier);
+                case VELOCITY -> inputs.registerSRXSignal(signal, externalVelocitySupplier);
+                case VOLTAGE -> inputs.registerSRXSignal(signal, talonSRX::getMotorOutputVoltage);
+                case CURRENT -> inputs.registerSRXSignal(signal, talonSRX::getStatorCurrent);
+                case TEMPERATURE -> inputs.registerSRXSignal(signal, talonSRX::getTemperature);
+                case CLOSED_LOOP_TARGET -> inputs.registerSRXSignal(signal, talonSRX::getClosedLoopTarget);
+            }
+        }
     }
 
     @Override
@@ -160,19 +174,7 @@ public class GenericTalonSRX extends Motor {
     }
 
     @Override
-    protected void refreshInputs(MotorInputs inputs) {
-        if (talonSRX == null) return;
-
-        if (externalPositionSupplier != null)
-            inputs.systemPosition = externalPositionSupplier.getAsDouble();
-
-        if (externalVelocitySupplier != null)
-            inputs.systemVelocity = externalVelocitySupplier.getAsDouble();
-
-        inputs.target = closedLoopTarget;
-
-        inputs.current = talonSRX.getStatorCurrent();
-        inputs.voltage = talonSRX.getMotorOutputVoltage();
-        inputs.temperature = talonSRX.getTemperature();
+    public LegacySRXInputs getInputs() {
+        return inputs;
     }
 }

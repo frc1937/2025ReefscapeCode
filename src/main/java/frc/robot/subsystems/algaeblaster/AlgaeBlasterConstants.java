@@ -50,10 +50,10 @@ public class AlgaeBlasterConstants {
         final MotorConfiguration blasterMotorConfiguration = new MotorConfiguration();
         blasterMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+        BLASTER_MOTOR.registerSignal(MotorSignal.POSITION);
+        BLASTER_MOTOR.registerSignal(MotorSignal.VELOCITY);
+        BLASTER_MOTOR.registerSignal(MotorSignal.VOLTAGE);
+        BLASTER_MOTOR.registerSignal(MotorSignal.CLOSED_LOOP_TARGET);
 
         blasterMotorConfiguration.slot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);
         blasterMotorConfiguration.simulationSlot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);

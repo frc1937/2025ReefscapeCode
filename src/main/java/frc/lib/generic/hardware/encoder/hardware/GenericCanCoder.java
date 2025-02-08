@@ -8,7 +8,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.signals.FasterSignalsThread;
 import frc.lib.generic.hardware.encoder.*;
 
 import java.util.*;
@@ -63,8 +63,8 @@ public class GenericCanCoder extends Encoder {
         signalsToLog[signal.getId() + ENCODER_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case POSITION -> signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
-            case VELOCITY -> signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
+            case POSITION -> signalQueueList.put("position", FasterSignalsThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
+            case VELOCITY -> signalQueueList.put("velocity", FasterSignalsThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
         }
     }
 

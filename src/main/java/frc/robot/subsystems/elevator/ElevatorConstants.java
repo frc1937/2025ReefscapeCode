@@ -93,11 +93,11 @@ public class ElevatorConstants {
                 true
         );
 
-        MASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-        MASTER_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
-        MASTER_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
-        MASTER_MOTOR.setupSignalUpdates(MotorSignal.ACCELERATION);
-        MASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+        MASTER_MOTOR.registerSignal(MotorSignal.VOLTAGE);
+        MASTER_MOTOR.registerSignal(MotorSignal.POSITION);
+        MASTER_MOTOR.registerSignal(MotorSignal.VELOCITY);
+        MASTER_MOTOR.registerSignal(MotorSignal.ACCELERATION);
+        MASTER_MOTOR.registerSignal(MotorSignal.CLOSED_LOOP_TARGET);
 
         MASTER_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
         SLAVE_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);

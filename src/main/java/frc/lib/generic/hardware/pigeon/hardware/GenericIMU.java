@@ -1,7 +1,7 @@
 package frc.lib.generic.hardware.pigeon.hardware;
 
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
-import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.signals.FasterSignalsThread;
 import frc.lib.generic.hardware.pigeon.Pigeon;
 import frc.lib.generic.hardware.pigeon.PigeonConfiguration;
 import frc.lib.generic.hardware.pigeon.PigeonInputs;
@@ -50,9 +50,9 @@ public class GenericIMU extends Pigeon {
         signalsToLog[signal.getId() + PIGEON_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case YAW -> signalQueueList.put("yaw", OdometryThread.getInstance().registerSignal(pigeon::getYaw));
-            case ROLL -> signalQueueList.put("roll", OdometryThread.getInstance().registerSignal(pigeon::getRoll));
-            case PITCH -> signalQueueList.put("pitch", OdometryThread.getInstance().registerSignal(pigeon::getPitch));
+            case YAW -> signalQueueList.put("yaw", FasterSignalsThread.getInstance().registerSignal(pigeon::getYaw));
+            case ROLL -> signalQueueList.put("roll", FasterSignalsThread.getInstance().registerSignal(pigeon::getRoll));
+            case PITCH -> signalQueueList.put("pitch", FasterSignalsThread.getInstance().registerSignal(pigeon::getPitch));
         }
     }
 

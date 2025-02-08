@@ -1,6 +1,5 @@
 package frc.lib.generic.hardware.motor.hardware.ctre;
 
-import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -12,29 +11,28 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.*;
-import frc.lib.generic.OdometryThread;
-import frc.lib.generic.hardware.motor.*;
-import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
+import frc.lib.generic.hardware.motor.Motor;
+import frc.lib.generic.hardware.motor.MotorConfiguration;
+import frc.lib.generic.hardware.motor.MotorProperties;
+import frc.lib.generic.hardware.motor.MotorSignal;
+import frc.lib.generic.hardware.signals.ctre.CTREInputs;
 
-import java.util.*;
 import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
 
 public class GenericTalonFX extends Motor {
     private final TalonFX talonFX;
 
-    private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
+    private final CTREInputs inputs;
 
-    private final boolean[] signalsToLog = new boolean[MotorInputs.MOTOR_INPUTS_LENGTH];
     private final StatusSignal<Angle> positionSignal;
     private final StatusSignal<AngularVelocity> velocitySignal;
     private final StatusSignal<AngularAcceleration> accelerationSignal;
     private final StatusSignal<Voltage> voltageSignal;
     private final StatusSignal<Current> currentSignal;
     private final StatusSignal<Temperature> temperatureSignal;
-    private final List<BaseStatusSignal> signalsToUpdateList = new ArrayList<>();
+    private final StatusSignal<Double> closedLoopTargetSignal;
 
     private final TalonFXConfiguration talonConfig = new TalonFXConfiguration();
     private final TalonFXConfigurator talonConfigurator;
@@ -51,10 +49,10 @@ public class GenericTalonFX extends Motor {
 
     private boolean shouldUseProfile = false;
 
-    private double target;
-
-    public GenericTalonFX(String name, int deviceId, String canbusName) {
+    public GenericTalonFX(String name, int deviceId) {
         super(name);
+
+        inputs = new CTREInputs(name);
 
         talonFX = new TalonFX(deviceId);
 
@@ -66,16 +64,11 @@ public class GenericTalonFX extends Motor {
         voltageSignal = talonFX.getMotorVoltage().clone();
         currentSignal = talonFX.getStatorCurrent().clone();
         temperatureSignal = talonFX.getDeviceTemp().clone();
-    }
-
-    public GenericTalonFX(String name, int deviceId) {
-        this(name, deviceId, "");
+        closedLoopTargetSignal = talonFX.getClosedLoopReference().clone();
     }
 
     @Override
     public void setOutput(MotorProperties.ControlMode mode, double output) {
-        target = output;
-
         switch (mode) {
             case VOLTAGE -> talonFX.setControl(voltageRequest.withOutput(output));
 
@@ -102,8 +95,6 @@ public class GenericTalonFX extends Motor {
     public void setOutput(MotorProperties.ControlMode mode, double output, double feedforward) {
         if (mode != MotorProperties.ControlMode.POSITION && mode != MotorProperties.ControlMode.VELOCITY)
             setOutput(mode, output);
-
-        target = output;
 
         switch (mode) {
             case POSITION -> {
@@ -260,89 +251,32 @@ public class GenericTalonFX extends Motor {
     }
 
     @Override
-    public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
-        final int updateFrequency = useFasterThread ? 200 : 50;
-        signalsToLog[signal.getId()] = true;
-
-        switch (signal) {
-            case VELOCITY -> setupSignal(velocitySignal, updateFrequency);
-            case POSITION -> setupSignal(positionSignal, updateFrequency);
-            case ACCELERATION -> setupSignal(accelerationSignal, updateFrequency);
-            case VOLTAGE -> setupSignal(voltageSignal, updateFrequency);
-            case CURRENT -> setupSignal(currentSignal, updateFrequency);
-            case TEMPERATURE -> setupSignal(temperatureSignal, updateFrequency);
-        }
-
-        if (!useFasterThread) return;
-
-        signalsToLog[signal.getId() + MotorInputs.MOTOR_INPUTS_LENGTH / 2] = true;
-
-        switch (signal) {
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
-            case ACCELERATION ->
-                    signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getSystemAccelerationPrivate));
-            case VOLTAGE ->
-                    signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
-            case CURRENT ->
-                    signalQueueList.put("current", OdometryThread.getInstance().registerSignal(this::getCurrentPrivate));
-            case TEMPERATURE ->
-                    signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(this::getTemperaturePrivate));
+    public void registerSignal(MotorSignal signal, boolean useFasterThread) {
+        if (useFasterThread) {
+            switch (signal) {
+                case POSITION -> inputs.registerThreadedCTRESignal(signal, positionSignal);
+                case VELOCITY -> inputs.registerThreadedCTRESignal(signal, velocitySignal);
+                case ACCELERATION -> inputs.registerThreadedCTRESignal(signal, accelerationSignal);
+                case VOLTAGE -> inputs.registerThreadedCTRESignal(signal, voltageSignal);
+                case CURRENT -> inputs.registerThreadedCTRESignal(signal, currentSignal);
+                case CLOSED_LOOP_TARGET -> inputs.registerThreadedCTRESignal(signal, closedLoopTargetSignal);
+                case TEMPERATURE -> inputs.registerThreadedCTRESignal(signal, temperatureSignal);
+            }
+        } else {
+            switch (signal) {
+                case POSITION -> inputs.registerCTRESignal(signal, positionSignal, 50);
+                case VELOCITY -> inputs.registerCTRESignal(signal, velocitySignal, 50);
+                case ACCELERATION -> inputs.registerCTRESignal(signal, accelerationSignal, 50);
+                case VOLTAGE -> inputs.registerCTRESignal(signal, voltageSignal, 50);
+                case CURRENT -> inputs.registerCTRESignal(signal, currentSignal, 50);
+                case TEMPERATURE -> inputs.registerCTRESignal(signal, temperatureSignal, 50);
+                case CLOSED_LOOP_TARGET -> inputs.registerCTRESignal(signal, closedLoopTargetSignal, 50);
+            }
         }
     }
 
     @Override
-    protected boolean[] getSignalsToLog() {
-        return signalsToLog;
-    }
-
-    @Override
-    protected void refreshInputs(MotorInputs inputs) {
-        if (talonFX == null) return;
-
-        inputs.setSignalsToLog(signalsToLog);
-
-        BaseStatusSignal.refreshAll(signalsToUpdateList.toArray(new BaseStatusSignal[0]));
-
-        inputs.voltage = getVoltagePrivate();
-        inputs.current = getCurrentPrivate();
-        inputs.temperature = getTemperaturePrivate();
-        inputs.target = target;
-        inputs.systemPosition = getSystemPositionPrivate();
-        inputs.systemVelocity = getSystemVelocityPrivate();
-        inputs.systemAcceleration = getSystemAccelerationPrivate();
-
-        MotorUtilities.handleThreadedInputs(inputs, signalQueueList);
-    }
-
-    private double getSystemPositionPrivate() {
-        return positionSignal.getValue().in(Rotations);
-    }
-
-    private double getSystemVelocityPrivate() {
-        return velocitySignal.getValue().in(RotationsPerSecond);
-    }
-
-    private double getSystemAccelerationPrivate() {
-        return accelerationSignal.getValue().in(RotationsPerSecondPerSecond);
-    }
-
-    private double getVoltagePrivate() {
-        return voltageSignal.getValue().in(Volts);
-    }
-
-    private double getTemperaturePrivate() {
-        return temperatureSignal.getValue().in(Celsius);
-    }
-
-    private double getCurrentPrivate() {
-        return currentSignal.getValue().in(Amp);
-    }
-
-    private void setupSignal(final BaseStatusSignal correspondingSignal, final int updateFrequency) {
-        correspondingSignal.setUpdateFrequency(updateFrequency);
-        signalsToUpdateList.add(correspondingSignal);
+    public CTREInputs getInputs() {
+        return inputs;
     }
 }
