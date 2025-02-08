@@ -56,7 +56,7 @@ public class ElevatorConstants {
             BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("BUTTON_BEAM_BREAKER", BOTTOM_BEAM_BREAK_DIO_PORT);
 
     protected static final double
-            ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.5, //TODO: TUNE
+            ELEVATOR_MAX_EXTENSION_ROTATIONS = 10, //TODO: TUNE
             ELEVATOR_MIN_EXTENSION_ROTATIONS = 0, //TODO: TUNE
             WHEEL_DIAMETER = 0.04;
 
@@ -77,7 +77,7 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
-        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(12.33, 0, 2.5, 0, 0, 1.311, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
+        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 25;
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 25;

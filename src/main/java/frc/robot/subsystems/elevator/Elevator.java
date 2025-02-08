@@ -34,7 +34,7 @@ public class Elevator extends GenericSubsystem {
                 },
                 () -> setMotorPosition(level.getRotations()),
                 interrupt -> stopMotors(),
-                MASTER_MOTOR::isAtPositionSetpoint,
+                () -> false,
                 this
         );
     }

@@ -48,10 +48,10 @@ public class AlgaeIntakeConstants {
             INTAKE_MOTOR = MotorFactory.createSpark("ALGAE_INTAKE_MOTOR", ALGAE_INTAKE_MOTOR_PORT, MAX);
 
     protected static final double
-            ARM_MAXIMUM_POSITION_ROTATIONS = 0.7, //TODO TUNE
-            ARM_MINIMUM_POSITION_ROTATIONS = -0.01; //TODO TUNE
+            ARM_MAXIMUM_POSITION_ROTATIONS = 0.3, //TODO: TUNE
+            ARM_MINIMUM_POSITION_ROTATIONS = -0.3; //TODO: TUNE
 
-    protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("IntakeArmMechanism", 3);
+    protected static final SingleJointedArmMechanism2d INTAKE_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("Algae Intake Arm Mechanism", 3);
 
     static {
         configureIntakeArmMotor();
@@ -63,10 +63,15 @@ public class AlgaeIntakeConstants {
 
         intakeArmMotorConfiguration.slot = new MotorProperties.Slot(0.2, 0, 0, 0, 0, 0);
         intakeArmMotorConfiguration.simulationSlot = new MotorProperties.Slot(1, 0, 0, 0, 0, 0);
-        intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM,
+        intakeArmMotorConfiguration.simulationProperties = new SimulationProperties.Slot(
+                SimulationProperties.SimulationType.ARM,
                 DCMotor.getFalcon500(1),
-                1.0, 0.1, 0.2, Rotation2d.fromRotations(ARM_MINIMUM_POSITION_ROTATIONS),
-                Rotation2d.fromRotations(ARM_MAXIMUM_POSITION_ROTATIONS), false);
+                1.0,
+                0.1,
+                0.2,
+                Rotation2d.fromRotations(ARM_MINIMUM_POSITION_ROTATIONS),
+                Rotation2d.fromRotations(ARM_MAXIMUM_POSITION_ROTATIONS),
+                false);
 
         intakeArmMotorConfiguration.profileMaxVelocity = 1;
         intakeArmMotorConfiguration.profileMaxAcceleration = 3;
