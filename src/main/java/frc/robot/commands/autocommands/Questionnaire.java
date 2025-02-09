@@ -10,8 +10,6 @@ import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import static frc.robot.RobotContainer.CORAL_INTAKE;
-
 public class Questionnaire {
     private final LoggedDashboardChooser<Command> PRESET_QUESTION;
     private final Cycle
