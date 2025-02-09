@@ -45,7 +45,9 @@ public class PathfindingCommands {
 
     public static DeferredCommand pathfindToLeftBranch(ReefFace face) {
         return new DeferredCommand(() -> {
-            final Pose2d targetPose = face.getLeftBranch();
+            final Pose2d targetPose = Flippable.isRedAlliance() ?
+                    face.getOpposite().getLeftBranch() :
+                    face.getLeftBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
                     SwerveCommands.goToPosePID(targetPose)
@@ -56,7 +58,9 @@ public class PathfindingCommands {
 
     public static DeferredCommand pathfindToRightBranch(ReefFace face) {
         return new DeferredCommand(() -> {
-            final Pose2d targetPose = face.getRightBranch();
+            final Pose2d targetPose = Flippable.isRedAlliance() ?
+                    face.getOpposite().getRightBranch() :
+                    face.getRightBranch();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
                     SwerveCommands.goToPosePID(targetPose)
@@ -111,15 +115,15 @@ public class PathfindingCommands {
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
-        final boolean isRedAlliance = Flippable.isRedAlliance();
+        final boolean isBlueAlliance = !Flippable.isRedAlliance();
 
-        if (angle < -150 || angle >= 150) return isRedAlliance ? FACE_3 : FACE_0;
-        if (angle < -90) return isRedAlliance ? FACE_2 : FACE_5;
-        if (angle < -30) return isRedAlliance ? FACE_1 : FACE_4;
-        if (angle < 30) return isRedAlliance ? FACE_0 : FACE_3;
-        if (angle < 90) return isRedAlliance ? FACE_5 : FACE_2;
+        if (angle < -150 || angle >= 150) return isBlueAlliance ? FACE_0 : FACE_0.getOpposite();
+        if (angle < -90) return isBlueAlliance ? FACE_5 : FACE_5.getOpposite();
+        if (angle < -30) return isBlueAlliance ? FACE_4 : FACE_4.getOpposite();
+        if (angle < 30) return isBlueAlliance ? FACE_3 : FACE_3.getOpposite();
+        if (angle < 90) return isBlueAlliance ? FACE_2 : FACE_2.getOpposite();
 
-        return isRedAlliance ? FACE_4 : FACE_1;
+        return isBlueAlliance ? FACE_1 : FACE_1.getOpposite();
     }
 
     private static Pose2d decideFeederPose() {
