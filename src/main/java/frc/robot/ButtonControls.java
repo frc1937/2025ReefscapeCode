@@ -161,7 +161,10 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
-        OPERATOR_CONTROLLER.nine().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.FEEDER));
+        OPERATOR_CONTROLLER.five().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.FEEDER));
+
+        OPERATOR_CONTROLLER.six().whileTrue(ClimbingCommands.climbCageNoAlignment());
+        OPERATOR_CONTROLLER.seven().onTrue(new InstantCommand(() -> CoralManipulationCommands.SHOULD_BLAST_ALGAE = true));
     }
 
     private static void setupTeleopLEDs() {

@@ -36,7 +36,7 @@ public class AlgaeBlasterConstants {
             Second.of(7)
     );
 
-    protected static final Motor BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
+    protected static final Motor ARM_BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
 
     protected static final double
             ARM_MINIMUM_ROTATION = -0.1, //TODO: TUNE
@@ -52,10 +52,10 @@ public class AlgaeBlasterConstants {
         final MotorConfiguration blasterMotorConfiguration = new MotorConfiguration();
         blasterMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-        BLASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+        ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
+        ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
+        ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
         blasterMotorConfiguration.slot = new MotorProperties.Slot(80, 0, 1, 0, 0, 0);
         blasterMotorConfiguration.simulationSlot = new MotorProperties.Slot(80, 0, 1, 0, 0, 0);
@@ -78,6 +78,6 @@ public class AlgaeBlasterConstants {
         blasterMotorConfiguration.forwardSoftLimit = ARM_MAXIMUM_ROTATION;
         blasterMotorConfiguration.reverseSoftLimit = ARM_MINIMUM_ROTATION;
 
-        BLASTER_MOTOR.configure(blasterMotorConfiguration);
+        ARM_BLASTER_MOTOR.configure(blasterMotorConfiguration);
     }
 }

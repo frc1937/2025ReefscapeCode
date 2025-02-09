@@ -18,11 +18,11 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.*;
 
 public class ElevatorConstants {
     public enum ElevatorHeight {
-        L1(0.457),
-        L2(0.793),
-        L3(1.196),
-        FEEDER(0.93),
-        CLIMB(0);
+        L1(0),
+        L2(0.1769),
+        L3(0.579),
+        FEEDER(0.172),
+        CLIMB(-0.02);
 
         private final double rotations;
         private final double meters;
