@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
+import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
 
 public class FieldConstants {
     public enum ReefFace {
@@ -27,12 +27,23 @@ public class FieldConstants {
             this.facePose = new FlippablePose2d(new Pose2d(x, y, rotation).transformBy(ROBOT_TRANSFORM), true);
 
             final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(), facePose.getRotation().get(), true);
-            this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_TRANSFORM), true);
-            this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_TRANSFORM), true);
+            this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
+            this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
         }
 
         public Pose2d getPose() {
             return facePose.get();
+        }
+
+        public ReefFace getOpposite() {
+            return switch (this) {
+                case FACE_0 -> FACE_3;
+                case FACE_1 -> FACE_4;
+                case FACE_2 -> FACE_5;
+                case FACE_3 -> FACE_0;
+                case FACE_4 -> FACE_1;
+                case FACE_5 -> FACE_2;
+            };
         }
 
         public Pose2d getLeftBranch() {
@@ -46,7 +57,7 @@ public class FieldConstants {
 
     public enum Feeder {
         TOP_FEEDER(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))),
-        BOTTOM_FEEDER(flipAboutYAxis(TOP_FEEDER.getPose()));
+        BOTTOM_FEEDER(flipAboutXAxis(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))));
 
         private final FlippablePose2d feederPose;
 
@@ -59,7 +70,9 @@ public class FieldConstants {
         }
     }
 
-    private static final Transform2d ROBOT_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
+    private static final Transform2d
+            ROBOT_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.4, -0.25), Rotation2d.fromDegrees(90));
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -0.1643, Rotation2d.kZero),
