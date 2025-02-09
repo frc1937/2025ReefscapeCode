@@ -70,5 +70,7 @@ public class Robot extends LoggedRobot {
     public void simulationPeriodic() {
         HardwareManager.updateSimulation();
         VISION_SIMULATION.updateRobotPose(POSE_ESTIMATOR.getOdometryPose());
+
+        robotContainer.updateComponents();
     }
 }

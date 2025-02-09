@@ -7,6 +7,7 @@ import frc.lib.generic.hardware.sensors.Sensor;
 import frc.lib.generic.hardware.sensors.SensorFactory;
 import frc.lib.generic.simulation.SimulationProperties;
 import frc.lib.generic.visualization.mechanisms.ElevatorMechanism2d;
+import frc.lib.generic.visualization.mechanisms.MechanismFactory;
 import frc.lib.math.Conversions;
 import frc.robot.GlobalConstants;
 
@@ -17,11 +18,11 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.*;
 
 public class ElevatorConstants {
     public enum ElevatorHeight {
-        L1(0.457),
-        L2(0.793),
-        L3(1.196),
-        FEEDER(0.93),
-        CLIMB(0);
+        L1(0),
+        L2(0.1769),
+        L3(0.579),
+        FEEDER(0.172),
+        CLIMB(-0.02);
 
         private final double rotations;
         private final double meters;
@@ -46,7 +47,8 @@ public class ElevatorConstants {
             Second.of(7)
     );
 
-    protected static final Motor MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
+    protected static final Motor
+            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
             SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
 
     protected static final Sensor
@@ -54,11 +56,11 @@ public class ElevatorConstants {
             BOTTOM_BEAM_BREAK = SensorFactory.createDigitalInput("BUTTON_BEAM_BREAKER", BOTTOM_BEAM_BREAK_DIO_PORT);
 
     protected static final double
-            ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.5, //TODO: TUNE
+            ELEVATOR_MAX_EXTENSION_ROTATIONS = 10, //TODO: TUNE
             ELEVATOR_MIN_EXTENSION_ROTATIONS = 0, //TODO: TUNE
             WHEEL_DIAMETER = 0.04;
 
-    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = new ElevatorMechanism2d("Elevator Mechanism", 1);
+    protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = MechanismFactory.createElevatorMechanism("Elevator Mechanism", 1);
 
     static {
         configureMotors();
@@ -75,7 +77,7 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
-        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(12.33, 0, 2.5, 0, 0, 1.311, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
+        ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 25;
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 25;

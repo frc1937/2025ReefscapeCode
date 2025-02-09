@@ -15,17 +15,17 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_BLASTER_MOTOR_
 
 public class AlgaeBlasterConstants {
     public enum BlasterArmState {
-        VERTICAL(Rotation2d.kCW_90deg),
-        HORIZONTAL_IN(Rotation2d.k180deg),
-        HORIZONTAL_OUT(Rotation2d.kZero);
+        VERTICAL(0.25),
+        HORIZONTAL_IN(0.5),
+        HORIZONTAL_OUT(0);
 
-        private final Rotation2d rotation;
+        private final double rotation;
 
-        BlasterArmState(Rotation2d rotation) {
+        BlasterArmState(double rotation) {
             this.rotation = rotation;
         }
 
-        public Rotation2d getRotation2d() {
+        public double getRotations() {
             return rotation;
         }
     }
@@ -36,11 +36,13 @@ public class AlgaeBlasterConstants {
             Second.of(7)
     );
 
-    protected static final Motor BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
-    protected static final Rotation2d ARM_MINIMUM_ROTATION = Rotation2d.fromDegrees(0),
-            ARM_MAXIMUM_ROTATION = Rotation2d.fromDegrees(180);
+    protected static final Motor ARM_BLASTER_MOTOR = MotorFactory.createSpark("ALGAE_BLASTER_MOTOR", ALGAE_BLASTER_MOTOR_PORT, MAX);
 
-    protected static final SingleJointedArmMechanism2d BLASTER_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("ALGAE_BLASTER_MECHANISM", 4);
+    protected static final double
+            ARM_MINIMUM_ROTATION = -0.1, //TODO: TUNE
+            ARM_MAXIMUM_ROTATION = 0.6; //TODO: TUNE
+
+    protected static final SingleJointedArmMechanism2d BLASTER_ARM_MECHANISM = MechanismFactory.createSingleJointedArmMechanism("Algae Blaster Mechanism", 4);
 
     static {
         configureBlasterMotor();
@@ -50,24 +52,32 @@ public class AlgaeBlasterConstants {
         final MotorConfiguration blasterMotorConfiguration = new MotorConfiguration();
         blasterMotorConfiguration.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        BLASTER_MOTOR.registerSignal(MotorSignal.POSITION);
-        BLASTER_MOTOR.registerSignal(MotorSignal.VELOCITY);
-        BLASTER_MOTOR.registerSignal(MotorSignal.VOLTAGE);
-        BLASTER_MOTOR.registerSignal(MotorSignal.CLOSED_LOOP_TARGET);
+        ARM_BLASTER_MOTOR.registerSignal(MotorSignal.POSITION);
+        ARM_BLASTER_MOTOR.registerSignal(MotorSignal.VELOCITY);
+        ARM_BLASTER_MOTOR.registerSignal(MotorSignal.VOLTAGE);
+        ARM_BLASTER_MOTOR.registerSignal(MotorSignal.CLOSED_LOOP_TARGET);
 
-        blasterMotorConfiguration.slot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);
-        blasterMotorConfiguration.simulationSlot = new MotorProperties.Slot(100, 0, 0, 0, 0, 0);
-        blasterMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.ARM, DCMotor.getFalcon500(1), 1, 0.5, 0.2, ARM_MINIMUM_ROTATION, ARM_MAXIMUM_ROTATION, true);
+        blasterMotorConfiguration.slot = new MotorProperties.Slot(80, 0, 1, 0, 0, 0);
+        blasterMotorConfiguration.simulationSlot = new MotorProperties.Slot(80, 0, 1, 0, 0, 0);
+        blasterMotorConfiguration.simulationProperties = new SimulationProperties.Slot(
+                SimulationProperties.SimulationType.ARM,
+                DCMotor.getFalcon500(1),
+                1,
+                0.5,
+                0.01,
+                Rotation2d.fromRotations(ARM_MINIMUM_ROTATION),
+                Rotation2d.fromRotations(ARM_MAXIMUM_ROTATION),
+                true);
 
         blasterMotorConfiguration.profileMaxVelocity = 2;
         blasterMotorConfiguration.profileMaxAcceleration = 3;
-        blasterMotorConfiguration.closedLoopTolerance = 0.5;
+        blasterMotorConfiguration.closedLoopTolerance = 0.03;
 
         blasterMotorConfiguration.supplyCurrentLimit = 30;
 
-        blasterMotorConfiguration.forwardSoftLimit = ARM_MAXIMUM_ROTATION.getRotations();
-        blasterMotorConfiguration.reverseSoftLimit = ARM_MINIMUM_ROTATION.getRotations();
+        blasterMotorConfiguration.forwardSoftLimit = ARM_MAXIMUM_ROTATION;
+        blasterMotorConfiguration.reverseSoftLimit = ARM_MINIMUM_ROTATION;
 
-        BLASTER_MOTOR.configure(blasterMotorConfiguration);
+        ARM_BLASTER_MOTOR.configure(blasterMotorConfiguration);
     }
 }
