@@ -18,36 +18,6 @@ import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
-    private static final AddressableLED ledstrip = new AddressableLED(LEDSTRIP_PORT_PWM);
-    private static final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_COUNT);
-
-    public Leds() {
-        ledstrip.setLength(LEDS_COUNT);
-        ledstrip.setData(buffer);
-        ledstrip.start();
-    }
-
-    public Command setLEDStatus(LEDMode mode, double timeout) {
-        return mode.getLedCommand(timeout);
-    }
-
-    /**
-     * Sets the LED strip to indicate the robot's position relative to the target position.
-     * This is command-less as the target position may change during the assignment of the autonomous.
-     *
-     * @param robotPosition  The current robot position.
-     * @param targetPosition The target position, where the robot should be.
-     */
-    public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
-        flashLEDStrip(
-                generatePositionIndicatorBuffer(
-                        new Color8Bit(Color.kRed),
-                        new Color8Bit(Color.kGreen),
-                        robotPosition,
-                        targetPosition
-                ));
-    }
-
     public enum LEDMode {
         END_OF_MATCH(timeout -> getCommandFromColours(() -> generateFlashingBuffer(new Color8Bit(Color.kGreen), new Color8Bit(Color.kBlue)), timeout)),
 
@@ -79,6 +49,36 @@ public class Leds extends SubsystemBase {
         public Command getLedCommand(double timeout) {
             return ledCommandFunction.apply(timeout);
         }
+    }
+
+    private static final AddressableLED ledstrip = new AddressableLED(LEDSTRIP_PORT_PWM);
+    private static final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_COUNT);
+
+    public Leds() {
+        ledstrip.setLength(LEDS_COUNT);
+        ledstrip.setData(buffer);
+        ledstrip.start();
+    }
+
+    public Command setLEDStatus(LEDMode mode, double timeout) {
+        return mode.getLedCommand(timeout);
+    }
+
+    /**
+     * Sets the LED strip to indicate the robot's position relative to the target position.
+     * This is command-less as the target position may change during the assignment of the autonomous.
+     *
+     * @param robotPosition  The current robot position.
+     * @param targetPosition The target position, where the robot should be.
+     */
+    public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
+        flashLEDStrip(
+                generatePositionIndicatorBuffer(
+                        new Color8Bit(Color.kRed),
+                        new Color8Bit(Color.kGreen),
+                        robotPosition,
+                        targetPosition
+                ));
     }
 
     private static Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
