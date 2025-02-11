@@ -1,4 +1,4 @@
-package frc.lib.util;
+package frc.lib.generic.hardware.controllers;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;

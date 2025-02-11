@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.characterization.WheelRadiusCharacterization;
-import frc.lib.generic.hardware.KeyboardController;
+import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
-import frc.lib.util.Controller;
+import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.ClimbingCommands;
@@ -22,8 +22,8 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.DoubleSupplier;
 
-import static frc.lib.util.Controller.Axis.LEFT_X;
-import static frc.lib.util.Controller.Axis.LEFT_Y;
+import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_X;
+import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 

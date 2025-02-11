@@ -1,4 +1,4 @@
-package frc.lib.generic.hardware;
+package frc.lib.generic.hardware.controllers;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
