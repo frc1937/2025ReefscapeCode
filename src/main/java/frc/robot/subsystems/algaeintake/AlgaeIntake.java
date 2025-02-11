@@ -1,6 +1,9 @@
 package frc.robot.subsystems.algaeintake;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -8,14 +11,16 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
+import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.algaeintake.AlgaeIntakeConstants.*;
 
 public class AlgaeIntake extends GenericSubsystem {
-    public Command setAlgaeIntakeState(IntakeState state) {
+    public Command setAlgaeIntakeState(IntakeArmState state) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> {
                     INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
                     INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());
@@ -61,12 +66,14 @@ public class AlgaeIntake extends GenericSubsystem {
                 .angularVelocity(RotationsPerSecond.of(INTAKE_ARM_MOTOR.getSystemVelocity()));
     }
 
-
-    @Override
-    public void periodic() {
+    public void printPose() {
         if (INTAKE_ARM_MECHANISM != null) {
-            INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
+            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0.28, 0.15), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
+
+            Logger.recordOutput("Components/IntakeArmPose", current3dPose);
+
             INTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
+            INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
         }
     }
 
