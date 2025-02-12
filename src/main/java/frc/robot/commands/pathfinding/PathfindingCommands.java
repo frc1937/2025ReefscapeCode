@@ -19,52 +19,34 @@ import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CAGE_CONSTRAI
 
 public class PathfindingCommands {
     private static final double
-            PID_PATHFIND_THRESHOLD_REEF = 0.8,
+            PID_PATHFIND_THRESHOLD_REEF = 1.1,
             PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
 
     public static DeferredCommand pathfindToBranch(PathfindingConstants.BranchOption branch) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = branch.getBranchPose();
-            return SwerveCommands.goToPoseTrapezoidal(targetPose);
-
-//            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
-//                    ? SwerveCommands.goToPosePID(targetPose)
-//                    .until(SWERVE.isRobotInThreshold(targetPose))
-//                    : SwerveCommands.goToPoseBezier(targetPose);
-        }, Set.of(SWERVE));
+        return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose()), Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToBranch(PathfindingConstants.BranchOption branch, ReefFace face) {
+    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.BranchOption branch, ReefFace face) {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = branch.getBranchPose(face);
 
-            return SwerveCommands.goToPoseTrapezoidal(targetPose);
-//            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-//                    SwerveCommands.goToPosePID(targetPose)
-//                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-//                    SwerveCommands.goToPoseBezier(targetPose);
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
+                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose))
+                    : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
     public static DeferredCommand pathfindToFeeder() {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = decideFeederPose();
-
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
-        }, Set.of(SWERVE));
+        return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose()), Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToFeeder(Feeder feeder) {
+    public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = feeder.getPose();
 
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
+            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER)
+                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose))
+                    : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
@@ -81,9 +63,9 @@ public class PathfindingCommands {
             );
 
             return alignWithTargetY
-                    .until(SWERVE.isRobotInThreshold(targetPose))
+                    .until(SWERVE.isRobotCloseToTarget(targetPose))
                     .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS))
-                    .until(SWERVE.isRobotInThreshold(targetPose));
+                    .until(SWERVE.isRobotCloseToTarget(targetPose));
         }, Set.of(SWERVE));
     }
 

@@ -104,22 +104,22 @@ public class Questionnaire {
         final Command goToBranch = selectedBranch.equals("None") || selectedReefFace.equals("None")
                 ? Commands.none()
                 : selectedBranch.equals("LEFT")
-                        ? PathfindingCommands.pathfindToBranch(PathfindingConstants.BranchOption.LEFT_BRANCH, ReefFace.valueOf(selectedReefFace))
-                        : PathfindingCommands.pathfindToBranch(PathfindingConstants.BranchOption.RIGHT_BRANCH, ReefFace.valueOf(selectedReefFace));
+                        ? PathfindingCommands.pathfindToBranchBezier(PathfindingConstants.BranchOption.LEFT_BRANCH, ReefFace.valueOf(selectedReefFace))
+                        : PathfindingCommands.pathfindToBranchBezier(PathfindingConstants.BranchOption.RIGHT_BRANCH, ReefFace.valueOf(selectedReefFace));
 
-        return goToBranch.alongWith(cycle.algaeQuestion.get())
-                        .andThen(cycle.scoringHeightQuestion.get())
-                        .andThen(cycle.feederQuestion.get());
+        return goToBranch.andThen(cycle.feederQuestion.get());
+//        return goToBranch.alongWith(cycle.algaeQuestion.get())
+//                        .andThen(cycle.scoringHeightQuestion.get())
+//                        .andThen(cycle.feederQuestion.get());
     }
 
     public Command getCommand() {
-        return PRESET_QUESTION.getSendableChooser().getSelected().equals("None") ?
-                Commands.sequence(
+        return PRESET_QUESTION.getSendableChooser().getSelected().equals("None")
+                ? Commands.sequence(
                         createCycleSequence(CYCLE_1),
                         createCycleSequence(CYCLE_2),
-                        createCycleSequence(CYCLE_3)
-                ) :
-                PRESET_QUESTION.get();
+                        createCycleSequence(CYCLE_3))
+                : PRESET_QUESTION.get();
     }
 
     public String getSelected() {

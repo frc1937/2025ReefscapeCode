@@ -26,12 +26,12 @@ public class FieldConstants {
                 rightBranch;
 
         ReefFace(double x, double y, Rotation2d rotation) {
-            this.facePose = new FlippablePose2d(new Pose2d(x, y, rotation).transformBy(ROBOT_TRANSFORM), true);
+            this.facePose = new FlippablePose2d(new Pose2d(x, y, rotation).transformBy(BLUE_FEEDER_TRANSFORM), true);
 
             final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(), facePose.getRotation().get(), true);
             this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
             this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
-        }
+        } //todo: Refactor this
 
         public Pose2d getPose() {
             return facePose.get();
@@ -51,17 +51,21 @@ public class FieldConstants {
     }
 
     public enum Feeder {
-        TOP_FEEDER(new Pose2d(0.84319, 7.41395, Rotation2d.fromDegrees(-54)),
-                new Pose2d(16.70681, 7.41395, Rotation2d.fromDegrees(54))),
-        BOTTOM_FEEDER(new Pose2d(0.84319, 0.63605, Rotation2d.fromDegrees(-54)),
-                new Pose2d(16.70681, 0.63605, Rotation2d.fromDegrees(54)));
+        TOP_FEEDER(
+                new Pose2d(0.84319, 7.41395, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0.5, 0.0, Rotation2d.fromDegrees(180))),
+                new Pose2d(16.70681, 7.41395, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0, 0, Rotation2d.fromDegrees(0)))
+        ),
+        BOTTOM_FEEDER(
+                new Pose2d(0.84319, 0.63605, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(-0.5, 0.0, Rotation2d.fromDegrees(0))),
+                new Pose2d(16.70681, 0.63605, Rotation2d.fromDegrees(54)).transformBy(new Transform2d(-0.9, 0, Rotation2d.fromDegrees(180)))
+        ); //TODO: ALl of these transforms are WRONG. Fix them.
 
         private final Pose2d blueFeederPose;
         private final Pose2d redFeederPose;
 
         Feeder(Pose2d blueFeederPose, Pose2d redFeederPose) {
-            this.blueFeederPose = blueFeederPose.transformBy(ROBOT_TRANSFORM);
-            this.redFeederPose = redFeederPose.transformBy(ROBOT_TRANSFORM);
+            this.blueFeederPose = blueFeederPose;
+            this.redFeederPose = redFeederPose;
         }
 
         /**
@@ -76,8 +80,9 @@ public class FieldConstants {
     }
 
     private static final Transform2d
-            ROBOT_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
-            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.4, -0.25), Rotation2d.fromDegrees(90));
+            BLUE_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
+            RED_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, -0.25), Rotation2d.fromDegrees(90));
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -0.1643, Rotation2d.kZero),

@@ -40,7 +40,7 @@ public class SwerveConstants {
             ROTATION_NEUTRAL_DEADBAND = 0.15;
 
     protected static final PID SWERVE_TRANSLATION_CONTROLLER = IS_SIMULATION
-            ? new PID(3, 0, 0)
+            ? new PID(1.2, 0, 0)
             : new PID(5, 0, 0);
 
 

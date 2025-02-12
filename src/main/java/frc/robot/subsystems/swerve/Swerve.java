@@ -119,7 +119,7 @@ public class Swerve extends GenericSubsystem {
             MODULES[i].setTargetState(swerveModuleStates[i]);
     }
 
-    public BooleanSupplier isRobotInThreshold(Pose2d targetPose) {
+    public BooleanSupplier isRobotCloseToTarget(Pose2d targetPose) {
         return () -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD;
     }
 
