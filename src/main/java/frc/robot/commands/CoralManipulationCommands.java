@@ -13,8 +13,8 @@ public class CoralManipulationCommands {
     public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2;
     public static boolean SHOULD_BLAST_ALGAE = false;
 
-    public static Command pathfindToBranchAndScore(PathfindingConstants.BranchOption branchOption) {
-        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToBranch(branchOption);
+    public static Command pathfindToBranchAndScore(PathfindingConstants.Branch branch) {
+        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToBranch(branch);
 
         return (pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)))
@@ -28,6 +28,12 @@ public class CoralManipulationCommands {
         return pathfindingCommand.alongWith(eatFromFeeder());
     }
 
+    /**
+     * Pathfinds to the specified feeder while constantly eating. Stops when the coral intake has coral
+     *
+     * @param feeder The feeder to pathfind to
+     * @return The command
+     */
     public static Command pathfindToFeederAndEat(FieldConstants.Feeder feeder) {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeederBezier(feeder);
 
@@ -43,7 +49,7 @@ public class CoralManipulationCommands {
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL).alongWith(
                 CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition).withTimeout(1.5));
     }
- 
+
     public static Command scoreCoralFromHeight(ElevatorConstants.ElevatorHeight elevatorHeight) {
         return ELEVATOR.setTargetHeight(elevatorHeight).alongWith(
                 CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(2);

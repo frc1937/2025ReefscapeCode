@@ -9,8 +9,6 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
-import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.*;
@@ -22,11 +20,11 @@ public class PathfindingCommands {
             PID_PATHFIND_THRESHOLD_REEF = 1.1,
             PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
 
-    public static DeferredCommand pathfindToBranch(PathfindingConstants.BranchOption branch) {
+    public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose()), Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.BranchOption branch, ReefFace face) {
+    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = branch.getBranchPose(face);
 

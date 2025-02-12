@@ -79,8 +79,8 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.BranchOption.LEFT_BRANCH));
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.BranchOption.RIGHT_BRANCH));
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
@@ -119,13 +119,13 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.BranchOption.LEFT_BRANCH));
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.BranchOption.RIGHT_BRANCH));
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgaeFromIntake());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevel());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
