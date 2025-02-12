@@ -8,9 +8,6 @@ import frc.lib.util.flippable.Flippable;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
-import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
-
 public class FieldConstants {
     public enum ReefFace {
         FACE_0(3.6587, 4.0269, Rotation2d.k180deg),
@@ -52,13 +49,13 @@ public class FieldConstants {
 
     public enum Feeder {
         TOP_FEEDER(
-                new Pose2d(0.84319, 7.41395, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0.5, 0.0, Rotation2d.fromDegrees(180))),
-                new Pose2d(16.70681, 7.41395, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0, 0, Rotation2d.fromDegrees(0)))
+                new Pose2d(0.851, 7.396, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0.4, 0.0, Rotation2d.fromDegrees(180))),
+                new Pose2d(16.697, 7.396, Rotation2d.fromDegrees(-126)).transformBy(new Transform2d(0.4, 0, Rotation2d.fromDegrees(180)))
         ),
         BOTTOM_FEEDER(
-                new Pose2d(0.84319, 0.63605, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(-0.5, 0.0, Rotation2d.fromDegrees(0))),
-                new Pose2d(16.70681, 0.63605, Rotation2d.fromDegrees(54)).transformBy(new Transform2d(-0.9, 0, Rotation2d.fromDegrees(180)))
-        ); //TODO: ALl of these transforms are WRONG. Fix them.
+                new Pose2d(0.851, 0.63605, Rotation2d.fromDegrees(54)).transformBy(new Transform2d(0.4, 0.0, Rotation2d.fromDegrees(180))),
+                new Pose2d(16.697, 0.63605, Rotation2d.fromDegrees(126)).transformBy(new Transform2d(0.4, 0, Rotation2d.fromDegrees(180)))
+        );  
 
         private final Pose2d blueFeederPose;
         private final Pose2d redFeederPose;

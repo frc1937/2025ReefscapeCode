@@ -77,10 +77,11 @@ public class SwerveCommands {
                 () -> {
                     PROFILED_TRANSLATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getX(), SWERVE.getFieldRelativeVelocity().vxMetersPerSecond);
                     PROFILED_STRAFE_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getY(), SWERVE.getFieldRelativeVelocity().vyMetersPerSecond);
-                    SWERVE.initializeDrive(true);
 
                     PROFILED_TRANSLATION_CONTROLLER.setGoal(targetPose.getX());
                     PROFILED_STRAFE_CONTROLLER.setGoal(targetPose.getY());
+
+                    SWERVE.initializeDrive(true);
                 },
                 () -> SWERVE.driveToPoseTrapezoidal(rotationCorrectedPose),
                 interrupt -> {},

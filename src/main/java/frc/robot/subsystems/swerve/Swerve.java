@@ -171,15 +171,8 @@ public class Swerve extends GenericSubsystem {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
         driveFieldRelative(
-                PROFILED_TRANSLATION_CONTROLLER.calculate(
-                        currentPose.getX(),
-                        target.getX()
-                ),
-
-                PROFILED_STRAFE_CONTROLLER.calculate(
-                        currentPose.getY(),
-                        target.getY()
-                ),
+                PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()),
+                PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY()),
 
                 SWERVE_ROTATION_CONTROLLER.calculate(
                         currentPose.getRotation().getDegrees(),
