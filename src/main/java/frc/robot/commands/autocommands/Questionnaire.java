@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
-import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
@@ -79,9 +80,9 @@ public class Questionnaire {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
 
         question.addDefaultOption("None", Commands.none());
-        question.addOption("L1", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L1));
-        question.addOption("L2", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L2));
-        question.addOption("L3", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L3));
+        question.addOption("L1", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L1));
+        question.addOption("L2", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
+        question.addOption("L3", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L3));
 
         return question;
     }
@@ -100,18 +101,15 @@ public class Questionnaire {
         final String selectedReefFace = cycle.reefFaceQuestion.get();
         final String selectedBranch = cycle.branchQuestion.get();
 
-        final Command goToBranch = selectedBranch.equals("None") || selectedReefFace.equals("None") ?
-                Commands.none() :
-                selectedBranch.equals("LEFT") ?
-                        PathfindingCommands.pathfindToLeftBranch(ReefFace.valueOf(selectedReefFace)) :
-                        PathfindingCommands.pathfindToRightBranch(ReefFace.valueOf(selectedReefFace));
+        final Command goToBranch = selectedBranch.equals("None") || selectedReefFace.equals("None")
+                ? Commands.none()
+                : selectedBranch.equals("LEFT")
+                        ? PathfindingCommands.pathfindToBranch(PathfindingConstants.BranchOption.LEFT_BRANCH, ReefFace.valueOf(selectedReefFace))
+                        : PathfindingCommands.pathfindToBranch(PathfindingConstants.BranchOption.RIGHT_BRANCH, ReefFace.valueOf(selectedReefFace));
 
-        return Commands.sequence(
-                goToBranch,
-                cycle.algaeQuestion.get(),
-                cycle.scoringHeightQuestion.get(),
-                cycle.feederQuestion.get()
-        );
+        return goToBranch.alongWith(cycle.algaeQuestion.get())
+                        .andThen(cycle.scoringHeightQuestion.get())
+                        .andThen(cycle.feederQuestion.get());
     }
 
     public Command getCommand() {

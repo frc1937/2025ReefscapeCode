@@ -40,7 +40,7 @@ public class SwerveConstants {
             ROTATION_NEUTRAL_DEADBAND = 0.15;
 
     protected static final PID SWERVE_TRANSLATION_CONTROLLER = IS_SIMULATION
-            ? new PID(4, 0, 0)
+            ? new PID(3, 0, 0)
             : new PID(5, 0, 0);
 
 
@@ -54,6 +54,29 @@ public class SwerveConstants {
                     3.9, 0, 0.05,
                     new TrapezoidProfile.Constraints(360, 360)
             );
+
+    protected static final ProfiledPIDController PROFILED_TRANSLATION_CONTROLLER = IS_SIMULATION ?
+            new ProfiledPIDController(
+                    0.4, 0, 0,
+                    new TrapezoidProfile.Constraints(3, 3)
+            )
+            :
+            new ProfiledPIDController(
+                    3.9, 0, 0.05,
+                    new TrapezoidProfile.Constraints(360, 360)
+            );
+
+    protected static final ProfiledPIDController PROFILED_STRAFE_CONTROLLER = IS_SIMULATION ?
+            new ProfiledPIDController(
+                    0.4, 0, 0,
+                    new TrapezoidProfile.Constraints(3, 3)
+            )
+            :
+            new ProfiledPIDController(
+                    3.9, 0, 0.05,
+                    new TrapezoidProfile.Constraints(360, 360)
+            );
+
 
     protected static final Pigeon GYRO = PigeonFactory.createIMU("GYRO", GYRO_PORT);
 
@@ -70,5 +93,8 @@ public class SwerveConstants {
     private static void configureRotationController() {
         SWERVE_ROTATION_CONTROLLER.enableContinuousInput(-180, 180);
         SWERVE_ROTATION_CONTROLLER.setTolerance(1);
+
+        PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.05);
+        PROFILED_STRAFE_CONTROLLER.setTolerance(0.05);
     }
 }

@@ -63,6 +63,10 @@ public class Swerve extends GenericSubsystem {
         return ROBOT_CONFIG.toChassisSpeeds(getModuleStates());
     }
 
+    public ChassisSpeeds getFieldRelativeVelocity() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeVelocity(), POSE_ESTIMATOR.getCurrentPose().getRotation());
+    }
+
     public void runDriveMotorWheelCharacterization(double voltage) {
         for (SwerveModule module : MODULES)
             module.runDriveMotorForCharacterization(voltage);
@@ -152,6 +156,27 @@ public class Swerve extends GenericSubsystem {
                 ),
 
                 SWERVE_TRANSLATION_CONTROLLER.calculate(
+                        currentPose.getY(),
+                        target.getY()
+                ),
+
+                SWERVE_ROTATION_CONTROLLER.calculate(
+                        currentPose.getRotation().getDegrees(),
+                        target.getRotation().getDegrees()
+                )
+        );
+    }
+
+    protected void driveToPoseTrapezoidal(Pose2d target) {
+        final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
+
+        driveFieldRelative(
+                PROFILED_TRANSLATION_CONTROLLER.calculate(
+                        currentPose.getX(),
+                        target.getX()
+                ),
+
+                PROFILED_STRAFE_CONTROLLER.calculate(
                         currentPose.getY(),
                         target.getY()
                 ),

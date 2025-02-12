@@ -4,10 +4,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import frc.lib.util.flippable.Flippable;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
 import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
+import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 
 public class FieldConstants {
     public enum ReefFace {
@@ -36,14 +38,7 @@ public class FieldConstants {
         }
 
         public ReefFace getOpposite() {
-            return switch (this) {
-                case FACE_0 -> FACE_3;
-                case FACE_1 -> FACE_4;
-                case FACE_2 -> FACE_5;
-                case FACE_3 -> FACE_0;
-                case FACE_4 -> FACE_1;
-                case FACE_5 -> FACE_2;
-            };
+            return values()[(ordinal() + 3) % 6];
         }
 
         public Pose2d getLeftBranch() {
@@ -56,17 +51,27 @@ public class FieldConstants {
     }
 
     public enum Feeder {
-        TOP_FEEDER(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))),
-        BOTTOM_FEEDER(flipAboutXAxis(new Pose2d(0.84319, 0.65078, Rotation2d.fromDegrees(54))));
+        TOP_FEEDER(new Pose2d(0.84319, 7.41395, Rotation2d.fromDegrees(-54)),
+                new Pose2d(16.70681, 7.41395, Rotation2d.fromDegrees(54))),
+        BOTTOM_FEEDER(new Pose2d(0.84319, 0.63605, Rotation2d.fromDegrees(-54)),
+                new Pose2d(16.70681, 0.63605, Rotation2d.fromDegrees(54)));
 
-        private final FlippablePose2d feederPose;
+        private final Pose2d blueFeederPose;
+        private final Pose2d redFeederPose;
 
-        Feeder(Pose2d pose) {
-            this.feederPose = new FlippablePose2d(pose.transformBy(ROBOT_TRANSFORM), true);
+        Feeder(Pose2d blueFeederPose, Pose2d redFeederPose) {
+            this.blueFeederPose = blueFeederPose.transformBy(ROBOT_TRANSFORM);
+            this.redFeederPose = redFeederPose.transformBy(ROBOT_TRANSFORM);
         }
 
+        /**
+         * Get alliance corrected feeder pose.
+         *
+         * @return alliance corrected feeder pose
+         */
         public Pose2d getPose() {
-            return feederPose.get();
+            if (Flippable.isRedAlliance()) return redFeederPose;
+            return blueFeederPose;
         }
     }
 

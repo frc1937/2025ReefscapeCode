@@ -2,6 +2,8 @@ package frc.robot.subsystems.coralintake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -15,7 +17,13 @@ public class CoralIntake extends GenericSubsystem {
     }
 
     public Command releaseGamePiece() {
-        return Commands.run(() -> setVoltage(6), this).withTimeout(3.5);
+        return new FunctionalCommand(
+                () -> {},
+                () -> setVoltage(4),
+                (interrupt) -> INTAKE_MOTOR.stopMotor(),
+                () -> false,
+                this
+        );
     }
 
     public Command rotateAlgaeBlasterEndEffector() {
@@ -31,7 +39,6 @@ public class CoralIntake extends GenericSubsystem {
         INTAKE_MOTOR.setIdleMode(idleMode);
     }
 
-    @AutoLogOutput(key = "hasCoral")
     public boolean hasCoral() {
         return INTAKE_BEAM_BREAK.get() == 1;
     }

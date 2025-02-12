@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -10,6 +10,7 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 import java.util.Set;
 
 import static frc.lib.util.flippable.FlippableUtils.flipAboutXAxis;
+import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.*;
@@ -21,51 +22,27 @@ public class PathfindingCommands {
             PID_PATHFIND_THRESHOLD_REEF = 0.8,
             PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
 
-    public static DeferredCommand pathfindToLeftBranch() {
+    public static DeferredCommand pathfindToBranch(PathfindingConstants.BranchOption branch) {
         return new DeferredCommand(() -> {
-            final Pose2d targetPose = decideReefFace().getLeftBranch();
+            final Pose2d targetPose = branch.getBranchPose();
+            return SwerveCommands.goToPoseTrapezoidal(targetPose);
 
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
+//            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
+//                    ? SwerveCommands.goToPosePID(targetPose)
+//                    .until(SWERVE.isRobotInThreshold(targetPose))
+//                    : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToRightBranch() {
+    public static DeferredCommand pathfindToBranch(PathfindingConstants.BranchOption branch, ReefFace face) {
         return new DeferredCommand(() -> {
-            final Pose2d targetPose = decideReefFace().getRightBranch();
+            final Pose2d targetPose = branch.getBranchPose(face);
 
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
-        }, Set.of(SWERVE));
-    }
-
-    public static DeferredCommand pathfindToLeftBranch(ReefFace face) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = Flippable.isRedAlliance() ?
-                    face.getOpposite().getLeftBranch() :
-                    face.getLeftBranch();
-
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
-        }, Set.of(SWERVE));
-    }
-
-    public static DeferredCommand pathfindToRightBranch(ReefFace face) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = Flippable.isRedAlliance() ?
-                    face.getOpposite().getRightBranch() :
-                    face.getRightBranch();
-
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
-                    SwerveCommands.goToPosePID(targetPose)
-                            .until(SWERVE.isRobotInThreshold(targetPose)) :
-                    SwerveCommands.goToPoseBezier(targetPose);
+            return SwerveCommands.goToPoseTrapezoidal(targetPose);
+//            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF) ?
+//                    SwerveCommands.goToPosePID(targetPose)
+//                            .until(SWERVE.isRobotInThreshold(targetPose)) :
+//                    SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
@@ -110,7 +87,7 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    private static ReefFace decideReefFace() {
+    public static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
@@ -127,13 +104,10 @@ public class PathfindingCommands {
     }
 
     private static Pose2d decideFeederPose() {
-        Pose2d originalPose = Feeder.BOTTOM_FEEDER.getPose();
+        Pose2d originalPose = Feeder.TOP_FEEDER.getPose();
 
-        if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 > 0)
-            originalPose = Feeder.TOP_FEEDER.getPose();
-
-        if (!Flippable.isRedAlliance())
-            originalPose = flipAboutXAxis(originalPose);
+        if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 < 0)
+            originalPose = Feeder.BOTTOM_FEEDER.getPose();
 
         return originalPose;
     }

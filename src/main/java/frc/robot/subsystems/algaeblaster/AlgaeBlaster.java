@@ -21,16 +21,20 @@ import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 
 public class AlgaeBlaster extends GenericSubsystem {
     public Command setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState state) {
-        return Commands.run(() -> ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotation2d().getRotations()), this)
-                .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector())
-                .andThen(stopAlgaeBlasterArm());
+        return new FunctionalCommand(
+                () -> {
+                    ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations());
+                },
+                () -> {
+                    ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations());
+                },
+                (interrupt) -> {},
+                ARM_BLASTER_MOTOR::isAtPositionSetpoint
+        ).alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector()).until(ARM_BLASTER_MOTOR::isAtPositionSetpoint);
+    }
 
     public Command stopAlgaeBlasterArm() {
         return Commands.runOnce(ARM_BLASTER_MOTOR::stopMotor, this);
-    }
-
-    public boolean isArmAtTarget() {
-        return ARM_BLASTER_MOTOR.isAtPositionSetpoint();
     }
 
     @Override
