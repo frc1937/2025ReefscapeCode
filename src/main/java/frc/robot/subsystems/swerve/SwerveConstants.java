@@ -27,20 +27,21 @@ public class SwerveConstants {
             Second.of(7)
     );
 
-    protected static final double STEER_GEAR_RATIO = (150.0 / 7.0);
-    protected static final double DRIVE_GEAR_RATIO = (6.75);
+    protected static final double
+            STEER_GEAR_RATIO = (150.0 / 7.0),
+            DRIVE_GEAR_RATIO = (6.75),
 
-    protected static final double MAX_ROTATION_RAD_PER_S = 3 * Math.PI;
+            MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
 
-    protected static final double WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
+            WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
 
     public static final double
             DRIVE_NEUTRAL_DEADBAND = 0.15,
             ROTATION_NEUTRAL_DEADBAND = 0.15;
 
     protected static final PID SWERVE_TRANSLATION_CONTROLLER = IS_SIMULATION
-            ? new PID(4,0,0)
-            : new PID(5,0,0);
+            ? new PID(4, 0, 0)
+            : new PID(5, 0, 0);
 
 
     protected static final ProfiledPIDController SWERVE_ROTATION_CONTROLLER = IS_SIMULATION ?
@@ -50,9 +51,9 @@ public class SwerveConstants {
             )
             :
             new ProfiledPIDController(
-            3.9, 0, 0.05,
-            new TrapezoidProfile.Constraints(360, 360)
-    );
+                    3.9, 0, 0.05,
+                    new TrapezoidProfile.Constraints(360, 360)
+            );
 
     protected static final Pigeon GYRO = PigeonFactory.createIMU("GYRO", GYRO_PORT);
 

@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.*;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants;
 
@@ -10,6 +9,7 @@ import static frc.robot.RobotContainer.ELEVATOR;
 
 public class CoralManipulationCommands {
     public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2;
+    public static boolean SHOULD_BLAST_ALGAE = false;
 
     public static Command pathfindToLeftBranchAndScore() {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToLeftBranch();
@@ -17,6 +17,7 @@ public class CoralManipulationCommands {
         return pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
+                .andThen(getAlgaeCommand())
                 .andThen(scoreCoralNoPositionCheck());
     }
 
@@ -26,6 +27,7 @@ public class CoralManipulationCommands {
         return pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
                 .until(pathfindingCommand::isFinished)
+                .andThen(getAlgaeCommand())
                 .andThen(scoreCoralNoPositionCheck());
     }
 
@@ -51,9 +53,17 @@ public class CoralManipulationCommands {
                 .until(ELEVATOR::isAtTarget)
                 .andThen(CORAL_INTAKE.releaseGamePiece());
     }
-
+ 
     public static Command scoreGamePiece(ElevatorConstants.ElevatorHeight elevatorHeight) {
         return ELEVATOR.setTargetHeight(elevatorHeight).andThen(
                 CORAL_INTAKE.releaseGamePiece()).andThen(CORAL_INTAKE.stop());
     }
+
+    private static Command getAlgaeCommand() {
+        return new ConditionalCommand(
+                AlgaeManipulationCommands.blastAlgaeOffReef().raceWith(new WaitCommand(0.76))
+                        .andThen(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false)),
+                Commands.none(),
+                () -> SHOULD_BLAST_ALGAE
+        );
 }

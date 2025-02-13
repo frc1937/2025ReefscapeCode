@@ -18,6 +18,10 @@ public class CoralIntake extends GenericSubsystem {
         return Commands.run(() -> setVoltage(6), this).withTimeout(3.5);
     }
 
+    public Command rotateAlgaeBlasterEndEffector() {
+        return Commands.run(() -> setVoltage(-2)).withTimeout(2);
+    }
+
     public Command stop() {
         return Commands.runOnce(INTAKE_MOTOR::stopMotor);
     }
