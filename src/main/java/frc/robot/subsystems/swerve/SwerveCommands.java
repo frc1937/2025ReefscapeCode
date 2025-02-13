@@ -1,8 +1,6 @@
 package frc.robot.subsystems.swerve;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -33,10 +31,10 @@ public class SwerveCommands {
                             right = new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
                             left = new SwerveModuleState(0, Rotation2d.fromDegrees(45));
 
-                    MODULES[0].setTargetState(left);
-                    MODULES[1].setTargetState(right);
-                    MODULES[2].setTargetState(right);
-                    MODULES[3].setTargetState(left);
+                    MODULES[0].setTargetState(left, false);
+                    MODULES[1].setTargetState(right, false);
+                    MODULES[2].setTargetState(right, false);
+                    MODULES[3].setTargetState(left, false);
                 },
                 SWERVE
         );
@@ -47,32 +45,16 @@ public class SwerveCommands {
     }
 
     public static Command goToPosePID(Pose2d targetPose) {
-        final Pose2d rotationCorrectedPose = new Pose2d(targetPose.getTranslation(), Rotation2d.fromDegrees(MathUtil.inputModulus(targetPose.getRotation().getDegrees(), -180, 180)));
-
         return new FunctionalCommand(
-                () -> SWERVE.initializeDrive(true),
-                () -> SWERVE.driveToPose(rotationCorrectedPose),
-                interrupt -> {},
-                () -> false,
-                SWERVE
-        );
-    }
-
-    public static Command goToPosePIDWithConstraints(Pose2d targetPose, PIDConstants constraints) {
-        final Pose2d rotationCorrectedPose = new Pose2d(targetPose.getTranslation(), Rotation2d.fromDegrees(MathUtil.inputModulus(targetPose.getRotation().getDegrees(), -180, 180)));
-
-        return new FunctionalCommand(
-                () -> SWERVE.initializeDrive(true),
-                () -> SWERVE.driveToPoseWithConstraints(rotationCorrectedPose, constraints),
-                interrupt -> {},
-                () -> false,
+                SWERVE::resetRotationController,
+                () -> SWERVE.driveToPose(targetPose),
+                interrupt -> SWERVE.stop(),
+                () -> SWERVE.isAtPose(targetPose, 0.09),
                 SWERVE
         );
     }
 
     public static Command goToPoseTrapezoidal(Pose2d targetPose) {
-        final Pose2d rotationCorrectedPose = new Pose2d(targetPose.getTranslation(), Rotation2d.fromDegrees(MathUtil.inputModulus(targetPose.getRotation().getDegrees(), -180, 180)));
-
         return new FunctionalCommand(
                 () -> {
                     PROFILED_TRANSLATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getX(), SWERVE.getFieldRelativeVelocity().vxMetersPerSecond);
@@ -81,9 +63,9 @@ public class SwerveCommands {
                     PROFILED_TRANSLATION_CONTROLLER.setGoal(targetPose.getX());
                     PROFILED_STRAFE_CONTROLLER.setGoal(targetPose.getY());
 
-                    SWERVE.initializeDrive(true);
+                    SWERVE.resetRotationController();
                 },
-                () -> SWERVE.driveToPoseTrapezoidal(rotationCorrectedPose),
+                () -> SWERVE.driveToPoseTrapezoidal(targetPose),
                 interrupt -> {},
                 () -> PROFILED_TRANSLATION_CONTROLLER.atGoal() && PROFILED_STRAFE_CONTROLLER.atGoal() && SWERVE_ROTATION_CONTROLLER.atGoal(),
                 SWERVE
@@ -96,15 +78,15 @@ public class SwerveCommands {
 
     public static Command driveOpenLoop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier robotCentric) {
         return new InitExecuteCommand(
-                () -> SWERVE.initializeDrive(true),
-                () -> SWERVE.driveOrientationBased(x.getAsDouble(), y.getAsDouble(), rotation.getAsDouble(), robotCentric.getAsBoolean()),
+                SWERVE::resetRotationController,
+                () -> SWERVE.driveOpenLoop(x.getAsDouble(), y.getAsDouble(), rotation.getAsDouble(), robotCentric.getAsBoolean()),
                 SWERVE
         );
     }
 
     public static Command driveWhilstRotatingToTarget(DoubleSupplier x, DoubleSupplier y, Pose2d target, BooleanSupplier robotCentric) {
         return new FunctionalCommand(
-                () -> SWERVE.initializeDrive(true),
+                SWERVE::resetRotationController,
                 () -> SWERVE.driveWithTarget(x.getAsDouble(), y.getAsDouble(), target, robotCentric.getAsBoolean()),
                 interrupt -> {
                 },
@@ -115,7 +97,7 @@ public class SwerveCommands {
 
     public static Command rotateToTarget(Pose2d target) {
         return new FunctionalCommand(
-                () -> SWERVE.initializeDrive(true),
+                SWERVE::resetRotationController,
                 () -> SWERVE.driveWithTarget(0, 0, target, false),
                 interrupt -> {
                 },

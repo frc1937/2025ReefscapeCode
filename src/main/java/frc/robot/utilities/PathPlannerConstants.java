@@ -7,6 +7,7 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.util.LocalADStarAK;
 import frc.lib.util.flippable.Flippable;
 import org.json.simple.parser.ParseException;
@@ -31,8 +32,6 @@ public class PathPlannerConstants {
             2
     );
 
-    public static final PIDConstants PATHPLANNER_CAGE_CONSTRAINTS = new PIDConstants(0.5);
-
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());
 
@@ -46,7 +45,7 @@ public class PathPlannerConstants {
                 POSE_ESTIMATOR::getCurrentPose,
                 POSE_ESTIMATOR::resetPose,
                 SWERVE::getRobotRelativeVelocity,
-                SWERVE::driveRobotRelative,
+                (ChassisSpeeds speeds) -> SWERVE.driveRobotRelative(speeds, true),
                 PATHPLANNER_PID_CONSTANTS,
                 ROBOT_CONFIG,
                 Flippable::isRedAlliance,

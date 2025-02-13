@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import frc.lib.util.flippable.Flippable;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
@@ -13,7 +12,6 @@ import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
-import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CAGE_CONSTRAINTS;
 
 public class PathfindingCommands {
     private static final double
@@ -52,18 +50,14 @@ public class PathfindingCommands {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = decideCagePose();
 
-            final Command alignWithTargetY = SwerveCommands.goToPosePIDWithConstraints(
+            final Command alignWithTargetY = SwerveCommands.goToPoseTrapezoidal(
                     new Pose2d(POSE_ESTIMATOR.getCurrentPose().getX(),
                             targetPose.getY(),
-                            targetPose.getRotation()
-                    ),
-                    PATHPLANNER_CAGE_CONSTRAINTS
+                            targetPose.getRotation())
             );
 
             return alignWithTargetY
-                    .until(SWERVE.isRobotCloseToTarget(targetPose))
-                    .andThen(SwerveCommands.goToPosePIDWithConstraints(targetPose, PATHPLANNER_CAGE_CONSTRAINTS))
-                    .until(SWERVE.isRobotCloseToTarget(targetPose));
+                    .andThen(SwerveCommands.goToPoseTrapezoidal(targetPose));
         }, Set.of(SWERVE));
     }
 

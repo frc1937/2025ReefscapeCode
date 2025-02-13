@@ -1,6 +1,5 @@
 package frc.robot.subsystems.swerve;
 
-import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -13,7 +12,6 @@ import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.OdometryThread;
-import frc.lib.generic.PID;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -30,8 +28,8 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
-    public boolean isAtPose(Pose2d target) {
-        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < 0.1 && SWERVE_ROTATION_CONTROLLER.atGoal();
+    public boolean isAtPose(Pose2d target, double threshold) {
+        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < threshold && SWERVE_ROTATION_CONTROLLER.atGoal();
     }
 
     @Override
@@ -103,7 +101,7 @@ public class Swerve extends GenericSubsystem {
         );
     }
 
-    public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+    public void driveRobotRelative(ChassisSpeeds chassisSpeeds, boolean shouldUseClosedLoop) {
         chassisSpeeds = discretize(chassisSpeeds);
 
         if (Optimizations.isStill(chassisSpeeds)) {
@@ -116,18 +114,18 @@ public class Swerve extends GenericSubsystem {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
 
         for (int i = 0; i < MODULES.length; i++)
-            MODULES[i].setTargetState(swerveModuleStates[i]);
+            MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
     }
 
     public BooleanSupplier isRobotCloseToTarget(Pose2d targetPose) {
         return () -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD;
     }
 
-    protected void driveOrientationBased(double xPower, double yPower, double thetaPower, boolean robotCentric) {
+    protected void driveOpenLoop(double xPower, double yPower, double thetaPower, boolean robotCentric) {
         if (robotCentric)
-            driveRobotRelative(xPower, yPower, thetaPower);
+            driveRobotRelative(xPower, yPower, thetaPower, false);
         else
-            driveFieldRelative(xPower, yPower, thetaPower);
+            driveFieldRelative(xPower, yPower, thetaPower, false);
     }
 
     protected void driveWithTarget(double xPower, double yPower, Pose2d target, boolean robotCentric) {
@@ -141,9 +139,9 @@ public class Swerve extends GenericSubsystem {
                 ));
 
         if (robotCentric)
-            driveRobotRelative(xPower, yPower, controllerOutput);
+            driveRobotRelative(xPower, yPower, controllerOutput, false);
         else
-            driveFieldRelative(xPower, yPower, controllerOutput);
+            driveFieldRelative(xPower, yPower, controllerOutput, false);
     }
 
     protected void driveToPose(Pose2d target) {
@@ -163,7 +161,8 @@ public class Swerve extends GenericSubsystem {
                 SWERVE_ROTATION_CONTROLLER.calculate(
                         currentPose.getRotation().getDegrees(),
                         target.getRotation().getDegrees()
-                )
+                ),
+                true
         );
     }
 
@@ -177,48 +176,24 @@ public class Swerve extends GenericSubsystem {
                 SWERVE_ROTATION_CONTROLLER.calculate(
                         currentPose.getRotation().getDegrees(),
                         target.getRotation().getDegrees()
-                )
+                ),
+                true
         );
     }
 
-    protected void driveToPoseWithConstraints(Pose2d target, PIDConstants constraints) {
-        final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
-        final PID PATHFINDING_TRANSLATION_CONTROLLER = new PID(constraints);
-
-        driveFieldRelative(
-                PATHFINDING_TRANSLATION_CONTROLLER.calculate(
-                        currentPose.getX(),
-                        target.getX()
-                ),
-
-                PATHFINDING_TRANSLATION_CONTROLLER.calculate(
-                        currentPose.getY(),
-                        target.getY()
-                ),
-
-                SWERVE_ROTATION_CONTROLLER.calculate(
-                        currentPose.getRotation().getDegrees(),
-                        target.getRotation().getDegrees()
-                )
-        );
-    }
-
-    protected void driveFieldRelative(double xPower, double yPower, double thetaPower) {
+    protected void driveFieldRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
         ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, RobotContainer.POSE_ESTIMATOR.getCurrentPose().getRotation());
 
-        driveRobotRelative(speeds);
+        driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
-    protected void driveRobotRelative(double xPower, double yPower, double thetaPower) {
+    protected void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
         final ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
-        driveRobotRelative(speeds);
+        driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
-    protected void initializeDrive(boolean openLoop) {
-        for (SwerveModule currentModule : MODULES)
-            currentModule.setOpenLoop(openLoop);
-
+    protected void resetRotationController() {
         SWERVE_ROTATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees());
     }
 

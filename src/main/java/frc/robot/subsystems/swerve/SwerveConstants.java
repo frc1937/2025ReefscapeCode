@@ -43,7 +43,6 @@ public class SwerveConstants {
             ? new PID(1.2, 0, 0)
             : new PID(5, 0, 0);
 
-
     protected static final ProfiledPIDController SWERVE_ROTATION_CONTROLLER = IS_SIMULATION ?
             new ProfiledPIDController(
                     0.1, 0, 0,
@@ -58,23 +57,23 @@ public class SwerveConstants {
     protected static final ProfiledPIDController PROFILED_TRANSLATION_CONTROLLER = IS_SIMULATION ?
             new ProfiledPIDController(
                     0.4, 0, 0,
-                    new TrapezoidProfile.Constraints(3, 3)
+                    new TrapezoidProfile.Constraints(1.5, 1.7)
             )
             :
             new ProfiledPIDController(
-                    3.9, 0, 0.05,
-                    new TrapezoidProfile.Constraints(360, 360)
+                    0.4, 0, 0,
+                    new TrapezoidProfile.Constraints(1.5, 1.7)
             );
 
     protected static final ProfiledPIDController PROFILED_STRAFE_CONTROLLER = IS_SIMULATION ?
             new ProfiledPIDController(
                     0.4, 0, 0,
-                    new TrapezoidProfile.Constraints(3, 3)
+                    new TrapezoidProfile.Constraints(1.5, 1.7)
             )
             :
             new ProfiledPIDController(
                     3.9, 0, 0.05,
-                    new TrapezoidProfile.Constraints(360, 360)
+                    new TrapezoidProfile.Constraints(1.5, 1.7)
             );
 
 
@@ -94,7 +93,7 @@ public class SwerveConstants {
         SWERVE_ROTATION_CONTROLLER.enableContinuousInput(-180, 180);
         SWERVE_ROTATION_CONTROLLER.setTolerance(1);
 
-        PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.05);
-        PROFILED_STRAFE_CONTROLLER.setTolerance(0.05);
+        PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.08);
+        PROFILED_STRAFE_CONTROLLER.setTolerance(0.08);
     }
 }
