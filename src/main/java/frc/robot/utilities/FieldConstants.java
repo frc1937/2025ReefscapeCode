@@ -4,38 +4,32 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import frc.lib.util.flippable.Flippable;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.lib.util.flippable.FlippableTranslation2d;
 
+import static frc.lib.util.flippable.Flippable.isRedAlliance;
+
 public class FieldConstants {
     public enum ReefFace {
-        FACE_0(3.6587, 4.0269, Rotation2d.k180deg),
-        FACE_1(4.0745, 4.7472, Rotation2d.fromDegrees(120)),
-        FACE_2(4.9052, 4.7472, Rotation2d.fromDegrees(60)),
-        FACE_3(5.3210, 4.0259, Rotation2d.kZero),
-        FACE_4(4.9053, 3.3067, Rotation2d.fromDegrees(-60)),
-        FACE_5(4.0746, 3.3064, Rotation2d.fromDegrees(-120));
+        FACE_0(Rotation2d.k180deg),
+        FACE_1(Rotation2d.fromDegrees(120)),
+        FACE_2(Rotation2d.fromDegrees(60)),
+        FACE_3(Rotation2d.kZero),
+        FACE_4(Rotation2d.fromDegrees(-60)),
+        FACE_5(Rotation2d.fromDegrees(-120));
 
-        private final FlippablePose2d
-                facePose,
-                leftBranch,
-                rightBranch;
+        private final FlippablePose2d rightBranch, leftBranch;
 
-        ReefFace(double x, double y, Rotation2d rotation) {
-            this.facePose = new FlippablePose2d(new Pose2d(x, y, rotation).transformBy(BLUE_FEEDER_TRANSFORM), true);
-
+        ReefFace(Rotation2d rotation) {
+            final FlippablePose2d facePose = new FlippablePose2d(new Pose2d(new Translation2d(), rotation).transformBy(ROBOT_DISTANCE_TRANSFORM), true);
             final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(), facePose.getRotation().get(), true);
+
             this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
             this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
-        } //todo: Refactor this
-
-        public Pose2d getPose() {
-            return facePose.get();
         }
 
-        public ReefFace getOpposite() {
-            return values()[(ordinal() + 3) % 6];
+        public ReefFace getAllianceCorrectedFace() {
+            return isRedAlliance() ? values()[(ordinal() + 3) % 6] : this;
         }
 
         public Pose2d getLeftBranch() {
@@ -49,20 +43,20 @@ public class FieldConstants {
 
     public enum Feeder {
         TOP_FEEDER(
-                new Pose2d(0.851, 7.396, Rotation2d.fromDegrees(-54)).transformBy(new Transform2d(0.4, 0.0, Rotation2d.fromDegrees(180))),
-                new Pose2d(16.697, 7.396, Rotation2d.fromDegrees(-126)).transformBy(new Transform2d(0.4, 0, Rotation2d.fromDegrees(180)))
+                new Pose2d(0.851, 7.396, Rotation2d.fromDegrees(-54)),
+                new Pose2d(16.697, 7.396, Rotation2d.fromDegrees(-126))
         ),
         BOTTOM_FEEDER(
-                new Pose2d(0.851, 0.63605, Rotation2d.fromDegrees(54)).transformBy(new Transform2d(0.4, 0.0, Rotation2d.fromDegrees(180))),
-                new Pose2d(16.697, 0.63605, Rotation2d.fromDegrees(126)).transformBy(new Transform2d(0.4, 0, Rotation2d.fromDegrees(180)))
-        );  
+                new Pose2d(0.851, 0.63605, Rotation2d.fromDegrees(54)),
+                new Pose2d(16.697, 0.63605, Rotation2d.fromDegrees(126))
+        );
 
         private final Pose2d blueFeederPose;
         private final Pose2d redFeederPose;
 
         Feeder(Pose2d blueFeederPose, Pose2d redFeederPose) {
-            this.blueFeederPose = blueFeederPose;
-            this.redFeederPose = redFeederPose;
+            this.blueFeederPose = blueFeederPose.transformBy(ROBOT_DISTANCE_TRANSFORM);
+            this.redFeederPose = redFeederPose.transformBy(ROBOT_DISTANCE_TRANSFORM);
         }
 
         /**
@@ -71,14 +65,12 @@ public class FieldConstants {
          * @return alliance corrected feeder pose
          */
         public Pose2d getPose() {
-            if (Flippable.isRedAlliance()) return redFeederPose;
-            return blueFeederPose;
+            return isRedAlliance() ? redFeederPose : blueFeederPose;
         }
     }
 
     private static final Transform2d
-            BLUE_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
-            RED_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
+            ROBOT_DISTANCE_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
             ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, -0.25), Rotation2d.fromDegrees(90));
 
     private static final Transform2d
@@ -94,5 +86,7 @@ public class FieldConstants {
             MIDDLE_CAGE = new FlippablePose2d(8.7738712, 6.168517, Rotation2d.k180deg, true),
             CLOSE_CAGE = new FlippablePose2d(8.7738712, 5.0786538, Rotation2d.k180deg, true);
 
-    public static final FlippableTranslation2d REEF_CENTER = new FlippableTranslation2d(4.490, 4.027, true);
+    public static final Translation2d BLUE_REEF_CENTER = new Translation2d(4.490, 4.027);
+
+    public static final FlippableTranslation2d REEF_CENTER = new FlippableTranslation2d(BLUE_REEF_CENTER, true);
 }

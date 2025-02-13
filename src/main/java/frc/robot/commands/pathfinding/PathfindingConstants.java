@@ -3,6 +3,7 @@ package frc.robot.commands.pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.utilities.FieldConstants;
+import org.littletonrobotics.junction.Logger;
 
 public class PathfindingConstants {
     public enum Branch {
@@ -14,9 +15,7 @@ public class PathfindingConstants {
 
             @Override
             public Pose2d getBranchPose(FieldConstants.ReefFace face) {
-                return Flippable.isRedAlliance() ?
-                        face.getOpposite().getLeftBranch() :
-                        face.getLeftBranch();
+                return face.getLeftBranch();
             }
         },
 
@@ -28,9 +27,7 @@ public class PathfindingConstants {
 
             @Override
             public Pose2d getBranchPose(FieldConstants.ReefFace face) {
-                return Flippable.isRedAlliance() ?
-                        face.getOpposite().getRightBranch() :
-                        face.getRightBranch();
+                return face.getRightBranch();
             }
         };
 

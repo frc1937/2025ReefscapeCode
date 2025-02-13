@@ -1,0 +1,255 @@
+{
+  "version": 1.0,
+  "grid_size": 64,
+  "tabs": [
+    {
+      "name": "Teleoperated",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "Cycle1",
+            "x": 448.0,
+            "y": 64.0,
+            "width": 256.0,
+            "height": 448.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Should Remove Algae?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle1/Should Remove Algae?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Branch?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle1/Which Branch?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Feeder?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle1/Which Feeder?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Reef Face?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle1/Which Reef Face?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Scoring Level?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle1/Which Scoring Level?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Cycle2",
+            "x": 704.0,
+            "y": 64.0,
+            "width": 256.0,
+            "height": 448.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Should Remove Algae?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle2/Should Remove Algae?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Branch?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle2/Which Branch?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Feeder?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle2/Which Feeder?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Reef Face?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle2/Which Reef Face?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Scoring Level?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle2/Which Scoring Level?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              }
+            ]
+          },
+          {
+            "title": "Cycle3",
+            "x": 960.0,
+            "y": 64.0,
+            "width": 256.0,
+            "height": 448.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Should Remove Algae?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle3/Should Remove Algae?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Branch?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle3/Which Branch?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Feeder?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle3/Which Feeder?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Reef Face?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle3/Which Reef Face?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Which Scoring Level?",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/Cycle3/Which Scoring Level?",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": []
+      }
+    },
+    {
+      "name": "Autonomous",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    }
+  ]
+}

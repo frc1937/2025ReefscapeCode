@@ -72,15 +72,14 @@ public class PathfindingCommands {
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
-        final boolean isBlueAlliance = !Flippable.isRedAlliance();
 
-        if (angle < -150 || angle >= 150) return isBlueAlliance ? FACE_0 : FACE_0.getOpposite();
-        if (angle < -90) return isBlueAlliance ? FACE_5 : FACE_5.getOpposite();
-        if (angle < -30) return isBlueAlliance ? FACE_4 : FACE_4.getOpposite();
-        if (angle < 30) return isBlueAlliance ? FACE_3 : FACE_3.getOpposite();
-        if (angle < 90) return isBlueAlliance ? FACE_2 : FACE_2.getOpposite();
+        if (angle < -150 || angle >= 150) return FACE_0.getAllianceCorrectedFace();
+        if (angle < -90) return FACE_5.getAllianceCorrectedFace();
+        if (angle < -30) return FACE_4.getAllianceCorrectedFace();
+        if (angle < 30) return FACE_3.getAllianceCorrectedFace();
+        if (angle < 90) return FACE_2.getAllianceCorrectedFace();
 
-        return isBlueAlliance ? FACE_1 : FACE_1.getOpposite();
+        return FACE_1.getAllianceCorrectedFace();
     }
 
     private static Pose2d decideFeederPose() {
