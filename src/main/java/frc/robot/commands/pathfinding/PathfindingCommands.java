@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
@@ -15,8 +16,8 @@ import static frc.robot.utilities.FieldConstants.ReefFace.*;
 
 public class PathfindingCommands {
     private static final double
-            PID_PATHFIND_THRESHOLD_REEF = 1.1,
-            PID_PATHFIND_THRESHOLD_FEEDER = 0.8;
+            PID_PATHFIND_THRESHOLD_REEF = 0.7,
+            PID_PATHFIND_THRESHOLD_FEEDER = 0.7;
 
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose()), Set.of(SWERVE));
@@ -26,9 +27,13 @@ public class PathfindingCommands {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = branch.getBranchPose(face);
 
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
-                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.1))
-                    : SwerveCommands.goToPoseBezier(targetPose);
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(
+                    SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.04))
+            ).andThen(new WaitCommand(1));
+//                    isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
+//                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.05))
+//                    : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
 
@@ -41,7 +46,7 @@ public class PathfindingCommands {
             final Pose2d targetPose = feeder.getPose();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER)
-                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.1))
+                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.05))
                     : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }

@@ -17,8 +17,6 @@ public class ProfiledPID {
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
 
-    private boolean forceAtGoal = false;
-
     /**
      * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd.
      *
@@ -128,10 +126,6 @@ public class ProfiledPID {
         return m_controller.getI();
     }
 
-    public void forceAtGoalToValue(boolean forceAtGoal) {
-        this.forceAtGoal = forceAtGoal;
-    }
-
     /**
      * Gets the differential coefficient.
      *
@@ -203,7 +197,7 @@ public class ProfiledPID {
      * @return True if the error is within the tolerance of the error.
      */
     public boolean atGoal() {
-        return atSetpoint() && m_goal.equals(m_setpoint) || forceAtGoal;
+        return atSetpoint() && m_goal.equals(m_setpoint);
     }
 
     /**

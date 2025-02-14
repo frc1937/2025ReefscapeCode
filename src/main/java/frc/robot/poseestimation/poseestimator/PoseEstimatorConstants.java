@@ -3,10 +3,7 @@ package frc.robot.poseestimation.poseestimator;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.poseestimation.photoncamera.CameraFactory;
@@ -21,7 +18,8 @@ public class PoseEstimatorConstants {
     static final double POSE_BUFFER_SIZE_SECONDS = 2;
     static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS = new StandardDeviations(Math.pow(0.003, 2), Math.pow(0.0002, 2));
 
-    static final Pose2d EMPTY_POSE = Flippable.isRedAlliance() ? flipAboutYAxis(new Pose2d()) : new Pose2d();
+    private static final Pose2d DEFAULT_RED_POSE = new Pose2d(new Translation2d(10,4), Rotation2d.kZero);
+    static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : flipAboutYAxis(DEFAULT_RED_POSE);
 
     static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
             0.27, 0.37, 0.19,

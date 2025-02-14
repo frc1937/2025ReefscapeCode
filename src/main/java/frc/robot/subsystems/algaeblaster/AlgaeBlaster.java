@@ -27,7 +27,7 @@ public class AlgaeBlaster extends GenericSubsystem {
                 interrupt -> {},
                 ARM_BLASTER_MOTOR::isAtPositionSetpoint,
                 this
-        ).alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector()).until(ARM_BLASTER_MOTOR::isAtPositionSetpoint);
+        ).raceWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector());
     }
 
     public Command stopAlgaeBlasterArm() {
