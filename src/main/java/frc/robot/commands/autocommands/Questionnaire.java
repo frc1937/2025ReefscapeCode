@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
-import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
@@ -52,7 +52,7 @@ public class Questionnaire {
         question.addDefaultOption("None", null);
 
         for (ReefFace face : ReefFace.values()) {
-            question.addOption("Face " + face.ordinal(), face);
+            question.addOption("Face " + face.ordinal(), face.getAllianceCorrectedFace());
         }
 
         return question;
@@ -116,18 +116,21 @@ public class Questionnaire {
                 : blastAlgaeOffReef(selectedReefFace);
 
         //toDO: Seems to get stuck at that algaeBlastingCOmmand
-        return goToBranch.alongWith(algaeBlastingCommand)
-                .andThen(cycle.scoringHeightQuestion.get())
+        return goToBranch
+//                .alongWith(algaeBlastingCommand)
+//                .andThen(cycle.scoringHeightQuestion.get())
                 .andThen((cycle.coralIntakeQuestion.get()));
     }
 
     public Command getCommand() {
-        return PRESET_QUESTION.getSendableChooser().getSelected().equals("None")
-                ? Commands.sequence(
-                        createCycleSequence(CYCLE_1),
-                        createCycleSequence(CYCLE_2),
-                        createCycleSequence(CYCLE_3))
-                : PRESET_QUESTION.get();
+        if (PRESET_QUESTION.getSendableChooser().getSelected() != "None")
+            return PRESET_QUESTION.get();
+
+        return Commands.sequence(
+                createCycleSequence(CYCLE_1),
+                createCycleSequence(CYCLE_2),
+                createCycleSequence(CYCLE_3)
+        );
     }
 
     public String getSelected() {

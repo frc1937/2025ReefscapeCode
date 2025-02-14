@@ -31,12 +31,9 @@ public class PathfindingCommands {
             final Pose2d targetPose = branch.getBranchPose(face);
 
             return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(
-                    SwerveCommands.goToPosePID(targetPose)
-            ).andThen(new WaitCommand(1));
-//                    isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
-//                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.05))
-//                    : SwerveCommands.goToPoseBezier(targetPose);
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
+                    .andThen(new WaitCommand(0.1));
+            //todo: See how to incorporate both pathplanner & PID to shave the most time off. perhaps some constants tuning will help?
         }, Set.of(SWERVE));
     }
 
@@ -51,9 +48,9 @@ public class PathfindingCommands {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = feeder.getPose();
 
-            return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER)
-                    ? SwerveCommands.goToPosePID(targetPose)
-                    : SwerveCommands.goToPoseBezier(targetPose);
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
+                    .andThen(new WaitCommand(0.1));
         }, Set.of(SWERVE));
     }
 
