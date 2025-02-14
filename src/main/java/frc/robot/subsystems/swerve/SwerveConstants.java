@@ -1,10 +1,10 @@
 package frc.robot.subsystems.swerve;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.PID;
+import frc.lib.generic.ProfiledPID;
 import frc.lib.generic.hardware.pigeon.Pigeon;
 import frc.lib.generic.hardware.pigeon.PigeonConfiguration;
 import frc.lib.generic.hardware.pigeon.PigeonFactory;
@@ -43,35 +43,35 @@ public class SwerveConstants {
             ? new PID(1.2, 0, 0)
             : new PID(5, 0, 0);
 
-    protected static final ProfiledPIDController SWERVE_ROTATION_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPIDController(
+    protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION ?
+            new ProfiledPID(
                     0.1, 0, 0,
                     new TrapezoidProfile.Constraints(360, 360)
             )
             :
-            new ProfiledPIDController(
+            new ProfiledPID(
                     3.9, 0, 0.05,
                     new TrapezoidProfile.Constraints(360, 360)
             );
 
-    protected static final ProfiledPIDController PROFILED_TRANSLATION_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPIDController(
+    protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = IS_SIMULATION ?
+            new ProfiledPID(
                     0.4, 0, 0,
                     new TrapezoidProfile.Constraints(1.5, 1.7)
             )
             :
-            new ProfiledPIDController(
+            new ProfiledPID(
                     0.4, 0, 0,
                     new TrapezoidProfile.Constraints(1.5, 1.7)
             );
 
-    protected static final ProfiledPIDController PROFILED_STRAFE_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPIDController(
+    protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = IS_SIMULATION ?
+            new ProfiledPID(
                     0.4, 0, 0,
                     new TrapezoidProfile.Constraints(1.5, 1.7)
             )
             :
-            new ProfiledPIDController(
+            new ProfiledPID(
                     3.9, 0, 0.05,
                     new TrapezoidProfile.Constraints(1.5, 1.7)
             );
