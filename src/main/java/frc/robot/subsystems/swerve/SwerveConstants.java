@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -39,35 +40,24 @@ public class SwerveConstants {
             DRIVE_NEUTRAL_DEADBAND = 0.15,
             ROTATION_NEUTRAL_DEADBAND = 0.15;
 
+    private static final TrapezoidProfile.Constraints TRANSLATIONAL_PROFILES_CONSTRAINTS = IS_SIMULATION
+            ? new TrapezoidProfile.Constraints(3, 3)
+            : new TrapezoidProfile.Constraints(5, 3);
+
+    private static final PIDConstants TRANSLATIONAL_PROFILES_CONSTANTS = IS_SIMULATION
+            ? new PIDConstants(0.9, 0, 0.00005)
+            : new PIDConstants(0.3551, 0, 0);
+
+    protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
+    protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
+
     protected static final PID PID_TRANSLATION_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
             : new PID(5, 0, 0);
 
-    protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPID(
-                    0.11, 0, 0,
-                    new TrapezoidProfile.Constraints(360, 360)
-            )
-            :
-            new ProfiledPID(
-                    3.9, 0, 0.05,
-                    new TrapezoidProfile.Constraints(360, 360)
-            );
-
-    protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPID(
-                    0.31, 0, 0, 0,
-                    new TrapezoidProfile.Constraints(3, 2)
-            )
-            : null;
-
-    protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = IS_SIMULATION ?
-            new ProfiledPID(
-                    0.31, 0, 0,
-                    new TrapezoidProfile.Constraints(3, 2)
-            )
-            : null;
-
+    protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
+            ? new ProfiledPID(0.5, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360))
+            : new ProfiledPID(3.9, 0, 0.05, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createIMU("GYRO", GYRO_PORT);
 

@@ -1,5 +1,6 @@
 package frc.lib.generic;
 
+import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
@@ -31,6 +32,11 @@ public class ProfiledPID {
     public ProfiledPID(
             double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints) {
         this(Kp, Ki, Kd, 0, constraints);
+    }
+
+    public ProfiledPID(
+            PIDConstants constants, double kS, TrapezoidProfile.Constraints constraints) {
+        this(constants.kP, constants.kI, constants.kD, kS, constraints);
     }
 
     /**

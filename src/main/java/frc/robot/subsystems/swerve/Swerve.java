@@ -17,8 +17,6 @@ import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.function.BooleanSupplier;
-
 import static frc.lib.math.Conversions.proportionalPowerToMps;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -29,8 +27,9 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
 
-    public boolean isAtPose(Pose2d target, double threshold) {
-        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < threshold && SWERVE_ROTATION_CONTROLLER.atGoal();
+    public boolean isAtPose(Pose2d target, double allowedDistanceFromTargetMeters, double allowedRotationalErrorDegrees) {
+         return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
+                Math.abs(POSE_ESTIMATOR.getCurrentPose().getRotation().minus(target.getRotation()).getDegrees()) < allowedRotationalErrorDegrees;
     }
 
     @Override
@@ -116,15 +115,6 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < MODULES.length; i++)
             MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
-    }
-
-    public BooleanSupplier isRobotCloseToTarget(Pose2d targetPose, double threshold) {
-        return () -> {
-            boolean isAtY = Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < threshold;
-            boolean isAtX = Math.abs(POSE_ESTIMATOR.getCurrentPose().getX() - targetPose.getX()) < threshold;
-
-            return isAtX && isAtY;
-        };
     }
 
     protected void driveOpenLoop(double xPower, double yPower, double thetaPower, boolean robotCentric) {

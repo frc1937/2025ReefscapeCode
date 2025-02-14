@@ -50,12 +50,12 @@ public class SwerveCommands {
                 },
                 () -> SWERVE.driveToPose(targetPose),
                 interrupt -> SWERVE.stop(),
-                () -> SWERVE.isAtPose(targetPose, 0.09),
+                () -> SWERVE.isAtPose(targetPose, 0.1, 1),
                 SWERVE
         );
     }
 
-    public static Command goToPoseTrapezoidal(Pose2d targetPose) {
+    public static Command goToPoseTrapezoidal(Pose2d targetPose, double allowedDistanceFromTargetMeters, double allowedRotationalErrorDegrees) {
         return new FunctionalCommand(
                 () -> {
                     SWERVE.resetRotationController();
@@ -65,8 +65,8 @@ public class SwerveCommands {
                     SWERVE.setGoalTranslationalControllers(targetPose);
                 },
                 () -> SWERVE.driveToPoseTrapezoidal(targetPose),
-                interrupt -> {},
-                () -> PROFILED_TRANSLATION_CONTROLLER.atGoal() && PROFILED_STRAFE_CONTROLLER.atGoal() && SWERVE_ROTATION_CONTROLLER.atGoal(),
+                interrupt -> SWERVE.stop(),
+                () -> SWERVE.isAtPose(targetPose, allowedDistanceFromTargetMeters, allowedRotationalErrorDegrees),
                 SWERVE
         );
     }

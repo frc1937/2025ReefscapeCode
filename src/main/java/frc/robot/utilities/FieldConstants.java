@@ -71,7 +71,7 @@ public class FieldConstants {
 
     private static final Transform2d
             ROBOT_DISTANCE_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
-            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, -0.25), Rotation2d.fromDegrees(90));
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.3, -0.25), Rotation2d.fromDegrees(90));
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -0.1643, Rotation2d.kZero),

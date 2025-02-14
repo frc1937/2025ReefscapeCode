@@ -20,7 +20,10 @@ public class PathfindingCommands {
             PID_PATHFIND_THRESHOLD_FEEDER = 0.7;
 
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
-        return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose()), Set.of(SWERVE));
+        return new DeferredCommand(
+                () -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.17, 0.5),
+                Set.of(SWERVE)
+        );
     }
 
     public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
@@ -29,7 +32,7 @@ public class PathfindingCommands {
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .andThen(
-                    SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.04))
+                    SwerveCommands.goToPosePID(targetPose)
             ).andThen(new WaitCommand(1));
 //                    isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_REEF)
 //                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.05))
@@ -38,7 +41,10 @@ public class PathfindingCommands {
     }
 
     public static DeferredCommand pathfindToFeeder() {
-        return new DeferredCommand(() -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose()), Set.of(SWERVE));
+        return new DeferredCommand(
+                () -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose(), 0.17, 0.5),
+                Set.of(SWERVE)
+        );
     }
 
     public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
@@ -46,7 +52,7 @@ public class PathfindingCommands {
             final Pose2d targetPose = feeder.getPose();
 
             return isRobotInProximity(targetPose, PID_PATHFIND_THRESHOLD_FEEDER)
-                    ? SwerveCommands.goToPosePID(targetPose).until(SWERVE.isRobotCloseToTarget(targetPose, 0.05))
+                    ? SwerveCommands.goToPosePID(targetPose)
                     : SwerveCommands.goToPoseBezier(targetPose);
         }, Set.of(SWERVE));
     }
@@ -56,11 +62,10 @@ public class PathfindingCommands {
             final Pose2d targetPose = decideCagePose();
             final Pose2d intermediateTarget = new Pose2d(POSE_ESTIMATOR.getCurrentPose().getX(), targetPose.getY(), targetPose.getRotation());
 
-            final Command alignWithTargetY = SwerveCommands.goToPoseTrapezoidal(intermediateTarget);
+            final Command alignWithTargetY = SwerveCommands.goToPoseTrapezoidal(intermediateTarget, 0.1, 0.1);
 
             return alignWithTargetY
-                    .until(SWERVE.isRobotCloseToTarget(intermediateTarget, 0.1))
-                    .andThen(SwerveCommands.goToPoseTrapezoidal(targetPose));
+                    .andThen(SwerveCommands.goToPoseTrapezoidal(targetPose, 0.07, 0.01));
         }, Set.of(SWERVE));
     }
 
