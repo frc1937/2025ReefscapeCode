@@ -8,12 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.lib.util.commands.InitExecuteCommand;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
@@ -46,7 +44,10 @@ public class SwerveCommands {
 
     public static Command goToPosePID(Pose2d targetPose) {
         return new FunctionalCommand(
-                SWERVE::resetRotationController,
+                () -> {
+                    SWERVE.resetRotationController();
+                    SWERVE.setGoalRotationController(targetPose);
+                },
                 () -> SWERVE.driveToPose(targetPose),
                 interrupt -> SWERVE.stop(),
                 () -> SWERVE.isAtPose(targetPose, 0.09),
@@ -57,13 +58,11 @@ public class SwerveCommands {
     public static Command goToPoseTrapezoidal(Pose2d targetPose) {
         return new FunctionalCommand(
                 () -> {
-                    PROFILED_TRANSLATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getX(), SWERVE.getFieldRelativeVelocity().vxMetersPerSecond);
-                    PROFILED_STRAFE_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getY(), SWERVE.getFieldRelativeVelocity().vyMetersPerSecond);
-
-                    PROFILED_TRANSLATION_CONTROLLER.setGoal(targetPose.getX());
-                    PROFILED_STRAFE_CONTROLLER.setGoal(targetPose.getY());
-
                     SWERVE.resetRotationController();
+                    SWERVE.resetTranslationalControllers();
+
+                    SWERVE.setGoalRotationController(targetPose);
+                    SWERVE.setGoalTranslationalControllers(targetPose);
                 },
                 () -> SWERVE.driveToPoseTrapezoidal(targetPose),
                 interrupt -> {},
@@ -77,8 +76,7 @@ public class SwerveCommands {
     }
 
     public static Command driveOpenLoop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier robotCentric) {
-        return new InitExecuteCommand(
-                SWERVE::resetRotationController,
+        return Commands.run(
                 () -> SWERVE.driveOpenLoop(x.getAsDouble(), y.getAsDouble(), rotation.getAsDouble(), robotCentric.getAsBoolean()),
                 SWERVE
         );
@@ -86,10 +84,12 @@ public class SwerveCommands {
 
     public static Command driveWhilstRotatingToTarget(DoubleSupplier x, DoubleSupplier y, Pose2d target, BooleanSupplier robotCentric) {
         return new FunctionalCommand(
-                SWERVE::resetRotationController,
-                () -> SWERVE.driveWithTarget(x.getAsDouble(), y.getAsDouble(), target, robotCentric.getAsBoolean()),
-                interrupt -> {
+                () -> {
+                    SWERVE.resetRotationController();
+                    SWERVE.setGoalRotationController(target);
                 },
+                () -> SWERVE.driveWithTarget(x.getAsDouble(), y.getAsDouble(), robotCentric.getAsBoolean()),
+                interrupt -> {},
                 () -> false,
                 SWERVE
         );
@@ -97,12 +97,14 @@ public class SwerveCommands {
 
     public static Command rotateToTarget(Pose2d target) {
         return new FunctionalCommand(
-                SWERVE::resetRotationController,
-                () -> SWERVE.driveWithTarget(0, 0, target, false),
-                interrupt -> {
+                () -> {
+                    SWERVE.resetRotationController();
+                    SWERVE.setGoalRotationController(target);
                 },
+                () -> SWERVE.driveWithTarget(0, 0, false),
+                interrupt -> {},
                 SWERVE_ROTATION_CONTROLLER::atGoal,
                 SWERVE
-        ).withTimeout(3);
+        );
     }
 }

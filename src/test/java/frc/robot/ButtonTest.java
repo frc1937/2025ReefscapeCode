@@ -1,8 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -27,14 +24,14 @@ class ButtonTest {
 //        System.out.println(rpm);
 //
         Map<Integer, Pose3d> TAG_ID_TO_POSE = new HashMap<>();
-
-        for (AprilTag aprilTag : AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape).getTags())
-            TAG_ID_TO_POSE.put(aprilTag.ID, aprilTag.pose);
-
-        for (Pose3d tagPosition : TAG_ID_TO_POSE.values()) {
-            System.out.println("Y:" + TAG_ID_TO_POSE.get(tagPosition).getY()); //Y:5.547868
-            System.out.println("X:" + TAG_ID_TO_POSE.get(tagPosition).getX()); //X:-0.0381
-        }
+//
+//        for (AprilTag aprilTag : AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape).getTags())
+//            TAG_ID_TO_POSE.put(aprilTag.ID, aprilTag.pose);
+//
+//        for (Pose3d tagPosition : TAG_ID_TO_POSE.values()) {
+//            System.out.println("Y:" + TAG_ID_TO_POSE.get(tagPosition).getY()); //Y:5.547868
+//            System.out.println("X:" + TAG_ID_TO_POSE.get(tagPosition).getX()); //X:-0.0381
+//        }
 //
     }
 

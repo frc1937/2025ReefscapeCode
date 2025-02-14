@@ -1,7 +1,6 @@
 package frc.lib.generic;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 /**
@@ -9,7 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  * call reset() when they first start running the controller to avoid unwanted behavior.
  */
 public class ProfiledPID {
-    private PIDController m_controller;
+    private PID m_controller;
     private double m_minimumInput;
     private double m_maximumInput;
 
@@ -17,6 +16,8 @@ public class ProfiledPID {
     private TrapezoidProfile m_profile;
     private TrapezoidProfile.State m_goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State m_setpoint = new TrapezoidProfile.State();
+
+    private boolean forceAtGoal = false;
 
     /**
      * Allocates a ProfiledPIDController with the given constants for Kp, Ki, and Kd.
@@ -31,7 +32,7 @@ public class ProfiledPID {
      */
     public ProfiledPID(
             double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints) {
-        this(Kp, Ki, Kd, constraints, 0.02);
+        this(Kp, Ki, Kd, 0, constraints);
     }
 
     /**
@@ -41,7 +42,7 @@ public class ProfiledPID {
      * @param Ki The integral coefficient.
      * @param Kd The derivative coefficient.
      * @param constraints Velocity and acceleration constraints for goal.
-     * @param period The period between controller updates in seconds. The default is 0.02 seconds.
+     * @param kS The minimum voltage value to apply
      * @throws IllegalArgumentException if kp &lt; 0
      * @throws IllegalArgumentException if ki &lt; 0
      * @throws IllegalArgumentException if kd &lt; 0
@@ -49,8 +50,8 @@ public class ProfiledPID {
      */
     @SuppressWarnings("this-escape")
     public ProfiledPID(
-            double Kp, double Ki, double Kd, TrapezoidProfile.Constraints constraints, double period) {
-        m_controller = new PIDController(Kp, Ki, Kd, period);
+            double Kp, double Ki, double Kd, double kS, TrapezoidProfile.Constraints constraints) {
+        m_controller = new PID(Kp, Ki, Kd, kS);
         m_constraints = constraints;
         m_profile = new TrapezoidProfile(m_constraints);
     }
@@ -127,6 +128,10 @@ public class ProfiledPID {
         return m_controller.getI();
     }
 
+    public void forceAtGoalToValue(boolean forceAtGoal) {
+        this.forceAtGoal = forceAtGoal;
+    }
+
     /**
      * Gets the differential coefficient.
      *
@@ -146,21 +151,12 @@ public class ProfiledPID {
     }
 
     /**
-     * Gets the period of this controller.
-     *
-     * @return The period of the controller.
-     */
-    public double getPeriod() {
-        return m_controller.getPeriod();
-    }
-
-    /**
      * Returns the position tolerance of this controller.
      *
      * @return the position tolerance of the controller.
      */
     public double getPositionTolerance() {
-        return m_controller.getErrorTolerance();
+        return m_controller.getPositionTolerance();
     }
 
     /**
@@ -169,16 +165,7 @@ public class ProfiledPID {
      * @return the velocity tolerance of the controller.
      */
     public double getVelocityTolerance() {
-        return m_controller.getErrorDerivativeTolerance();
-    }
-
-    /**
-     * Returns the accumulated error used in the integral calculation of this controller.
-     *
-     * @return The accumulated error of this controller.
-     */
-    public double getAccumulatedError() {
-        return m_controller.getAccumulatedError();
+        return m_controller.getVelocityTolerance();
     }
 
     /**
@@ -216,7 +203,7 @@ public class ProfiledPID {
      * @return True if the error is within the tolerance of the error.
      */
     public boolean atGoal() {
-        return atSetpoint() && m_goal.equals(m_setpoint);
+        return atSetpoint() && m_goal.equals(m_setpoint) || forceAtGoal;
     }
 
     /**
@@ -246,7 +233,7 @@ public class ProfiledPID {
     public TrapezoidProfile.State getSetpoint() {
         return m_setpoint;
     }
-//todo: Add support for kS
+
     /**
      * Returns true if the error is within the tolerance of the error.
      *
@@ -311,24 +298,6 @@ public class ProfiledPID {
     }
 
     /**
-     * Returns the difference between the setpoint and the measurement.
-     *
-     * @return The error.
-     */
-    public double getPositionError() {
-        return m_controller.getError();
-    }
-
-    /**
-     * Returns the change in error per second.
-     *
-     * @return The change in error per second.
-     */
-    public double getVelocityError() {
-        return m_controller.getErrorDerivative();
-    }
-
-    /**
      * Returns the next output of the PID controller.
      *
      * @param measurement The current measurement of the process variable.
@@ -351,7 +320,7 @@ public class ProfiledPID {
             m_setpoint.position = setpointMinDistance + measurement;
         }
 
-        m_setpoint = m_profile.calculate(getPeriod(), m_setpoint, m_goal);
+        m_setpoint = m_profile.calculate(0.02, m_setpoint, m_goal);
         return m_controller.calculate(measurement, m_setpoint.position);
     }
 

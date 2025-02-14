@@ -15,12 +15,13 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
 
 import static frc.lib.math.Conversions.proportionalPowerToMps;
-import static frc.lib.math.MathUtils.getAngleFromPoseToPose;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
+import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
@@ -117,8 +118,13 @@ public class Swerve extends GenericSubsystem {
             MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
     }
 
-    public BooleanSupplier isRobotCloseToTarget(Pose2d targetPose) {
-        return () -> Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < PID_PATHFIND_ACCURACY_THRESHOLD;
+    public BooleanSupplier isRobotCloseToTarget(Pose2d targetPose, double threshold) {
+        return () -> {
+            boolean isAtY = Math.abs(POSE_ESTIMATOR.getCurrentPose().getY() - targetPose.getY()) < threshold;
+            boolean isAtX = Math.abs(POSE_ESTIMATOR.getCurrentPose().getX() - targetPose.getX()) < threshold;
+
+            return isAtX && isAtY;
+        };
     }
 
     protected void driveOpenLoop(double xPower, double yPower, double thetaPower, boolean robotCentric) {
@@ -128,15 +134,10 @@ public class Swerve extends GenericSubsystem {
             driveFieldRelative(xPower, yPower, thetaPower, false);
     }
 
-    protected void driveWithTarget(double xPower, double yPower, Pose2d target, boolean robotCentric) {
+    protected void driveWithTarget(double xPower, double yPower, boolean robotCentric) {
         final Rotation2d currentAngle = RobotContainer.POSE_ESTIMATOR.getCurrentPose().getRotation();
-        final Rotation2d targetAngle = getAngleFromPoseToPose(RobotContainer.POSE_ESTIMATOR.getCurrentPose(), target);
 
-        final double controllerOutput = Units.degreesToRadians(
-                SWERVE_ROTATION_CONTROLLER.calculate(
-                        currentAngle.getDegrees(),
-                        targetAngle.getDegrees()
-                ));
+        final double controllerOutput = Units.degreesToRadians(SWERVE_ROTATION_CONTROLLER.calculate(currentAngle.getDegrees()));
 
         if (robotCentric)
             driveRobotRelative(xPower, yPower, controllerOutput, false);
@@ -148,20 +149,17 @@ public class Swerve extends GenericSubsystem {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
         driveFieldRelative(
-                SWERVE_TRANSLATION_CONTROLLER.calculate(
+                PID_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getX(),
                         target.getX()
                 ),
 
-                SWERVE_TRANSLATION_CONTROLLER.calculate(
+                PID_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getY(),
                         target.getY()
                 ),
 
-                SWERVE_ROTATION_CONTROLLER.calculate(
-                        currentPose.getRotation().getDegrees(),
-                        target.getRotation().getDegrees()
-                ),
+                SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees()),
                 true
         );
     }
@@ -169,14 +167,28 @@ public class Swerve extends GenericSubsystem {
     protected void driveToPoseTrapezoidal(Pose2d target) {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
+        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_output", PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()));
+        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_current", currentPose.getX());
+        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_target", target.getX());
+        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_velocity", getFieldRelativeVelocity().vxMetersPerSecond);
+        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_isAtGoal", PROFILED_TRANSLATION_CONTROLLER.atGoal());
+
+        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_output", PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY()));
+        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_current", currentPose.getY());
+        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_target", target.getY());
+        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_velocity", getFieldRelativeVelocity().vyMetersPerSecond);
+        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_isAtGoal", PROFILED_STRAFE_CONTROLLER.atGoal());
+
+        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_output", SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees(), target.getRotation().getDegrees()));
+        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_current", currentPose.getRotation().getDegrees());
+        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_target", target.getRotation().getDegrees());
+        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_velocity", getFieldRelativeVelocity().omegaRadiansPerSecond);
+        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_isAtGoal", SWERVE_ROTATION_CONTROLLER.atGoal());
+
         driveFieldRelative(
                 PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()),
                 PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY()),
-
-                SWERVE_ROTATION_CONTROLLER.calculate(
-                        currentPose.getRotation().getDegrees(),
-                        target.getRotation().getDegrees()
-                ),
+                SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees()),
                 true
         );
     }
@@ -193,8 +205,22 @@ public class Swerve extends GenericSubsystem {
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
+    protected void resetTranslationalControllers() {
+        PROFILED_TRANSLATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getX(), SWERVE.getFieldRelativeVelocity().vxMetersPerSecond);
+        PROFILED_STRAFE_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getY(), SWERVE.getFieldRelativeVelocity().vyMetersPerSecond);
+    }
+
     protected void resetRotationController() {
-        SWERVE_ROTATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees());
+        SWERVE_ROTATION_CONTROLLER.reset(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees(), getFieldRelativeVelocity().omegaRadiansPerSecond);
+    }
+
+    protected void setGoalTranslationalControllers(Pose2d target) {
+        PROFILED_TRANSLATION_CONTROLLER.setGoal(target.getX());
+        PROFILED_STRAFE_CONTROLLER.setGoal(target.getY());
+    }
+
+    protected void setGoalRotationController(Pose2d target) {
+        SWERVE_ROTATION_CONTROLLER.setGoal(target.getRotation().getDegrees());
     }
 
     protected SwerveModulePosition[] getSwerveWheelPositions(int odometryUpdateIndex) {
