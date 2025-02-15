@@ -115,7 +115,6 @@ public class Questionnaire {
                 ? Commands.none()
                 : blastAlgaeOffReef(selectedReefFace);
 
-        //toDO: Seems to get stuck at that algaeBlastingCOmmand
         return goToBranch
                 .alongWith(algaeBlastingCommand)
                 .andThen(cycle.scoringHeightQuestion.get())
@@ -134,7 +133,7 @@ public class Questionnaire {
     }
 
     public String getSelected() {
-        return "None";
+        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get().getName() : "Custom";
     }
 
     private record Cycle(
