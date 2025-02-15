@@ -20,17 +20,18 @@ import static frc.robot.RobotContainer.SWERVE;
 public class PathPlannerConstants {
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
 
-    public static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = new PPHolonomicDriveController(
-            new PIDConstants(5.1, 0.0, 0),
-            new PIDConstants(3, 0.0, 0)
+    public static final PathConstraints PATHPLANNER_CONSTRAINTS = new PathConstraints(
+            3.7,
+            2,
+            6,
+            4
     );
 
-    public static final PathConstraints PATHPLANNER_CONSTRAINTS = new PathConstraints(
-            ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS,
-            3,
-            ROBOT_CONFIG.moduleConfig.maxDriveVelocityRadPerSec,
-            2
+    private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = new PPHolonomicDriveController(
+            new PIDConstants(5.5, 0.0, 0),
+            new PIDConstants(5.5, 0.0, 0)
     );
+
 
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());

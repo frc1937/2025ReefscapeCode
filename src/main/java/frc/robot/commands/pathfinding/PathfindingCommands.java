@@ -26,32 +26,11 @@ public class PathfindingCommands {
         );
     }
 
-    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = branch.getBranchPose(face);
-
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.1));
-            //todo: See how to incorporate both pathplanner & PID to shave the most time off. perhaps some constants tuning will help?
-        }, Set.of(SWERVE));
-    }
-
     public static DeferredCommand pathfindToFeeder() {
         return new DeferredCommand(
                 () -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose(), 0.17, 0.5),
                 Set.of(SWERVE)
         );
-    }
-
-    public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = feeder.getPose();
-
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.1));
-        }, Set.of(SWERVE));
     }
 
     public static DeferredCommand pathfindToCage() {
@@ -66,7 +45,27 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    public static ReefFace decideReefFace() {
+    public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = feeder.getPose();
+
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
+                    .andThen(new WaitCommand(0.1));
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = branch.getBranchPose(face);
+
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
+                    .andThen(new WaitCommand(0.1));
+        }, Set.of(SWERVE));
+    }
+
+    protected static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 
@@ -103,9 +102,5 @@ public class PathfindingCommands {
             return MIDDLE_CAGE.get();
 
         return FAR_CAGE.get();
-    }
-
-    private static boolean isRobotInProximity(Pose2d pose2d, double thresholdMetres) {
-        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(pose2d.getTranslation()) < thresholdMetres;
     }
 }

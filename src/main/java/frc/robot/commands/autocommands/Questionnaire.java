@@ -117,8 +117,8 @@ public class Questionnaire {
 
         //toDO: Seems to get stuck at that algaeBlastingCOmmand
         return goToBranch
-//                .alongWith(algaeBlastingCommand)
-//                .andThen(cycle.scoringHeightQuestion.get())
+                .alongWith(algaeBlastingCommand)
+                .andThen(cycle.scoringHeightQuestion.get())
                 .andThen((cycle.coralIntakeQuestion.get()));
     }
 
