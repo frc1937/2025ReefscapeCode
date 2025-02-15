@@ -2,13 +2,15 @@ package frc.robot.commands.autocommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
-import frc.robot.commands.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
 
 public class Questionnaire {
     private final LoggedDashboardChooser<Command> PRESET_QUESTION;
@@ -44,23 +46,24 @@ public class Questionnaire {
         return question;
     }
 
-    private LoggedDashboardChooser<String> createReefFaceQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + "Which Reef Face?");
+    private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<ReefFace> question = new LoggedDashboardChooser<>(cycleNumber + "Which Reef Face?");
 
-        question.addDefaultOption("None", "None");
+        question.addDefaultOption("None", null);
+
         for (ReefFace face : ReefFace.values()) {
-            question.addOption("Face " + face.ordinal(), face.name());
+            question.addOption("Face " + face.ordinal(), face.getAllianceCorrectedFace());
         }
 
         return question;
     }
 
-    private LoggedDashboardChooser<String> createBranchQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>(cycleNumber + "Which Branch?");
+    private LoggedDashboardChooser<Branch> createBranchQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<Branch> question = new LoggedDashboardChooser<>(cycleNumber + "Which Branch?");
 
-        question.addDefaultOption("None", "None");
-        question.addOption("Left Branch", "LEFT");
-        question.addOption("Right Branch", "RIGHT");
+        question.addDefaultOption("None", null);
+        question.addOption("Left Branch", Branch.LEFT_BRANCH);
+        question.addOption("Right Branch", Branch.RIGHT_BRANCH);
 
         return question;
     }
@@ -68,9 +71,13 @@ public class Questionnaire {
     private LoggedDashboardChooser<Command> createAlgaeQuestion(String cycleNumber) {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Should Remove Algae?");
 
-        question.addDefaultOption("None", Commands.none());
-        question.addOption("Yes", AlgaeManipulationCommands.blastAlgaeOffReef());
-        question.addOption("No", Commands.none());
+        final Command emptyCommand = Commands.none();
+
+        question.addDefaultOption("None", emptyCommand);
+        question.addOption("Yes", blastAlgaeOffReef());
+        question.addOption("No", emptyCommand);
+
+        emptyCommand.schedule();
 
         return question;
     }
@@ -79,9 +86,9 @@ public class Questionnaire {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
 
         question.addDefaultOption("None", Commands.none());
-        question.addOption("L1", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L1));
-        question.addOption("L2", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L2));
-        question.addOption("L3", CoralManipulationCommands.scoreGamePiece(ElevatorConstants.ElevatorHeight.L3));
+        question.addOption("L1", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L1));
+        question.addOption("L2", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
+        question.addOption("L3", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L3));
 
         return question;
     }
@@ -97,42 +104,43 @@ public class Questionnaire {
     }
 
     private Command createCycleSequence(Cycle cycle) {
-        final String selectedReefFace = cycle.reefFaceQuestion.get();
-        final String selectedBranch = cycle.branchQuestion.get();
+        final ReefFace selectedReefFace = cycle.reefFaceQuestion.get();
+        final Branch selectedBranch = cycle.branchQuestion.get();
 
-        final Command goToBranch = selectedBranch.equals("None") || selectedReefFace.equals("None") ?
-                Commands.none() :
-                selectedBranch.equals("LEFT") ?
-                        PathfindingCommands.pathfindToLeftBranch(ReefFace.valueOf(selectedReefFace)) :
-                        PathfindingCommands.pathfindToRightBranch(ReefFace.valueOf(selectedReefFace));
+        final Command goToBranch = selectedBranch == null || selectedReefFace == null
+                ? Commands.none()
+                : PathfindingCommands.pathfindToBranchBezier(selectedBranch, selectedReefFace);
 
-        return Commands.sequence(
-                goToBranch,
-                cycle.algaeQuestion.get(),
-                cycle.scoringHeightQuestion.get(),
-                cycle.feederQuestion.get()
-        );
+        final Command algaeBlastingCommand = cycle.algaeQuestion.get().isFinished()
+                ? Commands.none()
+                : blastAlgaeOffReef(selectedReefFace);
+
+        return goToBranch
+                .alongWith(algaeBlastingCommand)
+                .andThen(cycle.scoringHeightQuestion.get())
+                .andThen((cycle.coralIntakeQuestion.get()));
     }
 
     public Command getCommand() {
-        return PRESET_QUESTION.getSendableChooser().getSelected().equals("None") ?
-                Commands.sequence(
-                        createCycleSequence(CYCLE_1),
-                        createCycleSequence(CYCLE_2),
-                        createCycleSequence(CYCLE_3)
-                ) :
-                PRESET_QUESTION.get();
+        if (PRESET_QUESTION.getSendableChooser().getSelected() != "None")
+            return PRESET_QUESTION.get();
+
+        return Commands.sequence(
+                createCycleSequence(CYCLE_1),
+                createCycleSequence(CYCLE_2),
+                createCycleSequence(CYCLE_3)
+        );
     }
 
     public String getSelected() {
-        return "None";
+        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get().getName() : "Custom";
     }
 
     private record Cycle(
-            LoggedDashboardChooser<String> reefFaceQuestion,
-            LoggedDashboardChooser<String> branchQuestion,
+            LoggedDashboardChooser<ReefFace> reefFaceQuestion,
+            LoggedDashboardChooser<Branch> branchQuestion,
             LoggedDashboardChooser<Command> algaeQuestion,
             LoggedDashboardChooser<Command> scoringHeightQuestion,
-            LoggedDashboardChooser<Command> feederQuestion) {
+            LoggedDashboardChooser<Command> coralIntakeQuestion) {
     }
 }

@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.*;
+import frc.robot.commands.pathfinding.PathfindingCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants;
 
@@ -11,24 +13,13 @@ public class CoralManipulationCommands {
     public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2;
     public static boolean SHOULD_BLAST_ALGAE = false;
 
-    public static Command pathfindToLeftBranchAndScore() {
-        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToLeftBranch();
+    public static Command pathfindToBranchAndScore(PathfindingConstants.Branch branch) {
+        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToBranch(branch);
 
-        return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
-                .until(pathfindingCommand::isFinished)
+        return (pathfindingCommand
+                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)))
                 .andThen(getAlgaeCommand())
-                .andThen(scoreCoralNoPositionCheck());
-    }
-
-    public static Command pathfindToRightBranchAndScore() {
-        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToRightBranch();
-
-        return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
-                .until(pathfindingCommand::isFinished)
-                .andThen(getAlgaeCommand())
-                .andThen(scoreCoralNoPositionCheck());
+                .andThen(scoreCoralFromCurrentLevel());
     }
 
     public static Command pathfindToFeederAndEat() {
@@ -37,8 +28,14 @@ public class CoralManipulationCommands {
         return pathfindingCommand.alongWith(eatFromFeeder());
     }
 
+    /**
+     * Pathfinds to the specified feeder while constantly eating. Stops when the coral intake has coral
+     *
+     * @param feeder The feeder to pathfind to
+     * @return The command
+     */
     public static Command pathfindToFeederAndEat(FieldConstants.Feeder feeder) {
-        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeeder(feeder);
+        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeederBezier(feeder);
 
         return pathfindingCommand.alongWith(eatFromFeeder().withTimeout(3).unless(CORAL_INTAKE::hasCoral));
     }
@@ -48,15 +45,14 @@ public class CoralManipulationCommands {
                 .alongWith(CORAL_INTAKE.prepareGamePiece());
     }
 
-    public static Command scoreCoralNoPositionCheck() {
-        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
-                .until(ELEVATOR::isAtTarget)
-                .andThen(CORAL_INTAKE.releaseGamePiece());
+    public static Command scoreCoralFromCurrentLevel() {
+        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL).alongWith(
+                CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition).withTimeout(1.5));
     }
- 
-    public static Command scoreGamePiece(ElevatorConstants.ElevatorHeight elevatorHeight) {
-        return ELEVATOR.setTargetHeight(elevatorHeight).andThen(
-                CORAL_INTAKE.releaseGamePiece()).andThen(CORAL_INTAKE.stop());
+
+    public static Command scoreCoralFromHeight(ElevatorConstants.ElevatorHeight elevatorHeight) {
+        return ELEVATOR.setTargetHeight(elevatorHeight).alongWith(
+                CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(2);
     }
 
     private static Command getAlgaeCommand() {
@@ -66,4 +62,5 @@ public class CoralManipulationCommands {
                 Commands.none(),
                 () -> SHOULD_BLAST_ALGAE
         );
+    }
 }

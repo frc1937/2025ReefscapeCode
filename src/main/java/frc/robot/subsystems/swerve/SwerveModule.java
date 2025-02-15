@@ -23,7 +23,6 @@ public class SwerveModule {
     private final Encoder steerEncoder;
 
     private SwerveModuleState targetState = new SwerveModuleState();
-    private boolean openLoop = true;
 
     public SwerveModule(Motor driveMotor, Motor steerMotor, Encoder steerEncoder) {
         this.steerMotor = steerMotor;
@@ -51,13 +50,13 @@ public class SwerveModule {
                 .angularVelocity(RotationsPerSecond.of(driveMotor.getSystemVelocity()));
     }
 
-    protected void setTargetState(SwerveModuleState state) {
+    protected void setTargetState(SwerveModuleState state, boolean shouldUseClosedLoop) {
         this.targetState = Optimizations.optimize(state, getCurrentAngle());
 
         targetState.speedMetersPerSecond = Optimizations.reduceSkew(targetState.speedMetersPerSecond, targetState.angle, getCurrentAngle());
 
         setTargetAngle(targetState.angle);
-        setTargetVelocity(targetState.speedMetersPerSecond, openLoop);
+        setTargetVelocity(targetState.speedMetersPerSecond, shouldUseClosedLoop);
     }
 
     /**
@@ -78,25 +77,21 @@ public class SwerveModule {
         );
     }
 
-    protected void setOpenLoop(boolean openLoop) {
-        this.openLoop = openLoop;
-    }
-
     protected void setTargetAngle(Rotation2d angle) {
         steerMotor.setOutput(MotorProperties.ControlMode.POSITION, angle.getRotations());
     }
 
-    protected void setTargetVelocity(double velocityMetresPerSecond, boolean openLoop) {
+    protected void setTargetVelocity(double velocityMetresPerSecond, boolean shouldUseClosedLoop) {
         if (!isTemperatureOkay()) System.out.println("SWERVE MODULE " + driveMotor.getDeviceID() + " is TOO HOT!" );
 
-        if (openLoop) {
+        if (shouldUseClosedLoop) {
+            final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
+            driveMotor.setOutput(MotorProperties.ControlMode.VELOCITY, targetVelocityRPSClosedLoop);
+        } else {
             final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION *
                     (velocityMetresPerSecond / ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
 
             driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, targetPowerOpenLoop);
-        } else {
-            final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
-            driveMotor.setOutput(MotorProperties.ControlMode.VELOCITY, targetVelocityRPSClosedLoop);
         }
     }
 

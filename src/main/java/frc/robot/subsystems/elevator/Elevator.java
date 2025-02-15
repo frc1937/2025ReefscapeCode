@@ -17,6 +17,12 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.*;
 
 public class Elevator extends GenericSubsystem {
+    /**
+     * This commands NEVER ENDS as the elevator needs to maintain its position.
+     *
+     * @param levelSupplier the target height of the elevator as a supplier
+     * @return the command to set the target height
+     */
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
                 () -> {
@@ -28,6 +34,12 @@ public class Elevator extends GenericSubsystem {
         );
     }
 
+    /**
+     * This commands NEVER ENDS as the elevator needs to maintain its position.
+     *
+     * @param level the target height of the elevator
+     * @return the command to set the target height
+     */
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
                 () -> {
@@ -39,7 +51,7 @@ public class Elevator extends GenericSubsystem {
         );
     }
 
-    public boolean isAtTarget() {
+    public boolean isAtTargetPosition() {
         return MASTER_MOTOR.isAtPositionSetpoint();
     }
 

@@ -18,6 +18,10 @@ public class FlippableUtils {
         return new Pose2d(FIELD_LENGTH - pose.getX(), pose.getY(), Rotation2d.k180deg.minus(pose.getRotation()));
     }
 
+    public static Pose2d flipAboutYAxisNoRotation(Pose2d pose) {
+        return new Pose2d(FIELD_LENGTH - pose.getX(), pose.getY(), (pose.getRotation()));
+    }
+
     /**
      * Rotate the pose about the X axis, including rotation.
      *
