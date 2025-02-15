@@ -9,13 +9,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.characterization.WheelRadiusCharacterization;
-import frc.lib.generic.hardware.KeyboardController;
+import frc.lib.generic.hardware.controllers.Controller;
+import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
-import frc.lib.util.Controller;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.leds.Leds;
@@ -23,8 +24,8 @@ import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.function.DoubleSupplier;
 
-import static frc.lib.util.Controller.Axis.LEFT_X;
-import static frc.lib.util.Controller.Axis.LEFT_Y;
+import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_X;
+import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
@@ -78,8 +79,8 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToLeftBranchAndScore());
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToRightBranchAndScore());
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
@@ -118,14 +119,14 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToLeftBranchAndScore());
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToRightBranchAndScore());
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgae());
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralNoPositionCheck());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(AlgaeManipulationCommands.releaseAlgaeFromIntake());
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevel());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(AlgaeManipulationCommands.blastAlgaeOffReef());
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(AlgaeManipulationCommands.intakeAlgae());
 
