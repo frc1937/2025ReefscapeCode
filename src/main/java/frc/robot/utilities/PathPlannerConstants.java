@@ -14,23 +14,20 @@ import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
 
+import static frc.robot.GlobalConstants.IS_SIMULATION;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 
 public class PathPlannerConstants {
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
 
-    public static final PathConstraints PATHPLANNER_CONSTRAINTS = new PathConstraints(
-            3.7,
-            2,
-            6,
-            4
-    );
+    public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
+            ? new PathConstraints(3.7, 2, 6, 4)
+            : new PathConstraints(5.7, 2, 6, 4); //TODO TUNE
 
-    private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = new PPHolonomicDriveController(
-            new PIDConstants(5.5, 0.0, 0),
-            new PIDConstants(5.5, 0.0, 0)
-    );
+    private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
+            ? new PPHolonomicDriveController(new PIDConstants(5.5, 0.0, 0), new PIDConstants(5.5, 0.0, 0))
+            : new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0), new PIDConstants(5, 0.0, 0)); //TODO TUNE
 
 
     public static void initializePathPlanner() {
