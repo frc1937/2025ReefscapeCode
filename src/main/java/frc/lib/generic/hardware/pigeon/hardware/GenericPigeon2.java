@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.hardware.pigeon.Pigeon;
 import frc.lib.generic.hardware.pigeon.PigeonConfiguration;
 import frc.lib.generic.hardware.pigeon.PigeonInputs;
@@ -23,7 +24,6 @@ public class GenericPigeon2 extends Pigeon {
     private final Pigeon2 pigeon;
 
     private final StatusSignal<Angle> yawSignal, pitchSignal, rollSignal;
-    private final List<BaseStatusSignal> signalsToUpdateList = new ArrayList<>();
 
     private final boolean[] signalsToLog = new boolean[PIGEON_INPUTS_LENGTH];
     private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
@@ -96,8 +96,6 @@ public class GenericPigeon2 extends Pigeon {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        BaseStatusSignal.refreshAll(signalsToUpdateList.toArray(new BaseStatusSignal[0]));
-
         inputs.gyroYawRotations = getYawPrivate();
         inputs.gyroRollRotations = getRollPrivate();
         inputs.gyroPitchRotations = getPitchPrivate();
@@ -119,6 +117,6 @@ public class GenericPigeon2 extends Pigeon {
 
     private void setupSignal(final BaseStatusSignal correspondingSignal, final int updateFrequency) {
         correspondingSignal.setUpdateFrequency(updateFrequency);
-        signalsToUpdateList.add(correspondingSignal);
+        HardwareManager.registerCTREStatusSignal(correspondingSignal);
     }
 }

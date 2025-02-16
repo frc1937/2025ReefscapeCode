@@ -15,7 +15,6 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 import static frc.lib.math.Conversions.proportionalPowerToMps;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
@@ -58,7 +57,7 @@ public class Swerve extends GenericSubsystem {
     }
 
     public ChassisSpeeds getRobotRelativeVelocity() {
-        return ROBOT_CONFIG.toChassisSpeeds(getModuleStates());
+        return SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
     }
 
     public ChassisSpeeds getFieldRelativeVelocity() {
@@ -156,24 +155,6 @@ public class Swerve extends GenericSubsystem {
 
     protected void driveToPoseTrapezoidal(Pose2d target) {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
-
-        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_output", PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()));
-        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_current", currentPose.getX());
-        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_target", target.getX());
-        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_velocity", getFieldRelativeVelocity().vxMetersPerSecond);
-        Logger.recordOutput("NGIGER1/PROFILED_TRANSLATION_CONTROLLER_isAtGoal", PROFILED_TRANSLATION_CONTROLLER.atGoal());
-
-        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_output", PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY()));
-        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_current", currentPose.getY());
-        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_target", target.getY());
-        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_velocity", getFieldRelativeVelocity().vyMetersPerSecond);
-        Logger.recordOutput("NGIGER2/PROFILED_STRAFE_CONTROLLER_isAtGoal", PROFILED_STRAFE_CONTROLLER.atGoal());
-
-        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_output", SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees(), target.getRotation().getDegrees()));
-        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_current", currentPose.getRotation().getDegrees());
-        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_target", target.getRotation().getDegrees());
-        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_velocity", getFieldRelativeVelocity().omegaRadiansPerSecond);
-        Logger.recordOutput("NGIGER3/SWERVE_ROTATION_CONTROLLER_isAtGoal", SWERVE_ROTATION_CONTROLLER.atGoal());
 
         driveFieldRelative(
                 PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()),

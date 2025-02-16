@@ -9,11 +9,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Voltage;
+import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.GenericPhysicsSimulation;
 import frc.robot.GlobalConstants;
 
-import static edu.wpi.first.units.Units.Volts;
 import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
 import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
@@ -54,6 +54,8 @@ public class SimulatedTalonMotor extends Motor {
 
         voltageSignal = talonFX.getMotorVoltage().clone();
         voltageSignal.setUpdateFrequency(1000);
+
+        HardwareManager.registerCTREStatusSignal(voltageSignal);
 
         if (CURRENT_MODE != GlobalConstants.Mode.SIMULATION)
             new RuntimeException("DO NOT Initialize THIS MOTOR! Use the factory methods instead!").printStackTrace();
@@ -186,7 +188,7 @@ public class SimulatedTalonMotor extends Motor {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        inputs.voltage = voltageSignal.refresh().getValue().in(Volts);
+        inputs.voltage = voltageSignal.getValueAsDouble();
         inputs.current = simulation.getCurrent();
         inputs.temperature = 0;
         inputs.target = target;
