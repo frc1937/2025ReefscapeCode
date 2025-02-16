@@ -1,5 +1,6 @@
 package frc.lib.generic.hardware;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import frc.lib.generic.OdometryThread;
 import frc.lib.generic.advantagekit.LoggableHardware;
 import frc.lib.generic.hardware.motor.MotorFactory;
@@ -24,10 +25,33 @@ public enum HardwareManager {
     INSTANCE;
 
     private static final boolean IS_PRACTICE = true;
-    private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100000000 /*100 MB*/ : 1000000000 /*1 GB*/;
+    private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100_000_000 /*100 MB*/ : 1_000_000_000 /*1 GB*/;
 
     private static final List<LoggableHardware> hardware = new ArrayList<>();
     private static final List<Runnable> periodicRunnable = new ArrayList<>();
+
+    private static BaseStatusSignal[] CTRE_STATUS_SIGNALS = new BaseStatusSignal[0];
+
+    /**
+     * Update all hardware devices
+     * <p>
+     * Call this periodically, preferably in the beginning of <code>robotPeriodic()</code> every loop
+     */
+    public static void update() {
+        FASTER_THREAD_LOCK.lock();
+
+        OdometryThread.getInstance().updateLatestTimestamps();
+
+        BaseStatusSignal.refreshAll(CTRE_STATUS_SIGNALS);
+
+        for (LoggableHardware loggableHardware : hardware) {
+            loggableHardware.periodic();
+        }
+
+        FASTER_THREAD_LOCK.unlock();
+
+        periodicRunnable.forEach(Runnable::run);
+    }
 
     /**
      * Initialize and start logging
@@ -90,27 +114,22 @@ public enum HardwareManager {
         HardwareManager.periodicRunnable.add(periodicRunnable);
     }
 
-    /**
-     * Update all hardware devices
-     * <p>
-     * Call this periodically, preferably in the beginning of <code>robotPeriodic()</code> every loop
-     */
-    public static void update() {
-        FASTER_THREAD_LOCK.lock();
-
-        OdometryThread.getInstance().updateLatestTimestamps();
-
-        for (LoggableHardware loggableHardware : hardware) {
-            loggableHardware.periodic();
-        }
-
-        FASTER_THREAD_LOCK.unlock();
-
-        periodicRunnable.forEach(Runnable::run);
-    }
-
     public static void updateSimulation() {
         MotorFactory.updateAllSimulations();
+    }
+
+    /**
+     * Add a signal to the signal initializer. This allows us to refresh ALL signals at once.
+     *
+     * @param signal The signal to refresh
+     */
+    public static void registerCTREStatusSignal(BaseStatusSignal signal) {
+        final BaseStatusSignal[] newSignals = new BaseStatusSignal[CTRE_STATUS_SIGNALS.length + 1];
+
+        System.arraycopy(CTRE_STATUS_SIGNALS, 0, newSignals, 0, CTRE_STATUS_SIGNALS.length);
+        newSignals[CTRE_STATUS_SIGNALS.length] = signal;
+
+        CTRE_STATUS_SIGNALS = newSignals;
     }
 
     private static void cleanOldFiles(File logsDirectory) {

@@ -9,12 +9,13 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.hardware.encoder.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static frc.lib.generic.hardware.encoder.EncoderInputs.ENCODER_INPUTS_LENGTH;
 
 /**
@@ -30,7 +31,6 @@ public class GenericCanCoder extends Encoder {
 
     private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
 
-    private final List<BaseStatusSignal> signalsToUpdateList = new ArrayList<>();
     private final StatusSignal<Angle> positionSignal;
     private final StatusSignal<AngularVelocity> velocitySignal;
 
@@ -63,8 +63,10 @@ public class GenericCanCoder extends Encoder {
         signalsToLog[signal.getId() + ENCODER_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case POSITION -> signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
-            case VELOCITY -> signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
+            case POSITION ->
+                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
+            case VELOCITY ->
+                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
         }
     }
 
@@ -76,9 +78,7 @@ public class GenericCanCoder extends Encoder {
                 SensorDirectionValue.Clockwise_Positive : SensorDirectionValue.CounterClockwise_Positive;
 
         canCoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint =
-                encoderConfiguration.sensorRange == EncoderProperties.SensorRange.ZERO_TO_ONE
-
-                ? 1 : 0.5;
+                encoderConfiguration.sensorRange == EncoderProperties.SensorRange.ZERO_TO_ONE ? 1 : 0.5;
 
         canCoder.optimizeBusUtilization();
 
@@ -108,8 +108,6 @@ public class GenericCanCoder extends Encoder {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        BaseStatusSignal.refreshAll(signalsToUpdateList.toArray(new BaseStatusSignal[0]));
-
         inputs.position = getEncoderPositionPrivate();
         inputs.velocity = getEncoderVelocityPrivate();
 
@@ -124,15 +122,15 @@ public class GenericCanCoder extends Encoder {
     }
 
     private double getEncoderPositionPrivate() {
-        return positionSignal.getValue().in(Rotations);
+        return positionSignal.getValueAsDouble();
     }
 
     private double getEncoderVelocityPrivate() {
-        return velocitySignal.getValue().in(RotationsPerSecond);
+        return velocitySignal.getValueAsDouble();
     }
 
     private void setupSignal(final BaseStatusSignal correspondingSignal, int updateFrequency) {
-        signalsToUpdateList.add(correspondingSignal);
         correspondingSignal.setUpdateFrequency(updateFrequency);
+        HardwareManager.registerCTREStatusSignal(correspondingSignal);
     }
 }

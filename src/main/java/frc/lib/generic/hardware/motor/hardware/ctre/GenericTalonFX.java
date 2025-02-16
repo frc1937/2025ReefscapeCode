@@ -13,13 +13,15 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.*;
 import frc.lib.generic.OdometryThread;
+import frc.lib.generic.hardware.HardwareManager;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
-import static edu.wpi.first.units.Units.*;
 import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
 
 public class GenericTalonFX extends Motor {
@@ -34,7 +36,6 @@ public class GenericTalonFX extends Motor {
     private final StatusSignal<Voltage> voltageSignal;
     private final StatusSignal<Current> currentSignal;
     private final StatusSignal<Temperature> temperatureSignal;
-    private final List<BaseStatusSignal> signalsToUpdateList = new ArrayList<>();
 
     private final TalonFXConfiguration talonConfig = new TalonFXConfiguration();
     private final TalonFXConfigurator talonConfigurator;
@@ -304,8 +305,6 @@ public class GenericTalonFX extends Motor {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        BaseStatusSignal.refreshAll(signalsToUpdateList.toArray(new BaseStatusSignal[0]));
-
         inputs.voltage = getVoltagePrivate();
         inputs.current = getCurrentPrivate();
         inputs.temperature = getTemperaturePrivate();
@@ -318,31 +317,31 @@ public class GenericTalonFX extends Motor {
     }
 
     private double getSystemPositionPrivate() {
-        return positionSignal.getValue().in(Rotations);
+        return positionSignal.getValueAsDouble();
     }
 
     private double getSystemVelocityPrivate() {
-        return velocitySignal.getValue().in(RotationsPerSecond);
+        return velocitySignal.getValueAsDouble();
     }
 
     private double getSystemAccelerationPrivate() {
-        return accelerationSignal.getValue().in(RotationsPerSecondPerSecond);
+        return accelerationSignal.getValueAsDouble();
     }
 
     private double getVoltagePrivate() {
-        return voltageSignal.getValue().in(Volts);
+        return voltageSignal.getValueAsDouble();
     }
 
     private double getTemperaturePrivate() {
-        return temperatureSignal.getValue().in(Celsius);
+        return temperatureSignal.getValueAsDouble();
     }
 
     private double getCurrentPrivate() {
-        return currentSignal.getValue().in(Amp);
+        return currentSignal.getValueAsDouble();
     }
 
     private void setupSignal(final BaseStatusSignal correspondingSignal, final int updateFrequency) {
         correspondingSignal.setUpdateFrequency(updateFrequency);
-        signalsToUpdateList.add(correspondingSignal);
+        HardwareManager.registerCTREStatusSignal(correspondingSignal);
     }
 }
