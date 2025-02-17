@@ -1,16 +1,19 @@
 package frc.robot;
 
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.autocommands.Questionnaire;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
 import frc.robot.subsystems.algaeintake.AlgaeIntake;
 import frc.robot.subsystems.coralintake.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.utilities.PathPlannerConstants;
@@ -39,6 +42,7 @@ public class RobotContainer {
         Flippable.init();
         PathPlannerConstants.initializePathPlanner();
 
+        setupNamedCommands();
         setupLEDs();
 
         ButtonControls.initializeButtons(ButtonControls.ButtonLayout.DEVELOPMENT);
@@ -72,5 +76,10 @@ public class RobotContainer {
         ALGAE_BLASTER.printPose();
         ALGAE_INTAKE.printPose();
         ELEVATOR.printPose();
+    }
+
+    public void setupNamedCommands() {
+        NamedCommands.registerCommand("ScoreCoralL2", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
+        NamedCommands.registerCommand("EatFromFeeder", CoralManipulationCommands.eatFromFeeder());
     }
 }

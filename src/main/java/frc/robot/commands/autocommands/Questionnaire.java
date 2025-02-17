@@ -1,5 +1,7 @@
 package frc.robot.commands.autocommands;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.commands.CoralManipulationCommands;
@@ -11,9 +13,10 @@ import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
+import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
 public class Questionnaire {
-    private final LoggedDashboardChooser<Command> PRESET_QUESTION;
+    private final LoggedDashboardChooser<String> PRESET_QUESTION;
     private final Cycle
             CYCLE_1,
             CYCLE_2,
@@ -35,13 +38,13 @@ public class Questionnaire {
                 createFeederQuestion(key));
     }
 
-    private LoggedDashboardChooser<Command> createPresetQuestion() {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>("Which Auto Preset?");
+    private LoggedDashboardChooser<String> createPresetQuestion() {
+        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>("Which Auto Preset?");
 
-        question.addDefaultOption("None", Commands.none());
-        question.addOption("go and distract on other alliance", Commands.none());
-        question.addOption("run into a wall", Commands.none());
-        question.addOption("spin around the reef", Commands.none());
+        question.addDefaultOption("None", "none");
+        question.addOption("preset1", "preset1");
+        question.addOption("placeholder1", "none");
+        question.addOption("placeholder2", "none");
 
         return question;
     }
@@ -122,8 +125,10 @@ public class Questionnaire {
     }
 
     public Command getCommand() {
-        if (PRESET_QUESTION.getSendableChooser().getSelected() != "None")
-            return PRESET_QUESTION.get();
+        if (PRESET_QUESTION.getSendableChooser().getSelected() != "None") {
+            final PathPlannerAuto presetAutoPath = new PathPlannerAuto(PRESET_QUESTION.get());
+            return AutoBuilder.pathfindToPose(presetAutoPath.getStartingPose(), PATHPLANNER_CONSTRAINTS).andThen(presetAutoPath);
+        }
 
         return Commands.sequence(
                 createCycleSequence(CYCLE_1),
@@ -133,7 +138,7 @@ public class Questionnaire {
     }
 
     public String getSelected() {
-        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get().getName() : "Custom";
+        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get() : "Custom";
     }
 
     private record Cycle(
