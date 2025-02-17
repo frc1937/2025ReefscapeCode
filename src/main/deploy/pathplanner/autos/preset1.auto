@@ -1,0 +1,73 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreCoralFace4L2Left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralL2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EatFromFeeder"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EatFromFeeder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreCoralFace4L2Right"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralL2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EatFromFeeder2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "EatFromFeeder"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ScoreCoralFace5L2Left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ScoreCoralL2"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
