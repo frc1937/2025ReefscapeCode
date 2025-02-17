@@ -30,7 +30,7 @@ public enum HardwareManager {
     private static final List<LoggableHardware> hardware = new ArrayList<>();
     private static final List<Runnable> periodicRunnable = new ArrayList<>();
 
-    private static BaseStatusSignal[] CTRE_STATUS_SIGNALS = new BaseStatusSignal[0];
+    private static BaseStatusSignal[] CTRE_NON_THREADED_SIGNALS = new BaseStatusSignal[0];
 
     /**
      * Update all hardware devices
@@ -42,7 +42,8 @@ public enum HardwareManager {
 
         OdometryThread.getInstance().updateLatestTimestamps();
 
-        BaseStatusSignal.refreshAll(CTRE_STATUS_SIGNALS);
+        if (CTRE_NON_THREADED_SIGNALS.length >= 1)
+            BaseStatusSignal.refreshAll(CTRE_NON_THREADED_SIGNALS);
 
         for (LoggableHardware loggableHardware : hardware) {
             loggableHardware.periodic();
@@ -124,12 +125,12 @@ public enum HardwareManager {
      * @param signal The signal to refresh
      */
     public static void registerCTREStatusSignal(BaseStatusSignal signal) {
-        final BaseStatusSignal[] newSignals = new BaseStatusSignal[CTRE_STATUS_SIGNALS.length + 1];
+        final BaseStatusSignal[] newSignals = new BaseStatusSignal[CTRE_NON_THREADED_SIGNALS.length + 1];
 
-        System.arraycopy(CTRE_STATUS_SIGNALS, 0, newSignals, 0, CTRE_STATUS_SIGNALS.length);
-        newSignals[CTRE_STATUS_SIGNALS.length] = signal;
+        System.arraycopy(CTRE_NON_THREADED_SIGNALS, 0, newSignals, 0, CTRE_NON_THREADED_SIGNALS.length);
+        newSignals[CTRE_NON_THREADED_SIGNALS.length] = signal;
 
-        CTRE_STATUS_SIGNALS = newSignals;
+        CTRE_NON_THREADED_SIGNALS = newSignals;
     }
 
     private static void cleanOldFiles(File logsDirectory) {
