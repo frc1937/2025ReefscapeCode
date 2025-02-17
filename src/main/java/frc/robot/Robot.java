@@ -2,12 +2,14 @@ package frc.robot;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LoggedRobot;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -36,7 +38,8 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledPeriodic() {
         try {
-            if (robotContainer.getAutoName().equals("None")) return;
+            if (!new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + robotContainer.getAutoName() + ".path").exists())
+                return;
 
             final PathPlannerPath path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
             final Optional<Pose2d> startingPose = path.getStartingHolonomicPose();
