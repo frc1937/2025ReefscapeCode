@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.util.flippable.FlippablePose2d;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
@@ -127,7 +128,7 @@ public class Questionnaire {
     public Command getCommand() {
         if (PRESET_QUESTION.getSendableChooser().getSelected() != "None") {
             final PathPlannerAuto presetAutoPath = new PathPlannerAuto(PRESET_QUESTION.get());
-            return AutoBuilder.pathfindToPose(presetAutoPath.getStartingPose(), PATHPLANNER_CONSTRAINTS).andThen(presetAutoPath);
+            return AutoBuilder.pathfindToPose(new FlippablePose2d(presetAutoPath.getStartingPose(), true).get(), PATHPLANNER_CONSTRAINTS).andThen(presetAutoPath);
         }
 
         return Commands.sequence(
