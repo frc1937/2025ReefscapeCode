@@ -25,8 +25,8 @@ public class OdometryThread extends Thread {
     private final List<Queue<Double>> queues = new ArrayList<>();
     private final Queue<Double> timestamps = new ArrayBlockingQueue<>(100);
 
-    private DoubleSupplier[] nonCtreSignals = new DoubleSupplier[0];
-    private BaseStatusSignal[] ctreSignals = new BaseStatusSignal[0];
+    private DoubleSupplier[] nonCtreThreadedSignals = new DoubleSupplier[0];
+    private BaseStatusSignal[] ctreThreadedSignals = new BaseStatusSignal[0];
 
     private static OdometryThread INSTANCE = null;
 
@@ -77,20 +77,22 @@ public class OdometryThread extends Thread {
     }
 
     private void periodic() {
-        BaseStatusSignal.refreshAll(ctreSignals);
-        final double updateTimestamp = (RobotController.getFPGATime() / 1.0e6 - ctreSignals[0].getTimestamp().getLatency());
+        if (ctreThreadedSignals.length >= 1)
+            BaseStatusSignal.refreshAll(ctreThreadedSignals);
+
+        final double updateTimestamp = (RobotController.getFPGATime() / 1.0e6);
 
         FASTER_THREAD_LOCK.lock();
 
         try {
-            final int nonCtreSignalsSize = nonCtreSignals.length;
+            final int nonCtreSignalsSize = nonCtreThreadedSignals.length;
 
             for (int i = 0; i < nonCtreSignalsSize; i++) {
-                queues.get(i).offer(nonCtreSignals[i].getAsDouble());
+                queues.get(i).offer(nonCtreThreadedSignals[i].getAsDouble());
             }
 
-            for (int i = 0; i < ctreSignals.length; i++) {
-                queues.get(nonCtreSignalsSize + i).offer(ctreSignals[i].getValueAsDouble());
+            for (int i = 0; i < ctreThreadedSignals.length; i++) {
+                queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
             timestamps.offer(updateTimestamp);
@@ -100,21 +102,21 @@ public class OdometryThread extends Thread {
     }
 
     private void insertCTRESignalToSignalArray(BaseStatusSignal statusSignal) {
-        final BaseStatusSignal[] newSignals = new BaseStatusSignal[ctreSignals.length + 1];
+        final BaseStatusSignal[] newSignals = new BaseStatusSignal[ctreThreadedSignals.length + 1];
 
-        System.arraycopy(ctreSignals, 0, newSignals, 0, ctreSignals.length);
-        newSignals[ctreSignals.length] = statusSignal;
+        System.arraycopy(ctreThreadedSignals, 0, newSignals, 0, ctreThreadedSignals.length);
+        newSignals[ctreThreadedSignals.length] = statusSignal;
 
-        ctreSignals = newSignals;
+        ctreThreadedSignals = newSignals;
     }
 
     private void insertSignalToSignalArray(DoubleSupplier statusSignal) {
-        final DoubleSupplier[] newSignals = new DoubleSupplier[nonCtreSignals.length + 1];
+        final DoubleSupplier[] newSignals = new DoubleSupplier[nonCtreThreadedSignals.length + 1];
 
-        System.arraycopy(nonCtreSignals, 0, newSignals, 0, nonCtreSignals.length);
-        newSignals[nonCtreSignals.length] = statusSignal;
+        System.arraycopy(nonCtreThreadedSignals, 0, newSignals, 0, nonCtreThreadedSignals.length);
+        newSignals[nonCtreThreadedSignals.length] = statusSignal;
 
-        nonCtreSignals = newSignals;
+        nonCtreThreadedSignals = newSignals;
     }
 
     public void updateLatestTimestamps() {
