@@ -34,6 +34,7 @@ public class MotorUtilities {
             return new double[0];
 
         final double[] array = new double[queue.size()];
+
         int i = 0;
         for (Double value : queue)
             array[i++] = value;

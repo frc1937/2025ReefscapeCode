@@ -49,24 +49,21 @@ public class GenericCanCoder extends Encoder {
 
     @Override
     public void setupSignalUpdates(EncoderSignal signal, boolean useFasterThread) {
-        final int updateFrequency = useFasterThread ? 200 : 50;
-
         signalsToLog[signal.getId()] = true;
 
-        switch (signal) {
-            case POSITION -> setupSignal(positionSignal, updateFrequency);
-            case VELOCITY -> setupSignal(velocitySignal, updateFrequency);
+        if (useFasterThread) {
+            switch (signal) {
+                case POSITION -> setupNonThreadedSignal(positionSignal);
+                case VELOCITY -> setupNonThreadedSignal(velocitySignal);
+            }
+            return;
         }
-
-        if (!useFasterThread) return;
 
         signalsToLog[signal.getId() + ENCODER_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getEncoderPositionPrivate));
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getEncoderVelocityPrivate));
+            case POSITION -> setupThreadedSignal("position", positionSignal);
+            case VELOCITY -> setupThreadedSignal("velocity",velocitySignal);
         }
     }
 
@@ -108,8 +105,8 @@ public class GenericCanCoder extends Encoder {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        inputs.position = getEncoderPositionPrivate();
-        inputs.velocity = getEncoderVelocityPrivate();
+        inputs.position = positionSignal.getValueAsDouble();
+        inputs.velocity = velocitySignal.getValueAsDouble();
 
         if (signalQueueList.isEmpty()) return;
 
@@ -121,16 +118,13 @@ public class GenericCanCoder extends Encoder {
         signalQueueList.forEach((k, v) -> v.clear());
     }
 
-    private double getEncoderPositionPrivate() {
-        return positionSignal.getValueAsDouble();
-    }
-
-    private double getEncoderVelocityPrivate() {
-        return velocitySignal.getValueAsDouble();
-    }
-
-    private void setupSignal(final BaseStatusSignal correspondingSignal, int updateFrequency) {
-        correspondingSignal.setUpdateFrequency(updateFrequency);
+    private void setupNonThreadedSignal(final BaseStatusSignal correspondingSignal) {
+        correspondingSignal.setUpdateFrequency(50);
         HardwareManager.registerCTREStatusSignal(correspondingSignal);
+    }
+
+    private void setupThreadedSignal(String name, BaseStatusSignal signal) {
+        signal.setUpdateFrequency(200);
+        signalQueueList.put(name, OdometryThread.getInstance().registerCTRESignal(signal));
     }
 }
