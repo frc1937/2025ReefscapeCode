@@ -262,35 +262,30 @@ public class GenericTalonFX extends Motor {
 
     @Override
     public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
-        final int updateFrequency = useFasterThread ? 200 : 50;
         signalsToLog[signal.getId()] = true;
 
-        switch (signal) {
-            case VELOCITY -> setupSignal(velocitySignal, updateFrequency);
-            case POSITION -> setupSignal(positionSignal, updateFrequency);
-            case ACCELERATION -> setupSignal(accelerationSignal, updateFrequency);
-            case VOLTAGE -> setupSignal(voltageSignal, updateFrequency);
-            case CURRENT -> setupSignal(currentSignal, updateFrequency);
-            case TEMPERATURE -> setupSignal(temperatureSignal, updateFrequency);
-        }
+        if (!useFasterThread) {
+            switch (signal) {
+                case VELOCITY -> setupNonThreadedSignal(velocitySignal);
+                case POSITION -> setupNonThreadedSignal(positionSignal);
+                case ACCELERATION -> setupNonThreadedSignal(accelerationSignal);
+                case VOLTAGE -> setupNonThreadedSignal(voltageSignal);
+                case CURRENT -> setupNonThreadedSignal(currentSignal);
+                case TEMPERATURE -> setupNonThreadedSignal(temperatureSignal);
+            }
 
-        if (!useFasterThread) return;
+            return;
+        }
 
         signalsToLog[signal.getId() + MotorInputs.MOTOR_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
-            case ACCELERATION ->
-                    signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getSystemAccelerationPrivate));
-            case VOLTAGE ->
-                    signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
-            case CURRENT ->
-                    signalQueueList.put("current", OdometryThread.getInstance().registerSignal(this::getCurrentPrivate));
-            case TEMPERATURE ->
-                    signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(this::getTemperaturePrivate));
+            case VELOCITY -> setupThreadedSignal("velocity", velocitySignal);
+            case POSITION -> setupThreadedSignal("position", positionSignal);
+            case ACCELERATION -> setupThreadedSignal("acceleration", accelerationSignal);
+            case VOLTAGE -> setupThreadedSignal("voltage", voltageSignal);
+            case CURRENT -> setupThreadedSignal("current", currentSignal);
+            case TEMPERATURE -> setupThreadedSignal("temperature", temperatureSignal);
         }
     }
 
@@ -305,43 +300,24 @@ public class GenericTalonFX extends Motor {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        inputs.voltage = getVoltagePrivate();
-        inputs.current = getCurrentPrivate();
-        inputs.temperature = getTemperaturePrivate();
+        inputs.voltage = voltageSignal.getValueAsDouble();
+        inputs.current = currentSignal.getValueAsDouble();
+        inputs.temperature = temperatureSignal.getValueAsDouble();
         inputs.target = target;
-        inputs.systemPosition = getSystemPositionPrivate();
-        inputs.systemVelocity = getSystemVelocityPrivate();
-        inputs.systemAcceleration = getSystemAccelerationPrivate();
+        inputs.systemPosition = positionSignal.getValueAsDouble();
+        inputs.systemVelocity = velocitySignal.getValueAsDouble();
+        inputs.systemAcceleration = accelerationSignal.getValueAsDouble();
 
         MotorUtilities.handleThreadedInputs(inputs, signalQueueList);
     }
 
-    private double getSystemPositionPrivate() {
-        return positionSignal.getValueAsDouble();
-    }
-
-    private double getSystemVelocityPrivate() {
-        return velocitySignal.getValueAsDouble();
-    }
-
-    private double getSystemAccelerationPrivate() {
-        return accelerationSignal.getValueAsDouble();
-    }
-
-    private double getVoltagePrivate() {
-        return voltageSignal.getValueAsDouble();
-    }
-
-    private double getTemperaturePrivate() {
-        return temperatureSignal.getValueAsDouble();
-    }
-
-    private double getCurrentPrivate() {
-        return currentSignal.getValueAsDouble();
-    }
-
-    private void setupSignal(final BaseStatusSignal correspondingSignal, final int updateFrequency) {
-        correspondingSignal.setUpdateFrequency(updateFrequency);
+    private void setupNonThreadedSignal(final BaseStatusSignal correspondingSignal) {
+        correspondingSignal.setUpdateFrequency(50);
         HardwareManager.registerCTREStatusSignal(correspondingSignal);
+    }
+
+    private void setupThreadedSignal(String name, BaseStatusSignal signal) {
+        signal.setUpdateFrequency(200);
+        signalQueueList.put(name, OdometryThread.getInstance().registerCTRESignal(signal));
     }
 }

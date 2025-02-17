@@ -1,5 +1,6 @@
 package frc.lib.generic;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
@@ -12,10 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.DoubleSupplier;
 
-import static frc.robot.GlobalConstants.CURRENT_MODE;
-import static frc.robot.GlobalConstants.FASTER_THREAD_LOCK;
-import static frc.robot.GlobalConstants.Mode;
-import static frc.robot.GlobalConstants.ODOMETRY_FREQUENCY_HERTZ;
+import static frc.robot.GlobalConstants.*;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -24,9 +22,11 @@ import static frc.robot.GlobalConstants.ODOMETRY_FREQUENCY_HERTZ;
  * blocking thread. A Notifier thread is used to gather samples with consistent timing.
  */
 public class OdometryThread extends Thread {
-    private final List<DoubleSupplier> signals = new ArrayList<>();
     private final List<Queue<Double>> queues = new ArrayList<>();
     private final Queue<Double> timestamps = new ArrayBlockingQueue<>(100);
+
+    private DoubleSupplier[] nonCtreSignals = new DoubleSupplier[0];
+    private BaseStatusSignal[] ctreSignals = new BaseStatusSignal[0];
 
     private static OdometryThread INSTANCE = null;
 
@@ -48,12 +48,26 @@ public class OdometryThread extends Thread {
         notifier.startPeriodic(1.0 / ODOMETRY_FREQUENCY_HERTZ);
     }
 
+    public Queue<Double> registerCTRESignal(BaseStatusSignal signal) {
+        Queue<Double> queue = new ArrayBlockingQueue<>(100);
+        FASTER_THREAD_LOCK.lock();
+
+        try {
+            insertCTRESignalToSignalArray(signal);
+            queues.add(queue);
+        } finally {
+            FASTER_THREAD_LOCK.unlock();
+        }
+
+        return queue;
+    }
+
     public Queue<Double> registerSignal(DoubleSupplier signal) {
         Queue<Double> queue = new ArrayBlockingQueue<>(100);
         FASTER_THREAD_LOCK.lock();
 
         try {
-            signals.add(signal);
+            insertSignalToSignalArray(signal);
             queues.add(queue);
         } finally {
             FASTER_THREAD_LOCK.unlock();
@@ -63,17 +77,44 @@ public class OdometryThread extends Thread {
     }
 
     private void periodic() {
+        BaseStatusSignal.refreshAll(ctreSignals);
+        final double updateTimestamp = (RobotController.getFPGATime() / 1.0e6 - ctreSignals[0].getTimestamp().getLatency());
+
         FASTER_THREAD_LOCK.lock();
 
-        timestamps.offer(RobotController.getFPGATime() / 1.0e6);
-
         try {
-            for (int i = 0; i < signals.size(); i++) {
-                queues.get(i).offer(signals.get(i).getAsDouble());
+            final int nonCtreSignalsSize = nonCtreSignals.length;
+
+            for (int i = 0; i < nonCtreSignalsSize; i++) {
+                queues.get(i).offer(nonCtreSignals[i].getAsDouble());
             }
+
+            for (int i = 0; i < ctreSignals.length; i++) {
+                queues.get(nonCtreSignalsSize + i).offer(ctreSignals[i].getValueAsDouble());
+            }
+
+            timestamps.offer(updateTimestamp);
         } finally {
             FASTER_THREAD_LOCK.unlock();
         }
+    }
+
+    private void insertCTRESignalToSignalArray(BaseStatusSignal statusSignal) {
+        final BaseStatusSignal[] newSignals = new BaseStatusSignal[ctreSignals.length + 1];
+
+        System.arraycopy(ctreSignals, 0, newSignals, 0, ctreSignals.length);
+        newSignals[ctreSignals.length] = statusSignal;
+
+        ctreSignals = newSignals;
+    }
+
+    private void insertSignalToSignalArray(DoubleSupplier statusSignal) {
+        final DoubleSupplier[] newSignals = new DoubleSupplier[nonCtreSignals.length + 1];
+
+        System.arraycopy(nonCtreSignals, 0, newSignals, 0, nonCtreSignals.length);
+        newSignals[nonCtreSignals.length] = statusSignal;
+
+        nonCtreSignals = newSignals;
     }
 
     public void updateLatestTimestamps() {
@@ -81,7 +122,6 @@ public class OdometryThread extends Thread {
             threadInputs.timestamps = timestamps.stream().mapToDouble(Double::doubleValue).toArray();
             timestamps.clear();
         }
-
         Logger.processInputs("OdometryThread", threadInputs);
     }
 
