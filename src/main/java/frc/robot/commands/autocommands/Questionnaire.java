@@ -128,7 +128,7 @@ public class Questionnaire {
     public Command getCommand() {
         if (PRESET_QUESTION.getSendableChooser().getSelected() != "None") {
             final PathPlannerAuto presetAutoPath = new PathPlannerAuto(PRESET_QUESTION.get());
-            return AutoBuilder.pathfindToPose(new FlippablePose2d(presetAutoPath.getStartingPose(), true).get(), PATHPLANNER_CONSTRAINTS).andThen(presetAutoPath);
+            return SwerveCommands.goToPoseBezier(new FlippablePose2d(presetAutoPath.getStartingPose(), true).get()).andThen(presetAutoPath);
         }
 
         return Commands.sequence(
