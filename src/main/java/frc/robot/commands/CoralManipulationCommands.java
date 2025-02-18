@@ -42,7 +42,7 @@ public class CoralManipulationCommands {
 
     public static Command eatFromFeeder() {
         return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
-                .alongWith(CORAL_INTAKE.prepareGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(2);
+                .alongWith(CORAL_INTAKE.prepareGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(3);
     }
 
     public static Command scoreCoralFromCurrentLevel() {

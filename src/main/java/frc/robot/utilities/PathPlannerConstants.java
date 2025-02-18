@@ -1,6 +1,7 @@
 package frc.robot.utilities;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -10,6 +11,8 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.util.LocalADStarAK;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.CoralManipulationCommands;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -34,8 +37,14 @@ public class PathPlannerConstants {
         Pathfinding.setPathfinder(new LocalADStarAK());
 
         configurePathPlanner();
+        setupNamedCommands();
 
         PathfindingCommand.warmupCommand().schedule();
+    }
+
+    private static void setupNamedCommands() {
+        NamedCommands.registerCommand("ScoreCoralL2", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
+        NamedCommands.registerCommand("EatFromFeeder", CoralManipulationCommands.eatFromFeeder());
     }
 
     private static void configurePathPlanner() {
