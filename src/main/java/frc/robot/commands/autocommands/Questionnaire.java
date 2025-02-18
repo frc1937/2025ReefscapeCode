@@ -1,6 +1,5 @@
 package frc.robot.commands.autocommands;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -9,12 +8,12 @@ import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.swerve.SwerveCommands;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
-import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
 public class Questionnaire {
     private final LoggedDashboardChooser<String> PRESET_QUESTION;
@@ -44,8 +43,6 @@ public class Questionnaire {
 
         question.addDefaultOption("None", "none");
         question.addOption("preset1", "preset1");
-        question.addOption("placeholder1", "none");
-        question.addOption("placeholder2", "none");
 
         return question;
     }
