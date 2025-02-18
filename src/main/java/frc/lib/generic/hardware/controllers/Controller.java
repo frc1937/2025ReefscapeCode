@@ -117,7 +117,7 @@ public class Controller {
      * @return The deadbanded value of the axis
      */
     public double getRawAxis(Axis axis) {
-        return MathUtil.applyDeadband(DriverStation.getStickAxis(port, axis.value), 0.002);
+        return MathUtil.applyDeadband(DriverStation.getStickAxis(port, axis.value), 0.05);
     }
 
     /**
@@ -130,8 +130,7 @@ public class Controller {
     public Command rumble(double intensity, double durationSeconds) {
         return new FunctionalCommand(
                 () -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, intensity),
-                () -> {
-                },
+                () -> {},
                 interrupt -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, 0),
                 () -> false
         ).raceWith(new WaitCommand(durationSeconds));

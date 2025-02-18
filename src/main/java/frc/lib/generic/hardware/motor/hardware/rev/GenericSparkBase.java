@@ -95,11 +95,15 @@ public abstract class GenericSparkBase extends Motor {
     }
 
     protected void configureFeedforward(MotorProperties.Slot slot) {
-        final Feedforward.Type type = switch (slot.gravityType()) {
-            case ARM -> Feedforward.Type.ARM;
-            case ELEVATOR -> Feedforward.Type.ELEVATOR;
-            default -> Feedforward.Type.SIMPLE;
-        };
+        Feedforward.Type type = Feedforward.Type.SIMPLE;
+
+        if (slot.gravityType() == MotorProperties.GravityType.ARM) {
+            type = Feedforward.Type.ARM;
+        }
+
+        if (slot.gravityType() == MotorProperties.GravityType.ELEVATOR) {
+            type = Feedforward.Type.ELEVATOR;
+        }
 
         this.feedforward = new Feedforward(type,
                 new Feedforward.FeedForwardConstants(slot.kS(), slot.kV(), slot.kA(), slot.kG()));
@@ -111,7 +115,7 @@ public abstract class GenericSparkBase extends Motor {
     }
 
     @Override
-    public void setFollowerOf(Motor motor, boolean invert) {
+    public void setFollower(Motor motor, boolean invert) {
         if (!(motor instanceof GenericSparkBase))
             return;
 
@@ -244,7 +248,7 @@ public abstract class GenericSparkBase extends Motor {
     }
 
     private double getSystemVelocityPrivate() {
-        return (encoder.getVelocity() / Conversions.SEC_PER_MIN);
+        return (encoder.getVelocity());
     }
 
     double getEffectivePosition() {
@@ -337,7 +341,7 @@ public abstract class GenericSparkBase extends Motor {
     protected abstract SparkBaseConfig getSparkConfig();
 
     private void optimizeBusUsage() {
-        final int disabledMs = 0;
+        final int disabledMs = 1000;
 
         //Status0:
         signalsConfig.appliedOutputPeriodMs(disabledMs);
@@ -383,8 +387,11 @@ public abstract class GenericSparkBase extends Motor {
         signalsConfig.iAccumulationAlwaysOn(false);
     }
 
-    private boolean configureMotor(MotorConfiguration configuration, SparkBase master, boolean invert) {
+    private boolean configureMotor(MotorConfiguration configuration, SparkBase master, boolean invertFollower) {
         currentConfiguration = configuration;
+
+        configureFeedforward(configuration.slot);
+        configureProfile(configuration);
 
         SparkBaseConfig sparkConfig = getSparkConfig();
 
@@ -392,8 +399,8 @@ public abstract class GenericSparkBase extends Motor {
 
         sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(configuration.closedLoopTolerance);
 
-        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
         sparkConfig.closedLoop.pid(configuration.slot.kP(), configuration.slot.kI(), configuration.slot.kD());
+        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
 
         sparkConfig.encoder.positionConversionFactor(1.0 / configuration.gearRatio);
         sparkConfig.encoder.velocityConversionFactor(1.0 / (Conversions.SEC_PER_MIN * configuration.gearRatio));
@@ -407,7 +414,8 @@ public abstract class GenericSparkBase extends Motor {
 
         sparkConfig.inverted(configuration.inverted);
 
-        if (master != null) sparkConfig.follow(master, invert);
+        if (master != null)
+            sparkConfig.follow(master, invertFollower);
 
         if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
         if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
@@ -422,17 +430,19 @@ public abstract class GenericSparkBase extends Motor {
             sparkConfig.softLimit.reverseSoftLimit(currentConfiguration.reverseSoftLimit * 1.0 / configuration.gearRatio);
         }
 
-        configureFeedforward(configuration.slot);
-        configureProfile(configuration);
-
         sparkConfig = configureExtras(configuration, sparkConfig);
 
         int i = 0;
 
-        while (i <= 5 && spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) != REVLibError.kOk) {
+        while (i <= 3 &&
+                spark.configureAsync(sparkConfig,
+                        SparkBase.ResetMode.kResetSafeParameters,
+                        SparkBase.PersistMode.kPersistParameters)
+                        != REVLibError.kOk)
+        {
             i++;
         }
 
-        return spark.configure(sparkConfig, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
+        return spark.configureAsync(sparkConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
     }
 }

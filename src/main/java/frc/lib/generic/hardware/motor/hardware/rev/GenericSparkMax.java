@@ -63,8 +63,7 @@ public class GenericSparkMax extends GenericSparkBase {
     }
 
     @Override
-    protected void refreshExtras() {
-    }
+    protected void refreshExtras() { }
 
     @Override
     protected void setNewGoalExtras() {
@@ -116,11 +115,11 @@ public class GenericSparkMax extends GenericSparkBase {
             }
 
             case POSITION_PID -> feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
+
             case POSITION_PID_WITH_KG -> {
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), 0, 0);
                 feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
             }
-
 
             case POSITION_S_CURVE -> {
                 final UpdateResult result = getSCurveGenerator().update(scurveInputs, scurveOutput);

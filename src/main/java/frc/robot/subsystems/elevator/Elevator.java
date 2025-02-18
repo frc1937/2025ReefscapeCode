@@ -59,6 +59,11 @@ public class Elevator extends GenericSubsystem {
         return Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
     }
 
+    public void stop() {
+        MASTER_MOTOR.stopMotor();
+        SLAVE_MOTOR.stopMotor();
+    }
+
     @Override
     public void setIdleMode(MotorProperties.IdleMode idleMode) {
         MASTER_MOTOR.setIdleMode(idleMode);
@@ -81,7 +86,8 @@ public class Elevator extends GenericSubsystem {
 
     @Override
     public void sysIdDrive(double voltage) {
-        MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+//        MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+//        SLAVE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, -voltage);
     }
 
     @Override

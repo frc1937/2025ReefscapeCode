@@ -16,7 +16,6 @@ import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import static frc.lib.math.Conversions.proportionalPowerToMps;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
@@ -199,6 +198,8 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < MODULES.length; i++) {
             swerveModulePositions[i] = MODULES[i].getOdometryPosition(odometryUpdateIndex);
+
+            if (swerveModulePositions[i] == null) return null;
         }
 
         return swerveModulePositions;
@@ -206,8 +207,8 @@ public class Swerve extends GenericSubsystem {
 
     protected ChassisSpeeds proportionalSpeedToMps(ChassisSpeeds chassisSpeeds) {
         return new ChassisSpeeds(
-                proportionalPowerToMps(chassisSpeeds.vxMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
-                proportionalPowerToMps(chassisSpeeds.vyMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
+                chassisSpeeds.vxMetersPerSecond * 3,
+                chassisSpeeds.vyMetersPerSecond* 3,
                 chassisSpeeds.omegaRadiansPerSecond
         );
     }

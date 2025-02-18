@@ -51,7 +51,7 @@ public class GenericCanCoder extends Encoder {
     public void setupSignalUpdates(EncoderSignal signal, boolean useFasterThread) {
         signalsToLog[signal.getId()] = true;
 
-        if (useFasterThread) {
+        if (!useFasterThread) {
             switch (signal) {
                 case POSITION -> setupNonThreadedSignal(positionSignal);
                 case VELOCITY -> setupNonThreadedSignal(velocitySignal);

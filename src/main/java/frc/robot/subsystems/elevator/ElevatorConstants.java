@@ -48,8 +48,8 @@ public class ElevatorConstants {
     );
 
     protected static final Motor
-            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.MAX),
-            SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.MAX);
+            MASTER_MOTOR = MotorFactory.createSpark("ELEVATOR_MASTER_MOTOR", MASTER_MOTOR_PORT, MotorProperties.SparkType.FLEX),
+            SLAVE_MOTOR = MotorFactory.createSpark("ELEVATOR_SLAVE_MOTOR", SLAVE_MOTOR_PORT, MotorProperties.SparkType.FLEX);
 
     protected static final Sensor
             TOP_BEAM_BREAK = SensorFactory.createDigitalInput("TOP_BEAM_BREAKER", TOP_BEAM_BREAK_DIO_PORT),
@@ -69,14 +69,12 @@ public class ElevatorConstants {
     private static void configureMotors() {
         final MotorConfiguration ELEVATOR_MOTORS_CONFIGURATION = new MotorConfiguration();
 
-        SLAVE_MOTOR.setFollowerOf(MASTER_MOTOR, true);
-
         ELEVATOR_MOTORS_CONFIGURATION.forwardSoftLimit = ELEVATOR_MAX_EXTENSION_ROTATIONS;
         ELEVATOR_MOTORS_CONFIGURATION.reverseSoftLimit = ELEVATOR_MIN_EXTENSION_ROTATIONS; //ASSUMING FORWARD IS +Voltage. TODO TUNE
 
         ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
-        ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
+        ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE ;
         ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, MotorProperties.GravityType.ELEVATOR);// S=1.313
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 25;
@@ -101,7 +99,15 @@ public class ElevatorConstants {
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.ACCELERATION);
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
+        SLAVE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        SLAVE_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
+        SLAVE_MOTOR.setupSignalUpdates(MotorSignal.VELOCITY);
+        SLAVE_MOTOR.setupSignalUpdates(MotorSignal.ACCELERATION);
+        SLAVE_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
+
         MASTER_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
         SLAVE_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
+
+        SLAVE_MOTOR.setFollower(MASTER_MOTOR, true);
     }
 }

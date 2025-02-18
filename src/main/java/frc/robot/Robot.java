@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
@@ -21,8 +22,12 @@ public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
     private RobotContainer robotContainer;
 
+    private final edu.wpi.first.wpilibj.Timer gcTimer = new Timer();
+
     @Override
     public void robotInit() {
+        gcTimer.start();
+
         robotContainer = new RobotContainer();
         HardwareManager.initialize(this);
     }
@@ -33,6 +38,10 @@ public class Robot extends LoggedRobot {
         commandScheduler.run();
 
         POSE_ESTIMATOR.periodic();
+
+        if (gcTimer.advanceIfElapsed(5)) {
+            System.gc();
+        }
     }
 
     @Override

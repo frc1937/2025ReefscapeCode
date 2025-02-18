@@ -34,7 +34,7 @@ public class SwerveModuleConstants {
 
     static final boolean CAN_CODER_INVERT = false;
     static final boolean ANGLE_MOTOR_INVERT = true;
-    static final boolean DRIVE_MOTOR_INVERT = false;
+    static final boolean DRIVE_MOTOR_INVERT = true;
 
     static final int ANGLE_CURRENT_LIMIT = 40;
     static final int DRIVE_SUPPLY_CURRENT_LIMIT = 60;
@@ -64,7 +64,7 @@ public class SwerveModuleConstants {
             RL_STEER_ENCODER = EncoderFactory.createCanCoder("RL_STEER_ENCODER", RL_STEER_ENCODER_PORT),
             RR_STEER_ENCODER = EncoderFactory.createCanCoder("RR_STEER_ENCODER", RR_STEER_ENCODER_PORT);
 
-    static final double[] STEER_ENCODER_OFFSET = {0.677246, 0.282715, 0.533447, 0.313721};
+    static final double[] STEER_ENCODER_OFFSET = {0.524414, 0.432617, 0.026611, 0.815186};
 
     static final Encoder[] STEER_ENCODERS = {FL_STEER_ENCODER, FR_STEER_ENCODER, RL_STEER_ENCODER, RR_STEER_ENCODER};
     static final Motor[] STEER_MOTORS = {FL_STEER_MOTOR, FR_STEER_MOTOR, RL_STEER_MOTOR, RR_STEER_MOTOR};
@@ -94,7 +94,7 @@ public class SwerveModuleConstants {
         final EncoderConfiguration encoderConfiguration = new EncoderConfiguration();
 
         encoderConfiguration.invert = CAN_CODER_INVERT;
-        encoderConfiguration.sensorRange = EncoderProperties.SensorRange.ZERO_TO_ONE;
+        encoderConfiguration.sensorRange = EncoderProperties.SensorRange.NEGATIVE_HALF_TO_HALF;
         encoderConfiguration.offsetRotations = -angleOffset.getRotations();
 
         steerEncoder.configure(encoderConfiguration);
@@ -123,6 +123,7 @@ public class SwerveModuleConstants {
         steerMotor.setupSignalUpdates(VELOCITY);
         steerMotor.setupSignalUpdates(VOLTAGE);
         steerMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
+
         steerMotor.configure(steerMotorConfiguration);
 
         steerMotor.setExternalPositionSupplier(encoder::getEncoderPosition);
@@ -150,21 +151,22 @@ public class SwerveModuleConstants {
     }
 
     private static void configureSteerConfiguration() {
-        steerMotorConfiguration.slot = new MotorProperties.Slot(30, 0, 0, 0, 0, 0);
+        steerMotorConfiguration.slot = new MotorProperties.Slot(25, 0, 0, 0, 0, 0);
 
         steerMotorConfiguration.supplyCurrentLimit = ANGLE_CURRENT_LIMIT;
         steerMotorConfiguration.inverted = ANGLE_MOTOR_INVERT;
         steerMotorConfiguration.idleMode = ANGLE_NEUTRAL_MODE;
 
         steerMotorConfiguration.gearRatio = STEER_GEAR_RATIO;
+        steerMotorConfiguration.closedLoopContinuousWrap = true;
 
         steerMotorConfiguration.simulationProperties = new SimulationProperties.Slot(
                 SimulationProperties.SimulationType.SIMPLE_MOTOR,
                 DCMotor.getCIM(1),
                 STEER_GEAR_RATIO,
-                0.003);
-        steerMotorConfiguration.simulationSlot = new MotorProperties.Slot(120, 0, 0, 0, 0, 0);
+                0.003
+        );
 
-        steerMotorConfiguration.closedLoopContinuousWrap = true;
+        steerMotorConfiguration.simulationSlot = new MotorProperties.Slot(120, 0, 0, 0, 0, 0);
     }
 }

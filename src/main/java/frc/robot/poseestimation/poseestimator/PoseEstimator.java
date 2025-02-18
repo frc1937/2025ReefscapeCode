@@ -86,8 +86,10 @@ public class PoseEstimator implements AutoCloseable {
      * @param gyroRotations        the gyro rotations accumulated since the last update
      */
     public void updateFromOdometry(SwerveModulePosition[][] swerveWheelPositions, Rotation2d[] gyroRotations, double[] timestamps) {
-        for (int i = 0; i < swerveWheelPositions.length; i++)
+        for (int i = 0; i < swerveWheelPositions.length; i++) {
+            if (swerveWheelPositions[i] == null) continue;
             addOdometryObservation(swerveWheelPositions[i], gyroRotations[i], timestamps[i]);
+        }
     }
 
     /**

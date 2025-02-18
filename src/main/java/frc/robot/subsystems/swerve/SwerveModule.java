@@ -12,6 +12,8 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.math.Conversions;
 import frc.lib.math.Optimizations;
 
+import java.util.Arrays;
+
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.math.Conversions.rotationsToMetres;
 import static frc.robot.GlobalConstants.VOLTAGE_COMPENSATION_SATURATION;
@@ -36,6 +38,7 @@ public class SwerveModule {
      */
     protected void runDriveMotorForCharacterization(double voltage) {
         driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+//        steerMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     protected double getDriveWheelPositionRadians() {
@@ -51,7 +54,9 @@ public class SwerveModule {
     }
 
     protected void setTargetState(SwerveModuleState state, boolean shouldUseClosedLoop) {
-        this.targetState = Optimizations.optimize(state, getCurrentAngle());
+        this.targetState = state;
+
+        targetState.optimize(getCurrentAngle());
 
         targetState.speedMetersPerSecond = Optimizations.reduceSkew(targetState.speedMetersPerSecond, targetState.angle, getCurrentAngle());
 
@@ -60,14 +65,17 @@ public class SwerveModule {
     }
 
     /**
-     * The odometry thread can update itself faster than the main code loop (which is 50 hertz).
+     * The odometry thread can update itself faster than the main code loop.
      * Instead of using the latest odometry update, the accumulated odometry positions since the last loop to get a more accurate position.
      *
      * @param odometryUpdateIndex the index of the odometry update
      * @return the position of the module at the given odometry update index
      */
     protected SwerveModulePosition getOdometryPosition(int odometryUpdateIndex) {
-        if (getDriveMotorInputs().threadSystemPosition.length != getSteerEncoderInputs().threadPosition.length) {
+        final int driveInputsLength = getDriveMotorInputs().threadSystemPosition.length;
+        final int steerInputsLength = getSteerEncoderInputs().threadPosition.length;
+
+        if (steerInputsLength != driveInputsLength || odometryUpdateIndex >= driveInputsLength) {
             return null;
         }
 
@@ -88,10 +96,8 @@ public class SwerveModule {
             final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
             driveMotor.setOutput(MotorProperties.ControlMode.VELOCITY, targetVelocityRPSClosedLoop);
         } else {
-            final double targetPowerOpenLoop = VOLTAGE_COMPENSATION_SATURATION *
-                    (velocityMetresPerSecond / ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS);
-
-            driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, targetPowerOpenLoop);
+            final double clampedVoltage = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / 5.1);
+            driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, clampedVoltage);
         }
     }
 

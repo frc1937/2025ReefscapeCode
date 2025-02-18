@@ -94,7 +94,6 @@ public enum HardwareManager {
         Logger.disableConsoleCapture();
     }
 
-
     /**
      * Add hardware device to hardware logging manager
      * <p>
