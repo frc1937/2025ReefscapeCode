@@ -37,8 +37,7 @@ public class SwerveModuleConstants {
     static final boolean DRIVE_MOTOR_INVERT = true;
 
     static final int ANGLE_CURRENT_LIMIT = 40;
-    static final int DRIVE_SUPPLY_CURRENT_LIMIT = 60;
-    static final int DRIVE_STATOR_CURRENT_LIMIT = 60;
+    static final int DRIVE_STATOR_CURRENT_LIMIT = 55;
 
     static final MotorProperties.Slot DRIVE_SLOT = new MotorProperties.Slot(
             0.053067, 0.0, 0.0,
@@ -136,7 +135,6 @@ public class SwerveModuleConstants {
         driveMotorConfiguration.gearRatio = DRIVE_GEAR_RATIO;
 
         driveMotorConfiguration.statorCurrentLimit = DRIVE_STATOR_CURRENT_LIMIT;
-        driveMotorConfiguration.supplyCurrentLimit = DRIVE_SUPPLY_CURRENT_LIMIT;
 
         driveMotorConfiguration.slot = DRIVE_SLOT;
 
