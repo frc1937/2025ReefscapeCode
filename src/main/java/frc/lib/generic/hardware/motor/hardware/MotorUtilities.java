@@ -5,6 +5,8 @@ import frc.lib.generic.hardware.motor.MotorInputs;
 import java.util.Map;
 import java.util.Queue;
 
+import static frc.lib.util.QueueUtilities.toArray;
+
 public class MotorUtilities {
     public enum MotionType {
         POSITION_PID,
@@ -26,19 +28,8 @@ public class MotorUtilities {
         inputs.threadTemperature = toArray(signalQueueList.get("temperature"));
         inputs.threadTarget = toArray(signalQueueList.get("target"));
 
-        signalQueueList.values().forEach(Queue::clear);
-    }
-
-    private static double[] toArray(Queue<Double> queue) {
-        if (queue == null || queue.isEmpty())
-            return new double[0];
-
-        final double[] array = new double[queue.size()];
-
-        int i = 0;
-        for (Double value : queue)
-            array[i++] = value;
-
-        return array;
+        for (Queue<Double> queue : signalQueueList.values()) {
+            queue.clear();
+        }
     }
 }

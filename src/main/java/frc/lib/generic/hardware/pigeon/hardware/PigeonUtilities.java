@@ -5,17 +5,18 @@ import frc.lib.generic.hardware.pigeon.PigeonInputs;
 import java.util.Map;
 import java.util.Queue;
 
+import static frc.lib.util.QueueUtilities.toArray;
+
 public class PigeonUtilities {
     public static void handleThreadedInputs(PigeonInputs inputs, Map<String, Queue<Double>> signalQueueList) {
         if (signalQueueList.isEmpty()) return;
 
-        if (signalQueueList.get("yaw") != null)
-            inputs.threadGyroYawRotations = signalQueueList.get("yaw").stream().mapToDouble(Double::doubleValue).toArray();
-        if (signalQueueList.get("pitch") != null)
-            inputs.threadGyroPitchRotations = signalQueueList.get("pitch").stream().mapToDouble(Double::doubleValue).toArray();
-        if (signalQueueList.get("roll") != null)
-            inputs.threadGyroRollRotations = signalQueueList.get("roll").stream().mapToDouble(Double::doubleValue).toArray();
+        inputs.threadGyroYawRotations = toArray(signalQueueList.get("yaw_pigeon2"));
+        inputs.threadGyroPitchRotations = toArray(signalQueueList.get("pitch_pigeon2"));
+        inputs.threadGyroRollRotations = toArray(signalQueueList.get("roll_pigeon2"));
 
-        signalQueueList.forEach((k, v) -> v.clear());
+        for (Queue<Double> queue : signalQueueList.values()) {
+            queue.clear();
+        }
     }
 }
