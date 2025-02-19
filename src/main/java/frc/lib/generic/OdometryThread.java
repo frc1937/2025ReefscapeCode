@@ -92,7 +92,10 @@ public class OdometryThread extends Thread {
             }
 
             for (int i = 0; i < ctreThreadedSignals.length; i++) {
-                queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
+                if (ctreThreadedSignals[i].getName().endsWith("_pigeon2"))
+                    queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble() / 360);
+                else
+                    queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
             timestamps.offer(updateTimestamp);
@@ -124,6 +127,7 @@ public class OdometryThread extends Thread {
             threadInputs.timestamps = timestamps.stream().mapToDouble(Double::doubleValue).toArray();
             timestamps.clear();
         }
+
         Logger.processInputs("OdometryThread", threadInputs);
     }
 
