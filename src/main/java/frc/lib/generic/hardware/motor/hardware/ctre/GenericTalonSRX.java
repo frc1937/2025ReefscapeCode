@@ -154,9 +154,9 @@ public class GenericTalonSRX extends Motor {
     }
 
     private void configureSlots(MotorConfiguration configuration) {
-        talonSRX.config_kP(0, configuration.slot.kP());
-        talonSRX.config_kI(0, configuration.slot.kI());
-        talonSRX.config_kD(0, configuration.slot.kD());
+        talonSRX.config_kP(0, configuration.slot.kP);
+        talonSRX.config_kI(0, configuration.slot.kI);
+        talonSRX.config_kD(0, configuration.slot.kD);
     }
 
     @Override
