@@ -32,9 +32,9 @@ public class SwerveConstants {
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),
 
-            MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
+    MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
 
-            WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
+    WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
 
     public static final double
             DRIVE_NEUTRAL_DEADBAND = 0.15,
@@ -59,7 +59,7 @@ public class SwerveConstants {
             ? new ProfiledPID(0.5, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360))
             : new ProfiledPID(3.9, 0, 0.05, new TrapezoidProfile.Constraints(360, 360));
 
-    protected static final Pigeon GYRO = PigeonFactory.createIMU("GYRO", GYRO_PORT);
+    protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
     static {
         configureGyro();
@@ -67,7 +67,14 @@ public class SwerveConstants {
     }
 
     private static void configureGyro() {
-        GYRO.configurePigeon(new PigeonConfiguration());
+        PigeonConfiguration configuration = new PigeonConfiguration();
+
+        configuration.mountPoseYawDegrees = -89.64400482177734;
+        configuration.mountPoseRollDegrees =  -0.5925159454345703;
+        configuration.mountPosePitchDegrees = 0.8338062763214111;
+
+        GYRO.configurePigeon(configuration);
+
         GYRO.setupSignalUpdates(PigeonSignal.YAW, true);
     }
 

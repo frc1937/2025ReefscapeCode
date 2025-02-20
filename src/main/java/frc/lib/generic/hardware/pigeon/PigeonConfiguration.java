@@ -1,7 +1,8 @@
 package frc.lib.generic.hardware.pigeon;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-
 public class PigeonConfiguration {
-    public Rotation3d centerOfRotationOffset = new Rotation3d();
+    public double mountPoseYawDegrees = 0,
+            mountPoseRollDegrees = 0,
+            mountPosePitchDegrees = 0;
+
 }

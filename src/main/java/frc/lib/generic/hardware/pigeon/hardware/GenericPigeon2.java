@@ -29,30 +29,26 @@ public class GenericPigeon2 extends Pigeon {
     private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
     private final boolean[] signalsToLog = new boolean[PIGEON_INPUTS_LENGTH];
 
-    public GenericPigeon2(String name, int deviceNumber, String canbusName) {
+    public GenericPigeon2(String name, int deviceNumber) {
         super(name);
 
-        pigeon = new Pigeon2(deviceNumber, canbusName);
+        pigeon = new Pigeon2(deviceNumber);
 
         yawSignal = pigeon.getYaw().clone();
         pitchSignal = pigeon.getPitch().clone();
         rollSignal = pigeon.getRoll().clone();
     }
 
-    public GenericPigeon2(String name, int deviceNumber) {
-        this(name, deviceNumber, "CAN");
-    }
 
     @Override
     public void configurePigeon(PigeonConfiguration pigeonConfiguration) {
         pigeon.reset();
 
         final Pigeon2Configuration configuration  = new Pigeon2Configuration();
-        final Rotation3d centerOfRotationOffset = pigeonConfiguration.centerOfRotationOffset;
 
-        configuration.MountPose.MountPoseYaw = Units.radiansToDegrees(centerOfRotationOffset.getZ());
-        configuration.MountPose.MountPosePitch = Units.radiansToDegrees(centerOfRotationOffset.getY());
-        configuration.MountPose.MountPoseRoll = Units.radiansToDegrees(centerOfRotationOffset.getX());
+        configuration.MountPose.MountPoseYaw = pigeonConfiguration.mountPoseYawDegrees;
+        configuration.MountPose.MountPosePitch = pigeonConfiguration.mountPosePitchDegrees;
+        configuration.MountPose.MountPoseRoll = pigeonConfiguration.mountPoseRollDegrees;
 
         pigeon.optimizeBusUtilization();
 
