@@ -10,7 +10,7 @@ import static frc.robot.utilities.PortsConstants.IntakePorts.BEAM_BREAK_DIO_PORT
 import static frc.robot.utilities.PortsConstants.IntakePorts.INTAKE_MOTOR_PORT;
 
 public class CoralIntakeConstants {
-    protected static final Motor INTAKE_MOTOR = MotorFactory.createTalonFX("INTAKE_ALGAE_MOTOR", INTAKE_MOTOR_PORT);
+    protected static final Motor INTAKE_MOTOR = MotorFactory.createTalonFX("INTAKE_MOTOR", INTAKE_MOTOR_PORT);
     protected static final Sensor INTAKE_BEAM_BREAK = SensorFactory.createDigitalInput("INTAKE_BEAM_BREAK", BEAM_BREAK_DIO_PORT);
 
     static {
@@ -22,6 +22,7 @@ public class CoralIntakeConstants {
 
         intakeMotorConfiguration.supplyCurrentLimit = 40;
         intakeMotorConfiguration.idleMode = MotorProperties.IdleMode.COAST;
+
         intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0.2);
 
         INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);

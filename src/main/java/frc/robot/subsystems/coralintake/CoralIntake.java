@@ -3,10 +3,8 @@ package frc.robot.subsystems.coralintake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_BEAM_BREAK;
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR;
