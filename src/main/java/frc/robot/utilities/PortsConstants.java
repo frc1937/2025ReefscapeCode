@@ -27,7 +27,7 @@ public class PortsConstants {
     }
 
     public static class IntakePorts {
-        public static final int INTAKE_MOTOR_PORT = 19;
+        public static final int INTAKE_MOTOR_PORT = 5;
         public static final int BEAM_BREAK_DIO_PORT = 20;
     }
 
@@ -41,7 +41,6 @@ public class PortsConstants {
         public static final int
                 MASTER_MOTOR_PORT = 28,
                 SLAVE_MOTOR_PORT = 15,
-                TOP_BEAM_BREAK_DIO_PORT = 15,
-                BOTTOM_BEAM_BREAK_DIO_PORT = 16;
+                TOP_BEAM_BREAK_DIO_PORT = 15;
     }
 }
