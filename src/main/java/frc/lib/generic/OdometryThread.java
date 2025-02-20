@@ -92,9 +92,9 @@ public class OdometryThread extends Thread {
             }
 
             for (int i = 0; i < ctreThreadedSignals.length; i++) {
-                if (ctreThreadedSignals[i].getName().endsWith("_pigeon2"))
+                if (ctreThreadedSignals[i].getName() == "Yaw") {
                     queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble() / 360);
-                else
+                } else
                     queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
