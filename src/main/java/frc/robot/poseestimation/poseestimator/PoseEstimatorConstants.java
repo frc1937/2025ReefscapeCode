@@ -16,7 +16,7 @@ import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
 
 public class PoseEstimatorConstants {
     static final double POSE_BUFFER_SIZE_SECONDS = 2;
-    static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS = new StandardDeviations(Math.pow(0.003, 2), Math.pow(0.0002, 2));
+    static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS = new StandardDeviations(0.0003, 0.00002);
 
     private static final Pose2d DEFAULT_RED_POSE = new Pose2d(new Translation2d(10,4), Rotation2d.kZero);
     static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : flipAboutYAxis(DEFAULT_RED_POSE);
