@@ -57,7 +57,7 @@ public class SwerveConstants {
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.5, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(3.9, 0, 0.05, new TrapezoidProfile.Constraints(360, 360));
+            : new ProfiledPID(5.5, 0, 0.009,0.1, new TrapezoidProfile.Constraints(500, 500));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
