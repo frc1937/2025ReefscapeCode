@@ -92,7 +92,7 @@ public class WheelRadiusCharacterization extends Command {
             Logger.recordOutput("RadiusCharacterization/AccumulatedWheelRadians" + i, accumulatedWheelRadians);
         }
 
-        currentDriveWheelRadius = currentDriveWheelRadius /4.0 ;
+        currentDriveWheelRadius = currentDriveWheelRadius / 4.0 ;
     }
 
     private int getRotationDirection() {
