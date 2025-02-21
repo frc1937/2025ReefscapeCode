@@ -30,7 +30,7 @@ public class SwerveModuleConstants {
     static final MotorProperties.IdleMode DRIVE_NEUTRAL_MODE = MotorProperties.IdleMode.BRAKE;
 
     static final double OPEN_LOOP_RAMP = 0.1;
-    static final double CLOSED_LOOP_RAMP = 0.0;
+    static final double CLOSED_LOOP_RAMP = 0.1;
 
     static final boolean CAN_CODER_INVERT = false;
     static final boolean ANGLE_MOTOR_INVERT = true;
