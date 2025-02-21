@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import static frc.lib.generic.hardware.encoder.EncoderInputs.ENCODER_INPUTS_LENGTH;
+import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
 
 /**
  * Wrapper class for the CAN encoder.
@@ -56,6 +57,7 @@ public class GenericCanCoder extends Encoder {
                 case POSITION -> setupNonThreadedSignal(positionSignal);
                 case VELOCITY -> setupNonThreadedSignal(velocitySignal);
             }
+
             return;
         }
 
@@ -63,7 +65,7 @@ public class GenericCanCoder extends Encoder {
 
         switch (signal) {
             case POSITION -> setupThreadedSignal("position", positionSignal);
-            case VELOCITY -> setupThreadedSignal("velocity",velocitySignal);
+            case VELOCITY -> setupThreadedSignal("velocity", velocitySignal);
         }
     }
 
@@ -110,12 +112,8 @@ public class GenericCanCoder extends Encoder {
 
         if (signalQueueList.isEmpty()) return;
 
-        if (signalQueueList.get("position") != null)
-            inputs.threadPosition = signalQueueList.get("position").stream().mapToDouble(Double::doubleValue).toArray();
-        if (signalQueueList.get("velocity") != null)
-            inputs.threadVelocity = signalQueueList.get("velocity").stream().mapToDouble(Double::doubleValue).toArray();
-
-        signalQueueList.forEach((k, v) -> v.clear());
+        inputs.threadPosition = queueToArrayAndClearQueue(signalQueueList.get("position"));
+        inputs.threadVelocity = queueToArrayAndClearQueue(signalQueueList.get("velocity"));
     }
 
     private void setupNonThreadedSignal(final BaseStatusSignal correspondingSignal) {
