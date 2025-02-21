@@ -20,12 +20,13 @@ public class CoralIntakeConstants {
     private static void configureIntakeMotorConfiguration() {
         final MotorConfiguration intakeMotorConfiguration = new MotorConfiguration();
 
-        intakeMotorConfiguration.supplyCurrentLimit = 40;
+        intakeMotorConfiguration.statorCurrentLimit = 40;
         intakeMotorConfiguration.idleMode = MotorProperties.IdleMode.COAST;
 
         intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0.2);
 
         INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
+        INTAKE_MOTOR.setupSignalUpdates(MotorSignal.CURRENT);
 
         INTAKE_MOTOR.configure(intakeMotorConfiguration);
     }

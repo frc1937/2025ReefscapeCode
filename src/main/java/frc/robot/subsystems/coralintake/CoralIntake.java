@@ -11,13 +11,13 @@ import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR
 
 public class CoralIntake extends GenericSubsystem {
     public Command prepareGamePiece() {
-        return Commands.run(() -> setVoltage(4), this).until(this::hasCoral).andThen(stop());
+        return Commands.run(() -> setVoltage(3), this).until(this::hasCoral).andThen(stop());
     }
 
     public Command releaseGamePiece() {
         return new FunctionalCommand(
                 () -> {},
-                () -> setVoltage(4),
+                () -> setVoltage(3),
                 (interrupt) -> INTAKE_MOTOR.stopMotor(),
                 () -> false,
                 this
