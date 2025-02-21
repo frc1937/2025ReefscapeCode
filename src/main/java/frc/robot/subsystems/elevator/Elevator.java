@@ -25,8 +25,7 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> setMotorPosition(levelSupplier.get().getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
@@ -42,8 +41,7 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> setMotorPosition(level.getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
@@ -71,23 +69,13 @@ public class Elevator extends GenericSubsystem {
     }
 
     @Override
-    public void periodic() {
-        if (BOTTOM_BEAM_BREAK.get() == 1)
-            MASTER_MOTOR.setMotorEncoderPosition(0);
-
-        if (TOP_BEAM_BREAK.get() == 1)
-            MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS);
-    }
-
-    @Override
     public SysIdRoutine.Config getSysIdConfig() {
         return ELEVATOR_CONFIG;
     }
 
     @Override
     public void sysIdDrive(double voltage) {
-//        MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
-//        SLAVE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, -voltage);
+        MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     @Override
