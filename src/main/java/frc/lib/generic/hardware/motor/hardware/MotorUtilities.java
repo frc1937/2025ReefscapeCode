@@ -5,7 +5,7 @@ import frc.lib.generic.hardware.motor.MotorInputs;
 import java.util.Map;
 import java.util.Queue;
 
-import static frc.lib.util.QueueUtilities.toArray;
+import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
 
 public class MotorUtilities {
     public enum MotionType {
@@ -20,16 +20,12 @@ public class MotorUtilities {
     public static void handleThreadedInputs(MotorInputs inputs, Map<String, Queue<Double>> signalQueueList) {
         if (signalQueueList.isEmpty()) return;
 
-        inputs.threadSystemPosition = toArray(signalQueueList.get("position"));
-        inputs.threadSystemVelocity = toArray(signalQueueList.get("velocity"));
-        inputs.threadSystemAcceleration = toArray(signalQueueList.get("acceleration"));
-        inputs.threadVoltage = toArray(signalQueueList.get("voltage"));
-        inputs.threadCurrent = toArray(signalQueueList.get("current"));
-        inputs.threadTemperature = toArray(signalQueueList.get("temperature"));
-        inputs.threadTarget = toArray(signalQueueList.get("target"));
-
-        for (Queue<Double> queue : signalQueueList.values()) {
-            queue.clear();
-        }
+        inputs.threadSystemPosition = queueToArrayAndClearQueue(signalQueueList.get("position"));
+        inputs.threadSystemVelocity = queueToArrayAndClearQueue(signalQueueList.get("velocity"));
+        inputs.threadSystemAcceleration = queueToArrayAndClearQueue(signalQueueList.get("acceleration"));
+        inputs.threadVoltage = queueToArrayAndClearQueue(signalQueueList.get("voltage"));
+        inputs.threadCurrent = queueToArrayAndClearQueue(signalQueueList.get("current"));
+        inputs.threadTemperature = queueToArrayAndClearQueue(signalQueueList.get("temperature"));
+        inputs.threadTarget = queueToArrayAndClearQueue(signalQueueList.get("target"));
     }
 }
