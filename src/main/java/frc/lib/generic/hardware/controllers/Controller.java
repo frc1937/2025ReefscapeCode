@@ -61,7 +61,7 @@ public class Controller {
         DOWN_RIGHT(135),
         DOWN(180),
         DOWN_LEFT(225),
-        EFT(270),
+        LEFT(270),
         UP_LEFT(315);
 
         public final int angle;
