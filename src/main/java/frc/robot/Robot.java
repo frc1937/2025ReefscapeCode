@@ -3,7 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
@@ -12,7 +11,6 @@ import org.littletonrobotics.junction.LoggedRobot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
@@ -22,12 +20,8 @@ public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
     private RobotContainer robotContainer;
 
-    private final edu.wpi.first.wpilibj.Timer gcTimer = new Timer();
-
     @Override
     public void robotInit() {
-        gcTimer.start();
-
         robotContainer = new RobotContainer();
         HardwareManager.initialize(this);
     }
@@ -38,31 +32,29 @@ public class Robot extends LoggedRobot {
         commandScheduler.run();
 
         POSE_ESTIMATOR.periodic();
-
-        if (gcTimer.advanceIfElapsed(5)) {
-            System.gc();
-        }
     }
 
     @Override
     public void disabledPeriodic() {
+        if (!new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + robotContainer.getAutoName() + ".path").exists())
+            return;
+
+        PathPlannerPath path = null;
+
         try {
-            if (!new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + robotContainer.getAutoName() + ".path").exists())
-                return;
-
-            final PathPlannerPath path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
-            final Optional<Pose2d> startingPose = path.getStartingHolonomicPose();
-
-            if (startingPose.isEmpty()) return;
-
-            LEDS.setLEDToPositionIndicator(
-                    POSE_ESTIMATOR.getCurrentPose().getTranslation(),
-                    startingPose.get().getTranslation()
-            );
-
+            path = PathPlannerPath.fromPathFile(robotContainer.getAutoName());
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
+
+        if (path == null) return;
+
+        final Pose2d startingPose = path.getStartingHolonomicPose().get();
+
+        LEDS.setLEDToPositionIndicator(
+                POSE_ESTIMATOR.getCurrentPose().getTranslation(),
+                startingPose.getTranslation()
+        );
     }
 
     @Override
@@ -83,6 +75,6 @@ public class Robot extends LoggedRobot {
         HardwareManager.updateSimulation();
         VISION_SIMULATION.updateRobotPose(POSE_ESTIMATOR.getOdometryPose());
 
-        robotContainer.updateComponents();
+        robotContainer.updateComponentPoses();
     }
 }
