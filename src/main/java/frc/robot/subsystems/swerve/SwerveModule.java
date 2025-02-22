@@ -17,6 +17,7 @@ import java.util.Arrays;
 import static edu.wpi.first.units.Units.*;
 import static frc.lib.math.Conversions.rotationsToMetres;
 import static frc.robot.GlobalConstants.VOLTAGE_COMPENSATION_SATURATION;
+import static frc.robot.subsystems.swerve.SwerveConstants.MAX_SPEED_MPS;
 import static frc.robot.subsystems.swerve.SwerveConstants.WHEEL_DIAMETER;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
@@ -38,7 +39,6 @@ public class SwerveModule {
      */
     protected void runDriveMotorForCharacterization(double voltage) {
         driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
-//        steerMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     protected double getDriveWheelPositionRadians() {
@@ -96,7 +96,7 @@ public class SwerveModule {
             final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
             driveMotor.setOutput(MotorProperties.ControlMode.VELOCITY, targetVelocityRPSClosedLoop);
         } else {
-            final double clampedVoltage = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / 5.1);
+            final double clampedVoltage = VOLTAGE_COMPENSATION_SATURATION * (velocityMetresPerSecond / MAX_SPEED_MPS);
             driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, clampedVoltage);
         }
     }

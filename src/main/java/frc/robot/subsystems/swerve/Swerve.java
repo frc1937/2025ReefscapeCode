@@ -164,14 +164,14 @@ public class Swerve extends GenericSubsystem {
     }
 
     protected void driveFieldRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
-        ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
+        ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, RobotContainer.POSE_ESTIMATOR.getCurrentPose().getRotation());
 
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
     protected void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
-        final ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
+        final ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
@@ -205,10 +205,10 @@ public class Swerve extends GenericSubsystem {
         return swerveModulePositions;
     }
 
-    protected ChassisSpeeds proportionalSpeedToMps(ChassisSpeeds chassisSpeeds) {
+    protected ChassisSpeeds powerSpeedsToChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         return new ChassisSpeeds(
-                chassisSpeeds.vxMetersPerSecond * 3,
-                chassisSpeeds.vyMetersPerSecond* 3,
+                chassisSpeeds.vxMetersPerSecond * MAX_SPEED_MPS,
+                chassisSpeeds.vyMetersPerSecond * MAX_SPEED_MPS,
                 chassisSpeeds.omegaRadiansPerSecond
         );
     }
