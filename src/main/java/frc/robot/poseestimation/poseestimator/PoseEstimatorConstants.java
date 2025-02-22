@@ -22,17 +22,17 @@ public class PoseEstimatorConstants {
     static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : flipAboutYAxis(DEFAULT_RED_POSE);
 
     static final Transform3d ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
-            0.27, 0.37, 0.19,
-            new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(30))
+            0.35, 0.35, 0.21,
+            new Rotation3d(0, Units.degreesToRadians(-25.16683805), Units.degreesToRadians(330))
     ), ROBOT_TO_FRONT_RIGHT_CAMERA = new Transform3d(
-            -0.27, 0.37, 0.19,
-            new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(150))
+            -0.35, 0.35, 0.21,
+            new Rotation3d(0, Units.degreesToRadians(-25.16683805), Units.degreesToRadians(30))
     ), ROBOT_TO_REAR_LEFT_CAMERA = new Transform3d(
-            0.27, -0.37, 0.19,
-            new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(-30))
+            0.35, -0.35, 0.21,
+            new Rotation3d(0, Units.degreesToRadians(-25.16683805), Units.degreesToRadians(150))
     ), ROBOT_TO_REAR_RIGHT_CAMERA = new Transform3d(
-            -0.27, -0.37, 0.19,
-            new Rotation3d(0, Units.degreesToRadians(-28.125), Units.degreesToRadians(210))
+            -0.35, -0.35, 0.21,
+            new Rotation3d(0, Units.degreesToRadians(-25.16683805), Units.degreesToRadians(210))
     );
 
 
