@@ -19,7 +19,7 @@ public class GlobalConstants {
 
     public static final boolean IS_REPLAY = false;
 
-    public static final boolean SHOULD_WRITE_LOGS = false; //for when the RoboRio doesn't have enough space...
+    public static final boolean SHOULD_WRITE_LOGS = true; //for when the RoboRio doesn't have enough space...
     public static final boolean SHOULD_DISPLAY_MECHANISMS = false; //For when we want to save resources.
 
     public static final Mode CURRENT_MODE;

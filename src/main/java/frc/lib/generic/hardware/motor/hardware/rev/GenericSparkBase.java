@@ -1,18 +1,16 @@
 package frc.lib.generic.hardware.motor.hardware.rev;
 
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SignalsConfig;
-import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.lib.generic.Feedforward;
 import frc.lib.generic.OdometryThread;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
-import frc.lib.math.Conversions;
 import frc.lib.scurve.InputParameter;
 import frc.lib.scurve.OutputParameter;
 import frc.lib.scurve.SCurveGenerator;
@@ -26,14 +24,14 @@ import java.util.function.DoubleSupplier;
 import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
 
 public abstract class GenericSparkBase extends Motor {
+    protected final SignalsConfig signalsConfig = new SignalsConfig();
+
     private MotorUtilities.MotionType motionType;
 
     private final SparkBase spark;
     private final RelativeEncoder encoder;
     private final SparkClosedLoopController sparkController;
     private final int deviceId;
-
-    private final SignalsConfig signalsConfig = new SignalsConfig();
 
     private final boolean[] signalsToLog = new boolean[MOTOR_INPUTS_LENGTH];
     private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
@@ -94,19 +92,9 @@ public abstract class GenericSparkBase extends Motor {
         return configureMotor(configuration, null, false);
     }
 
-    protected void configureFeedforward(MotorProperties.Slot slot) {
-        Feedforward.Type type = Feedforward.Type.SIMPLE;
-
-        if (slot.gravityType() == MotorProperties.GravityType.ARM) {
-            type = Feedforward.Type.ARM;
-        }
-
-        if (slot.gravityType() == MotorProperties.GravityType.ELEVATOR) {
-            type = Feedforward.Type.ELEVATOR;
-        }
-
-        this.feedforward = new Feedforward(type,
-                new Feedforward.FeedForwardConstants(slot.kS(), slot.kV(), slot.kA(), slot.kG()));
+    protected void setFeedforward(MotorProperties.Slot slot) {
+        feedforward = new Feedforward(slot.feedforwardType,
+                new Feedforward.FeedForwardConstants(slot.kS, slot.kV, slot.kA, slot.kG));
     }
 
     @Override
@@ -119,7 +107,7 @@ public abstract class GenericSparkBase extends Motor {
         if (!(motor instanceof GenericSparkBase))
             return;
 
-        configureMotor(currentConfiguration, ((GenericSparkBase) motor).spark, invert);
+        configureMotor(currentConfiguration, ((GenericSparkFlex) motor).getSpark(), invert);
     }
 
     @Override
@@ -330,7 +318,10 @@ public abstract class GenericSparkBase extends Motor {
 
     protected abstract void setNewGoalExtras();
 
-    protected abstract SparkBaseConfig configureExtras(MotorConfiguration configuration, SparkBaseConfig sparkConfig);
+    /**
+     * This exists because REV doesn't work properly with THEIR OW NFUCKING abstract configuration object
+     */
+    protected abstract boolean configureMotorInternal(MotorConfiguration configuration, SparkFlex master, boolean invertFollower);
 
     protected abstract void handleSmoothMotion(MotorUtilities.MotionType motionType, TrapezoidProfile.State goalState, TrapezoidProfile motionProfile, final Feedforward feedforward);
 
@@ -338,17 +329,15 @@ public abstract class GenericSparkBase extends Motor {
 
     protected abstract void setPreviousSetpoint(TrapezoidProfile.State previousSetpoint);
 
-    protected abstract SparkBaseConfig getSparkConfig();
-
     private void optimizeBusUsage() {
         final int disabledMs = 1000;
 
         //Status0:
-        signalsConfig.appliedOutputPeriodMs(disabledMs);
-        signalsConfig.busVoltagePeriodMs(disabledMs);
-        signalsConfig.motorTemperaturePeriodMs(disabledMs);
-        signalsConfig.limitsPeriodMs(disabledMs);
-        signalsConfig.outputCurrentPeriodMs(disabledMs);
+        signalsConfig.appliedOutputPeriodMs(50);
+        signalsConfig.busVoltagePeriodMs(50);
+        signalsConfig.motorTemperaturePeriodMs(50);
+        signalsConfig.limitsPeriodMs(50);
+        signalsConfig.outputCurrentPeriodMs(50);
 
         //Status1:
         signalsConfig.warningsPeriodMs(disabledMs);
@@ -387,62 +376,12 @@ public abstract class GenericSparkBase extends Motor {
         signalsConfig.iAccumulationAlwaysOn(false);
     }
 
-    private boolean configureMotor(MotorConfiguration configuration, SparkBase master, boolean invertFollower) {
+    private boolean configureMotor(MotorConfiguration configuration, SparkFlex masterId, boolean invertFollower) {
         currentConfiguration = configuration;
 
-        configureFeedforward(configuration.slot);
+        setFeedforward(configuration.slot);
         configureProfile(configuration);
 
-        SparkBaseConfig sparkConfig = getSparkConfig();
-
-        sparkConfig.idleMode(configuration.idleMode == MotorProperties.IdleMode.COAST ? SparkBaseConfig.IdleMode.kCoast : SparkBaseConfig.IdleMode.kBrake);
-
-        sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(configuration.closedLoopTolerance);
-
-        sparkConfig.closedLoop.pid(configuration.slot.kP(), configuration.slot.kI(), configuration.slot.kD());
-        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
-
-        sparkConfig.encoder.positionConversionFactor(1.0 / configuration.gearRatio);
-        sparkConfig.encoder.velocityConversionFactor(1.0 / (Conversions.SEC_PER_MIN * configuration.gearRatio));
-
-        sparkConfig.openLoopRampRate(configuration.dutyCycleOpenLoopRampPeriod);
-        sparkConfig.closedLoopRampRate(configuration.dutyCycleClosedLoopRampPeriod);
-
-        sparkConfig.voltageCompensation(12);
-
-        sparkConfig.signals.apply(signalsConfig);
-
-        sparkConfig.inverted(configuration.inverted);
-
-        if (master != null)
-            sparkConfig.follow(master, invertFollower);
-
-        if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
-        if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
-
-        if (currentConfiguration.forwardSoftLimit != null) {
-            sparkConfig.softLimit.forwardSoftLimitEnabled(true);
-            sparkConfig.softLimit.forwardSoftLimit(currentConfiguration.forwardSoftLimit * 1.0 / configuration.gearRatio);
-        }
-
-        if (currentConfiguration.reverseSoftLimit != null) {
-            sparkConfig.softLimit.reverseSoftLimitEnabled(true);
-            sparkConfig.softLimit.reverseSoftLimit(currentConfiguration.reverseSoftLimit * 1.0 / configuration.gearRatio);
-        }
-
-        sparkConfig = configureExtras(configuration, sparkConfig);
-
-        int i = 0;
-
-        while (i <= 3 &&
-                spark.configureAsync(sparkConfig,
-                        SparkBase.ResetMode.kResetSafeParameters,
-                        SparkBase.PersistMode.kPersistParameters)
-                        != REVLibError.kOk)
-        {
-            i++;
-        }
-
-        return spark.configureAsync(sparkConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
+        return configureMotorInternal(configuration, masterId, invertFollower);
     }
 }
