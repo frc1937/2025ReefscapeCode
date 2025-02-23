@@ -21,8 +21,8 @@ public class FieldConstants {
         private final FlippablePose2d rightBranch, leftBranch;
 
         ReefFace(Rotation2d rotation) {
-            final FlippablePose2d facePose = new FlippablePose2d(new Pose2d(new Translation2d(), rotation).transformBy(ROBOT_DISTANCE_TRANSFORM), true);
-            final FlippablePose2d faceDirection = new FlippablePose2d(REEF_CENTER.get(), facePose.getRotation().get(), true);
+            final FlippablePose2d facePose = new FlippablePose2d(new Pose2d(new Translation2d(), rotation), true);
+            final FlippablePose2d faceDirection =  new FlippablePose2d(new Pose2d(REEF_CENTER.get(), facePose.getRotation().get()), true);
 
             this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
             this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
@@ -51,12 +51,11 @@ public class FieldConstants {
                 new Pose2d(16.697, 0.63605, Rotation2d.fromDegrees(126))
         );
 
-        private final Pose2d blueFeederPose;
-        private final Pose2d redFeederPose;
+        private final Pose2d blueFeederPose, redFeederPose;
 
         Feeder(Pose2d blueFeederPose, Pose2d redFeederPose) {
-            this.blueFeederPose = blueFeederPose.transformBy(ROBOT_DISTANCE_TRANSFORM);
-            this.redFeederPose = redFeederPose.transformBy(ROBOT_DISTANCE_TRANSFORM);
+            this.blueFeederPose = blueFeederPose.transformBy(ROBOT_FEEDER_TRANSFORM);
+            this.redFeederPose = redFeederPose.transformBy(ROBOT_FEEDER_TRANSFORM);
         }
 
         /**
@@ -70,12 +69,12 @@ public class FieldConstants {
     }
 
     private static final Transform2d
-            ROBOT_DISTANCE_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(180)),
-            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.3, -0.25), Rotation2d.fromDegrees(90));
+            ROBOT_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(270)),
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
 
     private static final Transform2d
-            LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -0.1643, Rotation2d.kZero),
-            RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, 0.1643, Rotation2d.kZero);
+            LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.1643), Rotation2d.kZero),
+            RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, 0, Rotation2d.kZero);
 
     public static final double
             FIELD_WIDTH = 8.05,
