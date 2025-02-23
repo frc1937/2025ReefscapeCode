@@ -42,6 +42,8 @@ public class SimulatedIMU extends Pigeon {
 
     @Override
     protected void refreshInputs(PigeonInputs inputs) {
+        if (SWERVE == null) return;
+
         inputs.setSignalsToLog(signalsToLog);
 
         update(SWERVE.getRobotRelativeVelocity().omegaRadiansPerSecond, ROBOT_PERIODIC_LOOP_TIME);

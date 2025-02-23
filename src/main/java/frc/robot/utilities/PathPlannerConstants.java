@@ -23,11 +23,11 @@ public class PathPlannerConstants {
 
     public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
             ? new PathConstraints(3.7, 2, 6, 4)
-            : new PathConstraints(5.7, 2, 6, 4); //TODO TUNE
+            : new PathConstraints(3.7, 1, 3, 2); //TODO TUNE
 
     private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
             ? new PPHolonomicDriveController(new PIDConstants(5.5, 0.0, 0), new PIDConstants(5.5, 0.0, 0))
-            : new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0), new PIDConstants(5, 0.0, 0)); //TODO TUNE
+            : new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0), new PIDConstants(2, 0.0, 0)); //TODO TUNE
 
 
     public static void initializePathPlanner() {

@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static frc.robot.GlobalConstants.*;
 
@@ -27,9 +26,7 @@ public enum HardwareManager {
     private static final boolean IS_PRACTICE = true;
     private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100_000_000 /*100 MB*/ : 1_000_000_000 /*1 GB*/;
 
-    private static final List<LoggableHardware> hardware = new ArrayList<>();
-    private static final List<Runnable> periodicRunnable = new ArrayList<>();
-
+    private static LoggableHardware[] HARDWARE = new LoggableHardware[0];
     private static BaseStatusSignal[] CTRE_NON_THREADED_SIGNALS = new BaseStatusSignal[0];
 
     /**
@@ -45,13 +42,11 @@ public enum HardwareManager {
         if (CTRE_NON_THREADED_SIGNALS.length >= 1)
             BaseStatusSignal.refreshAll(CTRE_NON_THREADED_SIGNALS);
 
-        for (LoggableHardware loggableHardware : hardware) {
+        for (LoggableHardware loggableHardware : HARDWARE) {
             loggableHardware.periodic();
         }
 
         FASTER_THREAD_LOCK.unlock();
-
-        periodicRunnable.forEach(Runnable::run);
     }
 
     /**
@@ -94,25 +89,20 @@ public enum HardwareManager {
         Logger.disableConsoleCapture();
     }
 
-
     /**
      * Add hardware device to hardware logging manager
      * <p>
-     * Should not be necessary to call this manually, all devices register themselves when instantiated
+     * Should not be necessary to call this manually, all device register themselves when instantiated
      *
-     * @param devices Devices to add
+     * @param device Devices to add
      */
-    public static void addHardware(LoggableHardware... devices) {
-        hardware.addAll(Arrays.asList(devices));
-    }
+    public static void addHardware(LoggableHardware device) {
+        final LoggableHardware[] newHardware = new LoggableHardware[HARDWARE.length + 1];
 
-    /**
-     * Add custom periodicRunnable to the hardware logging manager to be called every loop
-     *
-     * @param periodicRunnable Desired periodicRunnable
-     */
-    public static void addCallback(Runnable periodicRunnable) {
-        HardwareManager.periodicRunnable.add(periodicRunnable);
+        System.arraycopy(HARDWARE, 0, newHardware, 0, HARDWARE.length);
+        newHardware[HARDWARE.length] = device;
+
+        HARDWARE = newHardware;
     }
 
     public static void updateSimulation() {

@@ -17,6 +17,7 @@ public class Pigeon implements LoggableHardware {
     public Pigeon(String name) {
         this.name = name;
 
+        periodic();
         HardwareManager.addHardware(this);
     }
 

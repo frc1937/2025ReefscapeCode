@@ -9,7 +9,6 @@ import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.units.measure.*;
 import frc.lib.generic.OdometryThread;
@@ -22,7 +21,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
-import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
+import static frc.lib.generic.Feedforward.Type.ARM;
 
 public class GenericTalonFX extends Motor {
     private final TalonFX talonFX;
@@ -156,7 +155,7 @@ public class GenericTalonFX extends Motor {
     }
 
     @Override
-    public void setFollowerOf(Motor motor, boolean invert) {
+    public void setFollower(Motor motor, boolean invert) {
         if (!(motor instanceof GenericTalonFX))
             return;
 
@@ -168,7 +167,7 @@ public class GenericTalonFX extends Motor {
         this.currentConfiguration = configuration;
 
         talonConfig.MotorOutput.Inverted = configuration.inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
-        talonConfig.MotorOutput.NeutralMode = configuration.idleMode.equals(MotorProperties.IdleMode.BRAKE) ? NeutralModeValue.Brake : NeutralModeValue.Coast;
+        talonConfig.MotorOutput.NeutralMode = configuration.idleMode.getCTREIdleMode();
 
         //Who the FUCK added this feature. CTRE should fucking fire him bruh
         talonConfig.Audio.BeepOnBoot = false;
@@ -205,19 +204,21 @@ public class GenericTalonFX extends Motor {
     }
 
     private void setConfig0() {
-        talonConfig.Slot0.kP = currentConfiguration.slot.kP();
-        talonConfig.Slot0.kI = currentConfiguration.slot.kI();
-        talonConfig.Slot0.kD = currentConfiguration.slot.kD();
+        talonConfig.Slot0.kP = currentConfiguration.slot.kP;
+        talonConfig.Slot0.kI = currentConfiguration.slot.kI;
+        talonConfig.Slot0.kD = currentConfiguration.slot.kD;
 
-        talonConfig.Slot0.kA = currentConfiguration.slot.kA();
-        talonConfig.Slot0.kS = currentConfiguration.slot.kS();
-        talonConfig.Slot0.kV = currentConfiguration.slot.kV();
-        talonConfig.Slot0.kG = currentConfiguration.slot.kG();
+        talonConfig.Slot0.kA = currentConfiguration.slot.kA;
+        talonConfig.Slot0.kS = currentConfiguration.slot.kS;
+        talonConfig.Slot0.kV = currentConfiguration.slot.kV;
+        talonConfig.Slot0.kG = currentConfiguration.slot.kG;
 
-        if (currentConfiguration.slot.gravityType() != null)
-            talonConfig.Slot0.GravityType = currentConfiguration.slot.gravityType() == ARM ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
+        if (currentConfiguration.slot.feedforwardType != null)
+            talonConfig.Slot0.GravityType = currentConfiguration.slot.feedforwardType == ARM
+                    ? GravityTypeValue.Arm_Cosine
+                    : GravityTypeValue.Elevator_Static;
 
-        if (currentConfiguration.slot.kS() != 0)
+        if (currentConfiguration.slot.kS != 0)
             talonConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
     }
 
@@ -311,9 +312,9 @@ public class GenericTalonFX extends Motor {
         MotorUtilities.handleThreadedInputs(inputs, signalQueueList);
     }
 
-    private void setupNonThreadedSignal(final BaseStatusSignal correspondingSignal) {
-        correspondingSignal.setUpdateFrequency(50);
-        HardwareManager.registerCTREStatusSignal(correspondingSignal);
+    private void setupNonThreadedSignal(final BaseStatusSignal signal) {
+        signal.setUpdateFrequency(50);
+        HardwareManager.registerCTREStatusSignal(signal);
     }
 
     private void setupThreadedSignal(String name, BaseStatusSignal signal) {
