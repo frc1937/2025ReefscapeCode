@@ -42,17 +42,20 @@ public class CoralManipulationCommands {
 
     public static Command eatFromFeeder() {
         return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
-                .alongWith(CORAL_INTAKE.prepareGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(3);
+                .alongWith(CORAL_INTAKE.prepareGamePiece()
+                        .onlyIf(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))).withTimeout(3);
     }
 
     public static Command scoreCoralFromCurrentLevel() {
-        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL).alongWith(
-                CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition).withTimeout(1.5));
+        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                .alongWith(CORAL_INTAKE.releaseGamePiece()
+                        .onlyIf(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL)).withTimeout(1.5));
     }
 
     public static Command scoreCoralFromHeight(ElevatorConstants.ElevatorHeight elevatorHeight) {
-        return ELEVATOR.setTargetHeight(elevatorHeight).alongWith(
-                CORAL_INTAKE.releaseGamePiece().onlyIf(ELEVATOR::isAtTargetPosition)).withTimeout(2);
+        return ELEVATOR.setTargetHeight(elevatorHeight)
+                .alongWith(CORAL_INTAKE.releaseGamePiece()
+                        .onlyIf(() -> ELEVATOR.isAtTargetHeight(elevatorHeight))).withTimeout(2);
     }
 
     private static Command getAlgaeCommand() {
