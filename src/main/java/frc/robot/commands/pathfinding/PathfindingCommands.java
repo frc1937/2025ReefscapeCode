@@ -15,20 +15,17 @@ import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
 
 public class PathfindingCommands {
-    private static final double
-            PID_PATHFIND_THRESHOLD_REEF = 0.7,
-            PID_PATHFIND_THRESHOLD_FEEDER = 0.7;
 
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
-                () -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.17, 0.5),
+                () -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.1, 0.5),
                 Set.of(SWERVE)
         );
     }
 
     public static DeferredCommand pathfindToFeeder() {
         return new DeferredCommand(
-                () -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose(), 0.17, 0.5),
+                () -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose(), 0.1, 0.5),
                 Set.of(SWERVE)
         );
     }
@@ -71,13 +68,14 @@ public class PathfindingCommands {
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
 
-        if (angle < -150 || angle >= 150) return FACE_0.getAllianceCorrectedFace();
-        if (angle < -90) return FACE_5.getAllianceCorrectedFace();
-        if (angle < -30) return FACE_4.getAllianceCorrectedFace();
-        if (angle < 30) return FACE_3.getAllianceCorrectedFace();
-        if (angle < 90) return FACE_2.getAllianceCorrectedFace();
+        if (angle >= 150 || angle < -150) return FACE_3.getAllianceCorrectedFace();
+        if (angle >= 90) return FACE_4.getAllianceCorrectedFace();
+        if (angle >= 30) return FACE_0.getAllianceCorrectedFace();
+        if (angle >= -30) return FACE_0.getAllianceCorrectedFace();
+        if (angle >= -90) return FACE_1.getAllianceCorrectedFace();
+        if (angle >= -150) return FACE_2.getAllianceCorrectedFace();
 
-        return FACE_1.getAllianceCorrectedFace();
+        return FACE_5.getAllianceCorrectedFace();
     }
 
     private static Pose2d decideFeederPose() {
