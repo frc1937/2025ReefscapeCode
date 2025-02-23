@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -25,8 +26,7 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> setMotorPosition(levelSupplier.get().getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
@@ -42,13 +42,16 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> setMotorPosition(level.getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
                 this
         );
+    }
+
+    public boolean isAtTargetHeight(ElevatorHeight level) {
+        return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.1;
     }
 
     public boolean isAtTargetPosition() {
@@ -59,19 +62,39 @@ public class Elevator extends GenericSubsystem {
         return Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
     }
 
+    public Command runCurrentZeroing() {
+        final int[] count = {0};
+        final Timer timer = new Timer();
+
+        return new FunctionalCommand(
+                () -> {
+                    timer.restart();
+                    count[0] = 0;
+                },
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1.2),
+                (interrupt) -> {
+                    MASTER_MOTOR.stopMotor();
+                    MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS );
+                },
+                () -> {
+                    if (MASTER_MOTOR.getCurrent() > 32.0) count[0]++;
+                    else count[0] = 0;
+
+                    return count[0] > 2 && timer.hasElapsed(0.1);
+                },
+                this
+        );
+    }
+
+    public void stop() {
+        MASTER_MOTOR.stopMotor();
+        SLAVE_MOTOR.stopMotor();
+    }
+
     @Override
     public void setIdleMode(MotorProperties.IdleMode idleMode) {
         MASTER_MOTOR.setIdleMode(idleMode);
         SLAVE_MOTOR.setIdleMode(idleMode);
-    }
-
-    @Override
-    public void periodic() {
-        if (BOTTOM_BEAM_BREAK.get() == 1)
-            MASTER_MOTOR.setMotorEncoderPosition(0);
-
-        if (TOP_BEAM_BREAK.get() == 1)
-            MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS);
     }
 
     @Override

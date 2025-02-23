@@ -7,50 +7,54 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 
 public class StaticFrictionCharacterization extends Command {
     private final Motor motor;
-    private final MotorProperties.IdleMode startingIdleMode;
 
-    private int movedCounter = 0;
-    private double rampVoltage;
+    private final boolean shouldInvertVoltage;
 
-    public StaticFrictionCharacterization(GenericSubsystem requirement, Motor motor, double startingRampVoltageValue) {
-        this.rampVoltage = startingRampVoltageValue;
+    private int movedCounter;
+    private double voltage;
+
+    public StaticFrictionCharacterization(GenericSubsystem requirement, Motor motor, boolean shouldInvertVoltage) {
         this.motor = motor;
+        this.shouldInvertVoltage = shouldInvertVoltage;
 
-        startingIdleMode = motor.getCurrentConfiguration().idleMode;
+        movedCounter = 0;
+
         addRequirements(requirement);
     }
 
     @Override
     public void initialize() {
         motor.stopMotor();
-        motor.setIdleMode(MotorProperties.IdleMode.BRAKE);
+
+        movedCounter = 0;
+        voltage = 0;
     }
 
     @Override
     public void execute() {
-        motor.setOutput(MotorProperties.ControlMode.VOLTAGE, rampVoltage);
+        motor.setOutput(MotorProperties.ControlMode.VOLTAGE, shouldInvertVoltage ? -voltage : voltage);
 
-        if (motor.getSystemVelocity() != 0) {
+        if (Math.abs(motor.getSystemVelocity()) > 0.01) {
             System.out.print(
                     "\n<~~~~~~~~~~~~~~>" +
-                    "\nMECHANISM " + motor.getName() + " MOVED AT " + rampVoltage + " with velocity of " + motor.getSystemVelocity() +
+                    "\nMECHANISM " + motor.getName() + " MOVED AT " + voltage + " with velocity of " + motor.getSystemVelocity() +
                     "\n<~~~~~~~~~~~~~~>");
 
             movedCounter++;
         } else {
-            rampVoltage += 0.001;
-            System.out.println("MECHANISM " + motor.getName() + "IS STILL NOT MOVING AT SPEED: " + rampVoltage);
+             voltage += 0.001;
+
+            System.out.println("MECHANISM " + motor.getName() + "IS STILL NOT MOVING AT SPEED: " + voltage + " SPEED: " + motor.getSystemVelocity() + " AND VOLTAGE " + motor.getVoltage());
         }
     }
 
     @Override
     public void end(boolean interrupted) {
         motor.stopMotor();
-        motor.setIdleMode(startingIdleMode);
     }
 
     @Override
     public boolean isFinished() {
-        return movedCounter > 3;
+        return movedCounter > 4;
     }
 }

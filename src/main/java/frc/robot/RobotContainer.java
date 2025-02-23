@@ -68,7 +68,7 @@ public class RobotContainer {
         batteryLowTrigger.onTrue(LEDS.setLEDStatus(Leds.LEDMode.BATTERY_LOW, 5));
     }
 
-    public void updateComponents() {
+    public void updateComponentPoses() {
         ALGAE_BLASTER.printPose();
         ALGAE_INTAKE.printPose();
         ELEVATOR.printPose();

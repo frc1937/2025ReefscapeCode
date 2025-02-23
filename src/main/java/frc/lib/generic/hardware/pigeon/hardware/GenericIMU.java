@@ -1,5 +1,6 @@
 package frc.lib.generic.hardware.pigeon.hardware;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.WPI_PigeonIMU;
 import frc.lib.generic.OdometryThread;
 import frc.lib.generic.hardware.pigeon.Pigeon;
@@ -15,7 +16,7 @@ import static frc.lib.generic.hardware.pigeon.PigeonInputs.PIGEON_INPUTS_LENGTH;
 import static frc.lib.generic.hardware.pigeon.hardware.PigeonUtilities.handleThreadedInputs;
 
 public class GenericIMU extends Pigeon {
-    private final WPI_PigeonIMU pigeon;
+    private final PigeonIMU pigeon;
 
     private final boolean[] signalsToLog = new boolean[PIGEON_INPUTS_LENGTH];
     private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
@@ -23,7 +24,7 @@ public class GenericIMU extends Pigeon {
     public GenericIMU(String name, int deviceNumber) {
         super(name);
 
-        pigeon = new WPI_PigeonIMU(deviceNumber);
+        pigeon = new PigeonIMU(deviceNumber);
     }
 
     @Override
@@ -50,9 +51,9 @@ public class GenericIMU extends Pigeon {
         signalsToLog[signal.getId() + PIGEON_INPUTS_LENGTH / 2] = true;
 
         switch (signal) {
-            case YAW -> signalQueueList.put("yaw", OdometryThread.getInstance().registerSignal(pigeon::getYaw));
-            case ROLL -> signalQueueList.put("roll", OdometryThread.getInstance().registerSignal(pigeon::getRoll));
-            case PITCH -> signalQueueList.put("pitch", OdometryThread.getInstance().registerSignal(pigeon::getPitch));
+            case YAW -> signalQueueList.put("yaw", OdometryThread.getInstance().registerSignal(() -> pigeon.getYaw() / 360.0));
+            case ROLL -> signalQueueList.put("roll", OdometryThread.getInstance().registerSignal(() -> pigeon.getRoll() / 360.0));
+            case PITCH -> signalQueueList.put("pitch", OdometryThread.getInstance().registerSignal(() -> pigeon.getPitch() / 360.0));
         }
     }
 
