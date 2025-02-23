@@ -22,12 +22,12 @@ public class AlgaeIntake extends GenericSubsystem {
                 () -> {
                 },
                 () -> {
-                    INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
-                    INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());
+//                    INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getTargetArmPositionRotations());
+//                    INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, state.getRollerVoltage());
                 },
                 interrupt -> {
-                    INTAKE_MOTOR.stopMotor();
-                    INTAKE_ARM_MOTOR.stopMotor();
+//                    INTAKE_MOTOR.stopMotor();
+//                    INTAKE_ARM_MOTOR.stopMotor();
                 },
                 () -> false,
                 this
@@ -35,17 +35,20 @@ public class AlgaeIntake extends GenericSubsystem {
     }
 
     public Command setRollersVoltage(double voltage) {
-        return Commands.run(() -> INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage), this);
+        return Commands.run(
+                () -> {},
+//                        INTAKE_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage),
+                        this);
     }
-
-    public boolean isArmAtTarget() {
-        return INTAKE_ARM_MOTOR.isAtPositionSetpoint();
-    }
+//
+//    public boolean isArmAtTarget() {
+//        return INTAKE_ARM_MOTOR.isAtPositionSetpoint();
+//    }
 
     @Override
     public void setIdleMode(MotorProperties.IdleMode idleMode) {
-        INTAKE_MOTOR.setIdleMode(idleMode);
-        INTAKE_ARM_MOTOR.setIdleMode(idleMode);
+//        INTAKE_MOTOR.setIdleMode(idleMode);
+//        INTAKE_ARM_MOTOR.setIdleMode(idleMode);
     }
 
     @Override
@@ -55,33 +58,33 @@ public class AlgaeIntake extends GenericSubsystem {
 
     @Override
     public void sysIdDrive(double voltage) {
-        INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+//        INTAKE_ARM_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     @Override
     public void sysIdUpdateLog(SysIdRoutineLog log) {
-        log.motor(INTAKE_ARM_MOTOR.getName())
-                .voltage(Volts.of(INTAKE_ARM_MOTOR.getVoltage()))
-                .angularPosition(Rotations.of(INTAKE_ARM_MOTOR.getSystemPosition()))
-                .angularVelocity(RotationsPerSecond.of(INTAKE_ARM_MOTOR.getSystemVelocity()));
+//        log.motor(INTAKE_ARM_MOTOR.getName())
+//                .voltage(Volts.of(INTAKE_ARM_MOTOR.getVoltage()))
+//                .angularPosition(Rotations.of(INTAKE_ARM_MOTOR.getSystemPosition()))
+//                .angularVelocity(RotationsPerSecond.of(INTAKE_ARM_MOTOR.getSystemVelocity()));
     }
 
     public void printPose() {
-        if (INTAKE_ARM_MECHANISM != null) {
-            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0.28, 0.15), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
-
-            Logger.recordOutput("Components/IntakeArmPose", current3dPose);
-
-            INTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
-            INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
-        }
+//        if (INTAKE_ARM_MECHANISM != null) {
+//            final Pose3d current3dPose = new Pose3d(new Translation3d(0, 0.28, 0.15), new Rotation3d(0, getCurrentArmPosition().getRadians(), Math.PI / 2));
+//
+//            Logger.recordOutput("Components/IntakeArmPose", current3dPose);
+//
+//            INTAKE_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
+//            INTAKE_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
+//        }
     }
 
-    private Rotation2d getCurrentArmPosition() {
-        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getSystemPosition());
-    }
-
-    private Rotation2d getTargetArmPosition() {
-        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getClosedLoopTarget());
-    }
+//    private Rotation2d getCurrentArmPosition() {
+//        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getSystemPosition());
+//    }
+//
+//    private Rotation2d getTargetArmPosition() {
+//        return Rotation2d.fromRotations(INTAKE_ARM_MOTOR.getClosedLoopTarget());
+//    }
 }
