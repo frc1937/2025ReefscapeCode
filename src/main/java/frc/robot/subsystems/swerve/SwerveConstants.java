@@ -43,7 +43,7 @@ public class SwerveConstants {
             : new TrapezoidProfile.Constraints(2, 1);
 
     private static final PIDConstants TRANSLATIONAL_PROFILES_CONSTANTS = IS_SIMULATION
-            ? new PIDConstants(0.9, 0, 0.00005)
+            ? new PIDConstants(1.1, 0, 0)
             : new PIDConstants(0.3551, 0, 0);
 
     protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
@@ -54,7 +54,7 @@ public class SwerveConstants {
             : new PID(2, 0, 0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
-            ? new ProfiledPID(0.5, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360))
+            ? new ProfiledPID(0.09, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
             : new ProfiledPID(5.5, 0, 0.009,0.1, new TrapezoidProfile.Constraints(500, 500));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
