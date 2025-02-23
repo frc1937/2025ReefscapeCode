@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -49,12 +50,40 @@ public class Elevator extends GenericSubsystem {
         );
     }
 
+    public boolean isAtTargetHeight(ElevatorHeight level) {
+        return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.1;
+    }
+
     public boolean isAtTargetPosition() {
         return MASTER_MOTOR.isAtPositionSetpoint();
     }
 
     public double getCurrentHeight() {
         return Conversions.rotationsToMetres(MASTER_MOTOR.getSystemPosition(), WHEEL_DIAMETER);
+    }
+
+    public Command runCurrentZeroing() {
+        final int[] count = {0};
+        final Timer timer = new Timer();
+
+        return new FunctionalCommand(
+                () -> {
+                    timer.restart();
+                    count[0] = 0;
+                },
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1.2),
+                (interrupt) -> {
+                    MASTER_MOTOR.stopMotor();
+                    MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS );
+                },
+                () -> {
+                    if (MASTER_MOTOR.getCurrent() > 32.0) count[0]++;
+                    else count[0] = 0;
+
+                    return count[0] > 2 && timer.hasElapsed(0.1);
+                },
+                this
+        );
     }
 
     public void stop() {

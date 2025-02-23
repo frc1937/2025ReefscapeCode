@@ -20,7 +20,7 @@ public class ElevatorConstants {
         L1(0.05),
         L2(0.6),
         L3(2.1),
-        FEEDER(0.05),
+        FEEDER(-0.30),
         CLIMB(-0.1);
 
         private final double rotations;
@@ -46,8 +46,9 @@ public class ElevatorConstants {
 
     protected static final double
             ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.2483952045440674,
-            ELEVATOR_MIN_EXTENSION_ROTATIONS = -0.0002,
-            WHEEL_DIAMETER = 0.0328;
+            ELEVATOR_MIN_EXTENSION_ROTATIONS = -0.30,
+            WHEEL_DIAMETER = 0.0328,
+            GEAR_RATIO = 48;
 
     protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = MechanismFactory.createElevatorMechanism("Elevator Mechanism", 1);
 
@@ -70,10 +71,10 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxJerk =
                 CURRENT_MODE == GlobalConstants.Mode.SIMULATION ? 250 : 25;
 
-        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 50;
+        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 40;
 
         ELEVATOR_MOTORS_CONFIGURATION.inverted = true;
-        ELEVATOR_MOTORS_CONFIGURATION.gearRatio = 48;
+        ELEVATOR_MOTORS_CONFIGURATION.gearRatio = GEAR_RATIO;
 
         ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(0.001,0,0,4.9764,0.21689,0.12065, 0.063824, Feedforward.Type.ELEVATOR);
 
