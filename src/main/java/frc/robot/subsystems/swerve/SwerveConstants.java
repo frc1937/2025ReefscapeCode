@@ -19,8 +19,8 @@ import static frc.robot.utilities.PortsConstants.SwervePorts.GYRO_PORT;
 
 public class SwerveConstants {
     public static final SwerveDriveKinematics SWERVE_KINEMATICS = new SwerveDriveKinematics(ROBOT_CONFIG.moduleLocations);
+    public static final double MAX_SPEED_MPS = 5;
 
-    public static final double PID_PATHFIND_ACCURACY_THRESHOLD = 0.07;
 
     protected static final SysIdRoutine.Config SYSID_DRIVE_CONFIG = new SysIdRoutine.Config(
             Volts.per(Second).of(1),
@@ -31,9 +31,7 @@ public class SwerveConstants {
     protected static final double
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),
-
             MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
-
             WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
 
     public static final double
@@ -42,10 +40,10 @@ public class SwerveConstants {
 
     private static final TrapezoidProfile.Constraints TRANSLATIONAL_PROFILES_CONSTRAINTS = IS_SIMULATION
             ? new TrapezoidProfile.Constraints(3, 3)
-            : new TrapezoidProfile.Constraints(5, 3);
+            : new TrapezoidProfile.Constraints(2, 1);
 
     private static final PIDConstants TRANSLATIONAL_PROFILES_CONSTANTS = IS_SIMULATION
-            ? new PIDConstants(0.9, 0, 0.00005)
+            ? new PIDConstants(1.1, 0, 0)
             : new PIDConstants(0.3551, 0, 0);
 
     protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
@@ -53,13 +51,13 @@ public class SwerveConstants {
 
     protected static final PID PID_TRANSLATION_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(5, 0, 0);
+            : new PID(2, 0, 0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
-            ? new ProfiledPID(0.5, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(3.9, 0, 0.05, new TrapezoidProfile.Constraints(360, 360));
+            ? new ProfiledPID(0.09, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
+            : new ProfiledPID(5.5, 0, 0.009,0.1, new TrapezoidProfile.Constraints(500, 500));
 
-    protected static final Pigeon GYRO = PigeonFactory.createIMU("GYRO", GYRO_PORT);
+    protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
     static {
         configureGyro();
@@ -67,7 +65,14 @@ public class SwerveConstants {
     }
 
     private static void configureGyro() {
-        GYRO.configurePigeon(new PigeonConfiguration());
+        PigeonConfiguration configuration = new PigeonConfiguration();
+
+        configuration.mountPoseYawDegrees = -89.64400482177734;
+        configuration.mountPoseRollDegrees =  -0.5925159454345703;
+        configuration.mountPosePitchDegrees = 0.8338062763214111;
+
+        GYRO.configurePigeon(configuration);
+
         GYRO.setupSignalUpdates(PigeonSignal.YAW, true);
     }
 

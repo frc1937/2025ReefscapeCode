@@ -16,7 +16,6 @@ import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-import static frc.lib.math.Conversions.proportionalPowerToMps;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
@@ -165,14 +164,14 @@ public class Swerve extends GenericSubsystem {
     }
 
     protected void driveFieldRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
-        ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
+        ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, RobotContainer.POSE_ESTIMATOR.getCurrentPose().getRotation());
 
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
     protected void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
-        final ChassisSpeeds speeds = proportionalSpeedToMps(new ChassisSpeeds(xPower, yPower, thetaPower));
+        final ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
@@ -199,15 +198,17 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < MODULES.length; i++) {
             swerveModulePositions[i] = MODULES[i].getOdometryPosition(odometryUpdateIndex);
+
+            if (swerveModulePositions[i] == null) return null;
         }
 
         return swerveModulePositions;
     }
 
-    protected ChassisSpeeds proportionalSpeedToMps(ChassisSpeeds chassisSpeeds) {
+    protected ChassisSpeeds powerSpeedsToChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         return new ChassisSpeeds(
-                proportionalPowerToMps(chassisSpeeds.vxMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
-                proportionalPowerToMps(chassisSpeeds.vyMetersPerSecond, ROBOT_CONFIG.moduleConfig.maxDriveVelocityMPS),
+                chassisSpeeds.vxMetersPerSecond * MAX_SPEED_MPS,
+                chassisSpeeds.vyMetersPerSecond * MAX_SPEED_MPS,
                 chassisSpeeds.omegaRadiansPerSecond
         );
     }

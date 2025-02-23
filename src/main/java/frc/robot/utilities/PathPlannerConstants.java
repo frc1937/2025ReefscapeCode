@@ -10,6 +10,7 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.util.LocalADStarAK;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.subsystems.swerve.SwerveConstants;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
@@ -22,12 +23,12 @@ public class PathPlannerConstants {
     public static final RobotConfig ROBOT_CONFIG = getRobotConfig();
 
     public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
-            ? new PathConstraints(3.7, 2, 6, 4)
-            : new PathConstraints(5.7, 2, 6, 4); //TODO TUNE
+            ? new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, 6, 4)
+            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 1, 3, 2); //TODO TUNE
 
     private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
-            ? new PPHolonomicDriveController(new PIDConstants(5.5, 0.0, 0), new PIDConstants(5.5, 0.0, 0))
-            : new PPHolonomicDriveController(new PIDConstants(5, 0.0, 0), new PIDConstants(5, 0.0, 0)); //TODO TUNE
+            ? new PPHolonomicDriveController(new PIDConstants(2.5, 0.0, 0), new PIDConstants(0.31, 0.0, 0))
+            : new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0), new PIDConstants(1, 0.0, 0)); //TODO TUNE
 
 
     public static void initializePathPlanner() {

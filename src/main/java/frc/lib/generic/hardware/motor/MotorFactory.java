@@ -2,8 +2,6 @@ package frc.lib.generic.hardware.motor;
 
 import frc.lib.generic.hardware.motor.hardware.ctre.GenericTalonFX;
 import frc.lib.generic.hardware.motor.hardware.ctre.GenericTalonSRX;
-import frc.lib.generic.hardware.motor.hardware.rev.GenericSparkFlex;
-import frc.lib.generic.hardware.motor.hardware.rev.GenericSparkMax;
 import frc.lib.generic.hardware.motor.hardware.simulated.SimulatedTalonMotor;
 import frc.robot.GlobalConstants;
 
@@ -21,10 +19,7 @@ public class MotorFactory {
         if (motor != null)
             return motor;
 
-        if (type == MotorProperties.SparkType.FLEX)
-            return new GenericSparkFlex(name, port);
-        else
-            return new GenericSparkMax(name, port);
+        return type.getSpark(name, port);
     }
 
     public static Motor createTalonFX(String name, int port) {

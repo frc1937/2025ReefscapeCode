@@ -1,20 +1,49 @@
 package frc.lib.generic.hardware.motor;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import frc.lib.generic.Feedforward;
+import frc.lib.generic.hardware.motor.hardware.rev.GenericSparkFlex;
+import frc.lib.generic.hardware.motor.hardware.rev.GenericSparkMax;
+
 public class MotorProperties {
     public enum IdleMode {
-        COAST,
-        BRAKE
+        COAST {
+            @Override
+            public SparkBaseConfig.IdleMode getSparkIdleMode() { return SparkBaseConfig.IdleMode.kCoast; }
+
+            @Override
+            public NeutralModeValue getCTREIdleMode() { return NeutralModeValue.Coast; }
+        },
+
+        BRAKE {
+            @Override
+            public SparkBaseConfig.IdleMode getSparkIdleMode() {return SparkBaseConfig.IdleMode.kBrake;}
+
+            @Override
+            public NeutralModeValue getCTREIdleMode() { return NeutralModeValue.Brake;}
+        };
+
+        public abstract SparkBaseConfig.IdleMode getSparkIdleMode();
+        public abstract NeutralModeValue getCTREIdleMode();
     }
 
     public enum SparkType {
-        MAX,
-        FLEX;
-    }
+        MAX {
+            @Override
+            public Motor getSpark(String name, int deviceId) {
+                return new GenericSparkMax(name, deviceId);
+            }
+        },
 
-    public enum GravityType {
-        SIMPLE,
-        ARM,
-        ELEVATOR
+        FLEX {
+            @Override
+            public Motor getSpark(String name, int deviceId) {
+                return new GenericSparkFlex(name, deviceId);
+            }
+        };
+
+        public abstract Motor getSpark(String name, int deviceId);
     }
 
     /**
@@ -51,10 +80,10 @@ public class MotorProperties {
     }
 
     public static final class Slot {
-        private final double kP, kD, kI, kV, kA, kS, kG;
-        private final GravityType gravityType;
+        public final double kP, kD, kI, kV, kA, kS, kG;
+        public final Feedforward.Type feedforwardType;
 
-        public Slot(double kP, double kI, double kD, double kV, double kA, double kS, double kG, GravityType gravityType) {
+        public Slot(double kP, double kI, double kD, double kV, double kA, double kS, double kG, Feedforward.Type feedforwardType) {
             this.kP = kP;
             this.kI = kI;
             this.kD = kD;
@@ -62,47 +91,15 @@ public class MotorProperties {
             this.kA = kA;
             this.kS = kS;
             this.kG = kG;
-            this.gravityType = gravityType;
+            this.feedforwardType = feedforwardType;
         }
 
         public Slot(double kP, double kI, double kD, double kV, double kA, double kS) {
-            this(kP, kI, kD, kV, kA, kS, 0, GravityType.SIMPLE);
+            this(kP, kI, kD, kV, kA, kS, 0, Feedforward.Type.SIMPLE);
         }
 
         public Slot(double kP, double kI, double kD) {
             this(kP, kI, kD, 0, 0, 0, 0, null);
-        }
-
-        public double kP() {
-            return kP;
-        }
-
-        public double kD() {
-            return kD;
-        }
-
-        public double kI() {
-            return kI;
-        }
-
-        public double kV() {
-            return kV;
-        }
-
-        public double kA() {
-            return kA;
-        }
-
-        public double kS() {
-            return kS;
-        }
-
-        public double kG() {
-            return kG;
-        }
-
-        public GravityType gravityType() {
-            return gravityType;
         }
     }
 }

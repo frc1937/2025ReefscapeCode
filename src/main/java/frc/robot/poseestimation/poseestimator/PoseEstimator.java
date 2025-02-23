@@ -86,8 +86,10 @@ public class PoseEstimator implements AutoCloseable {
      * @param gyroRotations        the gyro rotations accumulated since the last update
      */
     public void updateFromOdometry(SwerveModulePosition[][] swerveWheelPositions, Rotation2d[] gyroRotations, double[] timestamps) {
-        for (int i = 0; i < swerveWheelPositions.length; i++)
+        for (int i = 0; i < swerveWheelPositions.length; i++) {
+            if (swerveWheelPositions[i] == null) continue;
             addOdometryObservation(swerveWheelPositions[i], gyroRotations[i], timestamps[i]);
+        }
     }
 
     /**
@@ -133,7 +135,7 @@ public class PoseEstimator implements AutoCloseable {
     private void updateFromAprilTagCameras() {
         final PhotonCameraIO[] newResultCameras = getCamerasWithResults();
 
-        sortCamerasByLatestResultTimestamp(newResultCameras);
+        sort(aprilTagCameras, PhotonCameraIO::getLastResultTimestamp);
 
         for (PhotonCameraIO aprilTagCamera : newResultCameras)
             addVisionObservation(
@@ -148,17 +150,12 @@ public class PoseEstimator implements AutoCloseable {
         int index = 0;
 
         for (PhotonCameraIO aprilTagCamera : aprilTagCameras) {
-            if (!aprilTagCamera.hasNewResult())
-                continue;
+            if (!aprilTagCamera.hasNewResult()) continue;
 
             camerasWithNewResult[index++] = aprilTagCamera;
         }
 
         return Arrays.copyOf(camerasWithNewResult, index);
-    }
-
-    private void sortCamerasByLatestResultTimestamp(PhotonCameraIO[] aprilTagCameras) {
-        sort(aprilTagCameras, PhotonCameraIO::getLastResultTimestamp);
     }
 
     private Pose2d getOdometryPoseAtTimestamp(double timestamp) {
@@ -169,8 +166,7 @@ public class PoseEstimator implements AutoCloseable {
     }
 
     private Pose2d getEstimatedPoseAtTimestamp(Pose2d odometryPoseAtTimestamp) {
-        if (odometryPoseAtTimestamp == null)
-            return null;
+        if (odometryPoseAtTimestamp == null) return null;
 
         final Transform2d currentPoseToSamplePose = new Transform2d(odometryPose, odometryPoseAtTimestamp);
         return estimatedPose.plus(currentPoseToSamplePose);

@@ -1,17 +1,15 @@
 package frc.lib.generic.hardware.motor.hardware.rev;
 
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.*;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.lib.generic.Feedforward;
 import frc.lib.generic.PID;
 import frc.lib.generic.hardware.motor.MotorConfiguration;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
+import frc.lib.math.Conversions;
 import frc.lib.scurve.InputParameter;
 import frc.lib.scurve.OutputParameter;
 import frc.lib.scurve.UpdateResult;
@@ -63,8 +61,7 @@ public class GenericSparkMax extends GenericSparkBase {
     }
 
     @Override
-    protected void refreshExtras() {
-    }
+    protected void refreshExtras() { }
 
     @Override
     protected void setNewGoalExtras() {
@@ -72,13 +69,59 @@ public class GenericSparkMax extends GenericSparkBase {
     }
 
     @Override
-    protected SparkBaseConfig configureExtras(MotorConfiguration configuration, SparkBaseConfig sparkConfig) {
-        feedback = new PID(configuration.slot.kP(), configuration.slot.kI(), configuration.slot.kD(), configuration.slot.kS());
+    protected boolean configureMotorInternal(MotorConfiguration configuration, SparkFlex master, boolean invertFollower) {
+        feedback = new PID(configuration.slot.kP, configuration.slot.kI, configuration.slot.kD, configuration.slot.kS);
 
-        if (configuration.closedLoopContinuousWrap)
-            feedback.enableContinuousInput(-0.5, 0.5);
+        if (configuration.closedLoopContinuousWrap) feedback.enableContinuousInput(-0.5, 0.5);
 
-        return sparkConfig;
+        final SparkMaxConfig sparkConfig = new SparkMaxConfig();
+
+        sparkConfig.idleMode(configuration.idleMode.getSparkIdleMode());
+
+        sparkConfig.closedLoop.maxMotion.allowedClosedLoopError(configuration.closedLoopTolerance);
+        sparkConfig.closedLoop.pid(configuration.slot.kP, configuration.slot.kI, configuration.slot.kD);
+        sparkConfig.closedLoop.positionWrappingEnabled(configuration.closedLoopContinuousWrap);
+
+        sparkConfig.encoder.positionConversionFactor(1.0 / configuration.gearRatio);
+        sparkConfig.encoder.velocityConversionFactor(1.0 / (Conversions.SEC_PER_MIN * configuration.gearRatio));
+
+        sparkConfig.openLoopRampRate(configuration.dutyCycleOpenLoopRampPeriod);
+        sparkConfig.closedLoopRampRate(configuration.dutyCycleClosedLoopRampPeriod);
+
+        sparkConfig.voltageCompensation(12);
+
+        sparkConfig.signals.apply(signalsConfig);
+
+        sparkConfig.inverted(configuration.inverted);
+
+        if (master != null) {
+            sparkConfig.follow(master, invertFollower);
+        }
+
+        if (configuration.statorCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.statorCurrentLimit);
+        if (configuration.supplyCurrentLimit != -1) sparkConfig.smartCurrentLimit((int) configuration.supplyCurrentLimit);
+
+        if (configuration.forwardSoftLimit != null) {
+            sparkConfig.softLimit.forwardSoftLimitEnabled(true);
+            sparkConfig.softLimit.forwardSoftLimit(configuration.forwardSoftLimit * configuration.gearRatio);
+        }
+
+        if (configuration.reverseSoftLimit != null) {
+            sparkConfig.softLimit.reverseSoftLimitEnabled(true);
+            sparkConfig.softLimit.reverseSoftLimit(configuration.reverseSoftLimit * configuration.gearRatio);
+        }
+
+        int i = 0;
+
+        while (i <= 3 &&
+                spark.configureAsync(sparkConfig,
+                        SparkBase.ResetMode.kResetSafeParameters,
+                        SparkBase.PersistMode.kPersistParameters)
+                        != REVLibError.kOk) {
+            i++;
+        }
+
+        return spark.configureAsync(sparkConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters) == REVLibError.kOk;
     }
 
     protected void handleSmoothMotion(MotorUtilities.MotionType motionType, TrapezoidProfile.State goalState, TrapezoidProfile motionProfile,
@@ -116,11 +159,11 @@ public class GenericSparkMax extends GenericSparkBase {
             }
 
             case POSITION_PID -> feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
+
             case POSITION_PID_WITH_KG -> {
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), 0, 0);
                 feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
             }
-
 
             case POSITION_S_CURVE -> {
                 final UpdateResult result = getSCurveGenerator().update(scurveInputs, scurveOutput);
@@ -134,10 +177,6 @@ public class GenericSparkMax extends GenericSparkBase {
         }
 
         sparkController.setReference(feedforwardOutput + feedbackOutput, SparkBase.ControlType.kVoltage);
-    }
-
-    protected SparkBaseConfig getSparkConfig() {
-        return new SparkMaxConfig();
     }
 
     @Override

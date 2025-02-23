@@ -1,5 +1,6 @@
 package frc.lib.math;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -76,26 +77,6 @@ public class Optimizations {
         return Math.abs(chassisSpeeds.vxMetersPerSecond) <= SwerveConstants.DRIVE_NEUTRAL_DEADBAND &&
                 Math.abs(chassisSpeeds.vyMetersPerSecond) <= SwerveConstants.DRIVE_NEUTRAL_DEADBAND &&
                 Math.abs(chassisSpeeds.omegaRadiansPerSecond) <= SwerveConstants.ROTATION_NEUTRAL_DEADBAND;
-    }
-
-    /**
-     * Minimize the change in heading the desired swerve module state would require by potentially
-     * reversing the direction the wheel spins. Customized from WPILib's version to include placing
-     * in appropriate scope for CTRE onboard control.
-     *
-     * @param desiredState The desired state.
-     * @param currentAngle The current module angle.
-     */
-    public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle) {
-        double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
-        double targetSpeed = desiredState.speedMetersPerSecond;
-        double delta = targetAngle - currentAngle.getDegrees();
-
-        if (Math.abs(delta) > 90) {
-            targetSpeed = -targetSpeed;
-            targetAngle = delta > 90 ? targetAngle - 180 : targetAngle + 180;
-        }
-        return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
     }
 
     /**
