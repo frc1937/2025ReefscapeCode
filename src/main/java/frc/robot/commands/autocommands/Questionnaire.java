@@ -42,7 +42,7 @@ public class Questionnaire {
         final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>("Which Auto Preset?");
 
         question.addDefaultOption("None", "none");
-        question.addOption("preset1", "preset1");
+        question.addOption("L2x3", "L2x3");
 
         return question;
     }
