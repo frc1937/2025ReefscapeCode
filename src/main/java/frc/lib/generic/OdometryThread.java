@@ -13,6 +13,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.DoubleSupplier;
 
+import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
 import static frc.robot.GlobalConstants.*;
 
 /**
@@ -44,6 +45,7 @@ public class OdometryThread extends Thread {
 
         Notifier notifier = new Notifier(this::periodic);
         notifier.setName("OdometryThread");
+
         Timer.delay(5);
         notifier.startPeriodic(1.0 / ODOMETRY_FREQUENCY_HERTZ);
     }
@@ -92,7 +94,10 @@ public class OdometryThread extends Thread {
             }
 
             for (int i = 0; i < ctreThreadedSignals.length; i++) {
-                queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
+                if (ctreThreadedSignals[i].getName() == "Yaw") {
+                    queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble() / 360);
+                } else
+                    queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
             timestamps.offer(updateTimestamp);
@@ -121,9 +126,9 @@ public class OdometryThread extends Thread {
 
     public void updateLatestTimestamps() {
         if (CURRENT_MODE != Mode.REPLAY) {
-            threadInputs.timestamps = timestamps.stream().mapToDouble(Double::doubleValue).toArray();
-            timestamps.clear();
+            threadInputs.timestamps = queueToArrayAndClearQueue(timestamps);
         }
+
         Logger.processInputs("OdometryThread", threadInputs);
     }
 

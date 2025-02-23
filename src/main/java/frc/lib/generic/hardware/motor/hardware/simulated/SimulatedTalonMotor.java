@@ -14,8 +14,8 @@ import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.GenericPhysicsSimulation;
 import frc.robot.GlobalConstants;
 
+import static frc.lib.generic.Feedforward.Type.ARM;
 import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
-import static frc.lib.generic.hardware.motor.MotorProperties.GravityType.ARM;
 import static frc.robot.GlobalConstants.CURRENT_MODE;
 
 public class SimulatedTalonMotor extends Motor {
@@ -147,17 +147,18 @@ public class SimulatedTalonMotor extends Motor {
     }
 
     private void configurePIDSlot() {
-        talonConfig.Slot0.kP = currentConfiguration.simulationSlot.kP();
-        talonConfig.Slot0.kI = currentConfiguration.simulationSlot.kI();
-        talonConfig.Slot0.kD = currentConfiguration.simulationSlot.kD();
+        talonConfig.Slot0.kP = currentConfiguration.simulationSlot.kP;
+        talonConfig.Slot0.kI = currentConfiguration.simulationSlot.kI;
+        talonConfig.Slot0.kD = currentConfiguration.simulationSlot.kD;
 
-        talonConfig.Slot0.kA = currentConfiguration.simulationSlot.kA();
-        talonConfig.Slot0.kS = currentConfiguration.simulationSlot.kS();
-        talonConfig.Slot0.kV = currentConfiguration.simulationSlot.kV();
-        talonConfig.Slot0.kG = currentConfiguration.simulationSlot.kG();
+        talonConfig.Slot0.kA = currentConfiguration.simulationSlot.kA;
+        talonConfig.Slot0.kS = currentConfiguration.simulationSlot.kS;
+        talonConfig.Slot0.kV = currentConfiguration.simulationSlot.kV;
+        talonConfig.Slot0.kG = currentConfiguration.simulationSlot.kG;
 
-        if (currentConfiguration.simulationSlot.gravityType() != null)
-            talonConfig.Slot0.GravityType = currentConfiguration.simulationSlot.gravityType() == ARM ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
+        if (currentConfiguration.simulationSlot.feedforwardType != null)
+            talonConfig.Slot0.GravityType = currentConfiguration.simulationSlot.feedforwardType == ARM
+                    ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
     }
 
     @Override
@@ -190,7 +191,6 @@ public class SimulatedTalonMotor extends Motor {
 
         inputs.voltage = voltageSignal.getValueAsDouble();
         inputs.current = simulation.getCurrent();
-        inputs.temperature = 0;
         inputs.target = target;
         inputs.systemPosition = simulation.getSystemPositionRotations();
         inputs.systemVelocity = simulation.getSystemVelocityRotationsPerSecond();
@@ -198,7 +198,6 @@ public class SimulatedTalonMotor extends Motor {
 
         inputs.threadVoltage = new double[]{inputs.voltage};
         inputs.threadCurrent = new double[]{inputs.current};
-        inputs.threadTemperature = new double[]{inputs.temperature};
         inputs.threadTarget = new double[]{inputs.target};
         inputs.threadSystemPosition = new double[]{inputs.systemPosition};
         inputs.threadSystemVelocity = new double[]{inputs.systemVelocity};
