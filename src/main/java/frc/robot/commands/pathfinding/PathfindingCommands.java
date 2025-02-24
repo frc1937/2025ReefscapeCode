@@ -18,7 +18,9 @@ public class PathfindingCommands {
 
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
-                () -> SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.1, 0.5),
+                () -> SwerveCommands
+                                .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
+                                .andThen(SwerveCommands.goToPosePID(branch.getBranchPose())),
                 Set.of(SWERVE)
         );
     }
@@ -68,12 +70,11 @@ public class PathfindingCommands {
 
         final double angle = Math.toDegrees(Math.atan2(distanceToReef.getY(), distanceToReef.getX()));
 
-        if (angle >= 150 || angle < -150) return FACE_3.getAllianceCorrectedFace();
-        if (angle >= 90) return FACE_4.getAllianceCorrectedFace();
-        if (angle >= 30) return FACE_0.getAllianceCorrectedFace();
-        if (angle >= -30) return FACE_0.getAllianceCorrectedFace();
-        if (angle >= -90) return FACE_1.getAllianceCorrectedFace();
-        if (angle >= -150) return FACE_2.getAllianceCorrectedFace();
+        if (150 <= angle || angle < -150) return FACE_3.getAllianceCorrectedFace();
+        if (-30 <= angle && angle < 30) return FACE_0.getAllianceCorrectedFace();
+        if (90 <= angle) return  FACE_4.getAllianceCorrectedFace();
+        if (-90 <= angle && angle < -30) return FACE_1.getAllianceCorrectedFace();
+        if (-150 <= angle && angle < -90) return FACE_2.getAllianceCorrectedFace();
 
         return FACE_5.getAllianceCorrectedFace();
     }
