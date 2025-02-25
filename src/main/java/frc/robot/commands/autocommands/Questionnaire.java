@@ -41,7 +41,7 @@ public class Questionnaire {
     private LoggedDashboardChooser<String> createPresetQuestion() {
         final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>("Which Auto Preset?");
 
-        question.addDefaultOption("None", "none");
+        question.addDefaultOption("None", "None");
         question.addOption("L2x3", "L2x3");
 
         return question;
@@ -119,13 +119,14 @@ public class Questionnaire {
         return goToBranch
                 .alongWith(algaeBlastingCommand)
                 .andThen(cycle.scoringHeightQuestion.get())
-                .andThen((cycle.coralIntakeQuestion.get()));
+                .andThen(cycle.coralIntakeQuestion.get());
     }
 
     public Command getCommand() {
         if (PRESET_QUESTION.getSendableChooser().getSelected() != "None") {
-            final PathPlannerAuto presetAutoPath = new PathPlannerAuto(PRESET_QUESTION.get());
-            return SwerveCommands.goToPoseBezier(new FlippablePose2d(presetAutoPath.getStartingPose(), true).get()).andThen(presetAutoPath);
+            final PathPlannerAuto followAutoPreset = new PathPlannerAuto(PRESET_QUESTION.get());
+            final Command correctStartPose = SwerveCommands.goToPoseTrapezoidal(new FlippablePose2d(followAutoPreset.getStartingPose(), true).get(), 0.02, 0.5);
+            return correctStartPose.andThen(followAutoPreset);
         }
 
         return Commands.sequence(

@@ -30,7 +30,7 @@ public class PathPlannerConstants {
             : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 1, 3, 2); //TODO TUNE
 
     private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
-            ? new PPHolonomicDriveController(new PIDConstants(2.5, 0.0, 0), new PIDConstants(0.31, 0.0, 0))
+            ? new PPHolonomicDriveController(new PIDConstants(4.75, 0.0, 0), new PIDConstants(0.9, 0.0, 0))
             : new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0), new PIDConstants(1, 0.0, 0)); //TODO TUNE
 
 
