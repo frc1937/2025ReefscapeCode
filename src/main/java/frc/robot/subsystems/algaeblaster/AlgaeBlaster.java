@@ -28,6 +28,16 @@ public class AlgaeBlaster extends GenericSubsystem {
         );
     }
 
+    public Command holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState state) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION,state.getRotations()),
+                interrupt -> {},
+                () -> false,
+                this
+        );
+    }
+
     public Command stopAlgaeBlasterArm() {
         return Commands.runOnce(
                 ARM_BLASTER_MOTOR::stopMotor, this);
