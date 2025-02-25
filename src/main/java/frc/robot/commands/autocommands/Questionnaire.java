@@ -1,11 +1,15 @@
 package frc.robot.commands.autocommands;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.util.flippable.FlippablePose2d;
+import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.swerve.SwerveCommands;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -13,7 +17,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
 
 public class Questionnaire {
-    private final LoggedDashboardChooser<Command> PRESET_QUESTION;
+    private final LoggedDashboardChooser<String> PRESET_QUESTION;
     private final Cycle
             CYCLE_1,
             CYCLE_2,
@@ -35,13 +39,12 @@ public class Questionnaire {
                 createFeederQuestion(key));
     }
 
-    private LoggedDashboardChooser<Command> createPresetQuestion() {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>("Which Auto Preset?");
+    private LoggedDashboardChooser<String> createPresetQuestion() {
+        final LoggedDashboardChooser<String> question = new LoggedDashboardChooser<>("Which Auto Preset?");
 
-        question.addDefaultOption("None", Commands.none());
-        question.addOption("go and distract on other alliance", Commands.none());
-        question.addOption("run into a wall", Commands.none());
-        question.addOption("spin around the reef", Commands.none());
+        question.addDefaultOption("None", "None");
+        question.addOption("L2x3", "L2x3");
+        question.addOption("Leave the midline", "Leave");
 
         return question;
     }
@@ -113,17 +116,24 @@ public class Questionnaire {
 
         final Command algaeBlastingCommand = cycle.algaeQuestion.get().isFinished()
                 ? Commands.none()
-                : blastAlgaeOffReef(selectedReefFace);
+                : AlgaeManipulationCommands.blastAlgaeOffReefWithElevator(selectedReefFace);
 
         return goToBranch
                 .alongWith(algaeBlastingCommand)
                 .andThen(cycle.scoringHeightQuestion.get())
-                .andThen((cycle.coralIntakeQuestion.get()));
+                .andThen((cycle.feederQuestion.get()));
     }
 
     public Command getCommand() {
-        if (PRESET_QUESTION.getSendableChooser().getSelected() != "None")
-            return PRESET_QUESTION.get();
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "L2x3") {
+            final PathPlannerAuto followAutoPreset = new PathPlannerAuto(PRESET_QUESTION.get());
+            final Command correctStartPose = SwerveCommands.goToPoseTrapezoidal(new FlippablePose2d(followAutoPreset.getStartingPose(), true).get(), 0.02, 0.5);
+            return correctStartPose.andThen(followAutoPreset);
+        }
+      
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "Leave") {
+            return SwerveCommands.driveOpenLoop(() -> 1, () -> 0, () -> 0, () -> true).withTimeout(1);
+        }
 
         return Commands.sequence(
                 createCycleSequence(CYCLE_1),
@@ -133,7 +143,7 @@ public class Questionnaire {
     }
 
     public String getSelected() {
-        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get().getName() : "Custom";
+        return PRESET_QUESTION.getSendableChooser().getSelected() != "None" ? PRESET_QUESTION.get() : "Custom";
     }
 
     private record Cycle(
@@ -141,6 +151,6 @@ public class Questionnaire {
             LoggedDashboardChooser<Branch> branchQuestion,
             LoggedDashboardChooser<Command> algaeQuestion,
             LoggedDashboardChooser<Command> scoringHeightQuestion,
-            LoggedDashboardChooser<Command> coralIntakeQuestion) {
+            LoggedDashboardChooser<Command> feederQuestion) {
     }
 }

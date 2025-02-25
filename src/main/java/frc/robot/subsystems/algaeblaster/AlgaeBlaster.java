@@ -14,8 +14,6 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.Logger;
 
 import static edu.wpi.first.units.Units.*;
-
-import static frc.robot.RobotContainer.CORAL_INTAKE;
 import static frc.robot.RobotContainer.ELEVATOR;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.*;
 
@@ -23,25 +21,31 @@ public class AlgaeBlaster extends GenericSubsystem {
     public Command setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState state) {
         return new FunctionalCommand(
                 () -> {},
-                //ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations()),
+                () -> ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations()),
+                interrupt -> ARM_BLASTER_MOTOR.stopMotor(),
+                () -> Math.abs(ARM_BLASTER_MOTOR.getSystemPosition() - state.getRotations()) < 0.1,
+                this
+        );
+    }
+
+    public Command holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState state) {
+        return new FunctionalCommand(
                 () -> {},
-//                ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION, state.getRotations()),
+                () -> ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION,state.getRotations()),
                 interrupt -> {},
                 () -> false,
-                //ARM_BLASTER_MOTOR::isAtPositionSetpoint,
                 this
-        ).raceWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector());
+        );
     }
 
     public Command stopAlgaeBlasterArm() {
-        return Commands.none();
-//        return Commands.runOnce(
-//                ARM_BLASTER_MOTOR::stopMotor, this);
+        return Commands.runOnce(
+                ARM_BLASTER_MOTOR::stopMotor, this);
     }
 
     @Override
     public void setIdleMode(MotorProperties.IdleMode idleMode) {
-//        ARM_BLASTER_MOTOR.setIdleMode(idleMode);
+        ARM_BLASTER_MOTOR.setIdleMode(idleMode);
     }
 
     @Override
@@ -51,33 +55,33 @@ public class AlgaeBlaster extends GenericSubsystem {
 
     @Override
     public void sysIdDrive(double voltage) {
-//        ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
+        ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
     @Override
     public void sysIdUpdateLog(SysIdRoutineLog log) {
-//        log.motor(ARM_BLASTER_MOTOR.getName())
-//                .voltage(Volts.of(ARM_BLASTER_MOTOR.getVoltage()))
-//                .angularPosition(Rotations.of(ARM_BLASTER_MOTOR.getSystemPosition()))
-//                .angularVelocity(RotationsPerSecond.of(ARM_BLASTER_MOTOR.getSystemVelocity()));
+        log.motor(ARM_BLASTER_MOTOR.getName())
+                .voltage(Volts.of(ARM_BLASTER_MOTOR.getVoltage()))
+                .angularPosition(Rotations.of(ARM_BLASTER_MOTOR.getSystemPosition()))
+                .angularVelocity(RotationsPerSecond.of(ARM_BLASTER_MOTOR.getSystemVelocity()));
     }
 
     public void printPose() {
-//        if (BLASTER_ARM_MECHANISM != null) {
-//            final Pose3d current3dPose = new Pose3d(new Translation3d(0.279, 0.31, ELEVATOR.getCurrentHeight() / 2 + 0.81), new Rotation3d(0, getCurrentArmPosition().getRadians() - Math.PI / 2, Math.PI / 2));
-//
-//            Logger.recordOutput("Components/BlasterArmPose", current3dPose);
-//
-//            BLASTER_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
-//            BLASTER_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
-//        }
+        if (BLASTER_ARM_MECHANISM != null) {
+            final Pose3d current3dPose = new Pose3d(new Translation3d(0.279, 0.31, ELEVATOR.getCurrentHeight() / 2 + 0.81), new Rotation3d(0, getCurrentArmPosition().getRadians() - Math.PI / 2, Math.PI / 2));
+
+            Logger.recordOutput("Components/BlasterArmPose", current3dPose);
+
+            BLASTER_ARM_MECHANISM.updateCurrentAngle(getCurrentArmPosition());
+            BLASTER_ARM_MECHANISM.updateTargetAngle(getTargetArmPosition());
+        }
     }
 
-//    private Rotation2d getCurrentArmPosition() {
-//        return Rotation2d.fromRotations(ARM_BLASTER_MOTOR.getSystemPosition());
-//    }
-//
-//    private Rotation2d getTargetArmPosition() {
-//        return Rotation2d.fromRotations(ARM_BLASTER_MOTOR.getClosedLoopTarget());
-//    }
+    private Rotation2d getCurrentArmPosition() {
+        return Rotation2d.fromRotations(ARM_BLASTER_MOTOR.getSystemPosition());
+    }
+
+    private Rotation2d getTargetArmPosition() {
+        return Rotation2d.fromRotations(ARM_BLASTER_MOTOR.getClosedLoopTarget());
+    }
 }

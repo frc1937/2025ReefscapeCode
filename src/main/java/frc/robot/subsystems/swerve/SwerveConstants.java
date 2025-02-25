@@ -40,22 +40,26 @@ public class SwerveConstants {
 
     private static final TrapezoidProfile.Constraints TRANSLATIONAL_PROFILES_CONSTRAINTS = IS_SIMULATION
             ? new TrapezoidProfile.Constraints(3, 3)
-            : new TrapezoidProfile.Constraints(2, 1);
+            : new TrapezoidProfile.Constraints(3, 1.2);
 
     private static final PIDConstants TRANSLATIONAL_PROFILES_CONSTANTS = IS_SIMULATION
             ? new PIDConstants(1.1, 0, 0)
-            : new PIDConstants(0.3551, 0, 0);
+            : new PIDConstants(1.5958, 0, 0.007);
 
     protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
     protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
 
     protected static final PID PID_TRANSLATION_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(2, 0, 0);
+            : new PID(1.45, 0, 0, 0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.09, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(5.5, 0, 0.009,0.1, new TrapezoidProfile.Constraints(500, 500));
+            : new ProfiledPID(0.28, 0, 0, new TrapezoidProfile.Constraints(360, 360));
+
+    //Different rotational controller for long distances.
+    protected static final ProfiledPID SWERVE_ROTATIONAL_CONTROLLER_ACCURATE =
+            new ProfiledPID(0.3, 0, 0.00005,0, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
@@ -79,6 +83,9 @@ public class SwerveConstants {
     private static void configureRotationController() {
         SWERVE_ROTATION_CONTROLLER.enableContinuousInput(-180, 180);
         SWERVE_ROTATION_CONTROLLER.setTolerance(1);
+
+        SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.enableContinuousInput(-180, 180);
+        SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.setTolerance(1);
 
         PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.08);
         PROFILED_STRAFE_CONTROLLER.setTolerance(0.08);

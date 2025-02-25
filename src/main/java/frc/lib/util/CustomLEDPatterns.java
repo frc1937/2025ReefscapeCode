@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import java.util.Arrays;
 
 public class CustomLEDPatterns {
-    public static final int LEDS_COUNT = 46;
+    public static final int LEDS_COUNT = 69;
     private static final double MAX_GREEN_RANGE_METERS = 2;
 
     private static final Timer timer = new Timer();

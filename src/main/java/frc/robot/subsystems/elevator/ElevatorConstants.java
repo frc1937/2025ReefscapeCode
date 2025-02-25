@@ -20,8 +20,9 @@ public class ElevatorConstants {
         L1(0.05),
         L2(0.6),
         L3(2.1),
-        FEEDER(-0.30),
-        CLIMB(-0.1);
+        FEEDER(0.05),
+        CLIMB_INSERT(0.956),
+        CLIMB_LOWERING(-0.1);
 
         private final double rotations;
 
@@ -46,7 +47,6 @@ public class ElevatorConstants {
 
     protected static final double
             ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.2483952045440674,
-            ELEVATOR_MIN_EXTENSION_ROTATIONS = -0.30,
             WHEEL_DIAMETER = 0.0328,
             GEAR_RATIO = 48;
 
@@ -59,24 +59,19 @@ public class ElevatorConstants {
     private static void configureMotors() {
         final MotorConfiguration ELEVATOR_MOTORS_CONFIGURATION = new MotorConfiguration();
 
-        ELEVATOR_MOTORS_CONFIGURATION.forwardSoftLimit = ELEVATOR_MAX_EXTENSION_ROTATIONS;
-        ELEVATOR_MOTORS_CONFIGURATION.reverseSoftLimit = ELEVATOR_MIN_EXTENSION_ROTATIONS;
-
         ELEVATOR_MOTORS_CONFIGURATION.closedLoopTolerance = 0.05;
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 2;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 3;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxJerk =
-                CURRENT_MODE == GlobalConstants.Mode.SIMULATION ? 250 : 25;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 4.9;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 3.9;
 
-        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 40;
+        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 53;
 
         ELEVATOR_MOTORS_CONFIGURATION.inverted = true;
         ELEVATOR_MOTORS_CONFIGURATION.gearRatio = GEAR_RATIO;
 
-        ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(0.001,0,0,4.9764,0.21689,0.12065, 0.063824, Feedforward.Type.ELEVATOR);
+        ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(0.69,0,0,4.9764,0.21689,0.12065, 0.063824, Feedforward.Type.ELEVATOR);
 
         ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, Feedforward.Type.ELEVATOR);// S=1.313
         ELEVATOR_MOTORS_CONFIGURATION.simulationProperties = new SimulationProperties.Slot(
