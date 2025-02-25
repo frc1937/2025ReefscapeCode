@@ -2,10 +2,12 @@ package frc.robot.commands.autocommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.swerve.SwerveCommands;
 import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
@@ -39,8 +41,9 @@ public class Questionnaire {
         final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>("Which Auto Preset?");
 
         question.addDefaultOption("None", Commands.none());
-        question.addOption("go and distract on other alliance", Commands.none());
-        question.addOption("run into a wall", Commands.none());
+        question.addOption("go and SHIT on other alliance", Commands.none());
+        question.addOption("Leave the midline", SwerveCommands.driveOpenLoop(() -> 1, () -> 0, () -> 0, () -> true)
+                .withTimeout(1));
         question.addOption("spin around the reef", Commands.none());
 
         return question;
@@ -113,12 +116,12 @@ public class Questionnaire {
 
         final Command algaeBlastingCommand = cycle.algaeQuestion.get().isFinished()
                 ? Commands.none()
-                : blastAlgaeOffReef(selectedReefFace);
+                : AlgaeManipulationCommands.blastAlgaeOffReefWithElevator(selectedReefFace);
 
         return goToBranch
                 .alongWith(algaeBlastingCommand)
                 .andThen(cycle.scoringHeightQuestion.get())
-                .andThen((cycle.coralIntakeQuestion.get()));
+                .andThen((cycle.feederQuestion.get()));
     }
 
     public Command getCommand() {
@@ -141,6 +144,6 @@ public class Questionnaire {
             LoggedDashboardChooser<Branch> branchQuestion,
             LoggedDashboardChooser<Command> algaeQuestion,
             LoggedDashboardChooser<Command> scoringHeightQuestion,
-            LoggedDashboardChooser<Command> coralIntakeQuestion) {
+            LoggedDashboardChooser<Command> feederQuestion) {
     }
 }

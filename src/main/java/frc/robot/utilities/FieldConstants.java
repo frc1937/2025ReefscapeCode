@@ -73,8 +73,8 @@ public class FieldConstants {
             ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
 
     private static final Transform2d
-            LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.1643), Rotation2d.kZero),
-            RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, 0, Rotation2d.kZero);
+            LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.084), Rotation2d.kZero),
+            RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.0943), Rotation2d.kZero);
 
     public static final double
             FIELD_WIDTH = 8.05,

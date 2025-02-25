@@ -128,11 +128,11 @@ public class Controller {
      * @return a command that rumbles the controller
      */
     public Command rumble(double intensity, double durationSeconds) {
-        return new FunctionalCommand(
+        return (new FunctionalCommand(
                 () -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, intensity),
                 () -> {},
                 interrupt -> xboxController.setRumble(GenericHID.RumbleType.kBothRumble, 0),
                 () -> false
-        ).raceWith(new WaitCommand(durationSeconds));
+        ).raceWith(new WaitCommand(durationSeconds))).ignoringDisable(true);
     }
 }
