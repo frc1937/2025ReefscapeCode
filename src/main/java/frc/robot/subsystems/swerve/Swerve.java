@@ -15,6 +15,7 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -55,6 +56,7 @@ public class Swerve extends GenericSubsystem {
         return GYRO.getYawRotations();
     }
 
+    @AutoLogOutput(key="Swerve/velocity")
     public ChassisSpeeds getRobotRelativeVelocity() {
         return SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
     }
@@ -113,6 +115,21 @@ public class Swerve extends GenericSubsystem {
 
         for (int i = 0; i < MODULES.length; i++)
             MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
+    }
+
+    public void rotateToTargetAccurate() {
+        double current = POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees();
+        double target = SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.getGoal().position;
+
+        Logger.recordOutput("Profiled/Current", current);
+        Logger.recordOutput("Profiled/Target", target);
+
+        driveFieldRelative(
+                0,
+                0,
+                SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.calculate(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees()),
+                true
+        );
     }
 
     protected void driveOpenLoop(double xPower, double yPower, double thetaPower, boolean robotCentric) {
@@ -189,8 +206,8 @@ public class Swerve extends GenericSubsystem {
         PROFILED_STRAFE_CONTROLLER.setGoal(target.getY());
     }
 
-    protected void setGoalRotationController(Pose2d target) {
-        SWERVE_ROTATION_CONTROLLER.setGoal(target.getRotation().getDegrees());
+    protected void setGoalRotationController(Rotation2d target) {
+        SWERVE_ROTATION_CONTROLLER.setGoal(target.getDegrees());
     }
 
     protected SwerveModulePosition[] getSwerveWheelPositions(int odometryUpdateIndex) {

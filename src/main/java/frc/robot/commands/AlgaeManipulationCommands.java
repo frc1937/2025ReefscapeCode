@@ -27,19 +27,20 @@ public class AlgaeManipulationCommands {
      *
      * @return the command
      */
-    public static Command blastAlgaeOffReef(FieldConstants.ReefFace face) {
+    public static Command blastAlgaeOffReefWithElevator(FieldConstants.ReefFace face) {
         return ELEVATOR.setTargetHeight(getAlgaeHeightFromFace(face))
-                .raceWith(blastAlgaeOffReef().onlyIf(ELEVATOR::isAtTargetPosition));
+                .andThen(blastAlgaeOffReef());
     }
 
     public static Command blastAlgaeOffReef() {
-        return ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
-                .andThen(new WaitCommand(0.4))
+        return CORAL_INTAKE.rotateAlgaeBlasterEndEffector()
+                .alongWith(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT))
+                .withTimeout(1.5)
                 .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
     private static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
-        if (face.ordinal() % 2 == 0) return ElevatorConstants.ElevatorHeight.L2;
-        return ElevatorConstants.ElevatorHeight.L1;
+        if (face.ordinal() % 2 == 0) return ElevatorConstants.ElevatorHeight.L3;
+        return ElevatorConstants.ElevatorHeight.L2;
     }
 }
