@@ -15,7 +15,6 @@ import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
 
 public class PathfindingCommands {
-
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
                 () -> SwerveCommands
@@ -50,7 +49,7 @@ public class PathfindingCommands {
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.1));
+                    .andThen(new WaitCommand(0.05));
         }, Set.of(SWERVE));
     }
 
@@ -60,7 +59,7 @@ public class PathfindingCommands {
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.1));
+                    .andThen(new WaitCommand(0.05));
         }, Set.of(SWERVE));
     }
 
