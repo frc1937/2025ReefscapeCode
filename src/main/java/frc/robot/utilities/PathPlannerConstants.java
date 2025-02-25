@@ -1,6 +1,7 @@
 package frc.robot.utilities;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -10,6 +11,8 @@ import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.lib.util.LocalADStarAK;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.CoralManipulationCommands;
+import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import org.json.simple.parser.ParseException;
 
@@ -27,16 +30,21 @@ public class PathPlannerConstants {
             : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, Math.PI, Math.PI);
 
     private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
-            ? new PPHolonomicDriveController(new PIDConstants(2.5, 0.0, 0), new PIDConstants(0.31, 0.0, 0))
+            ? new PPHolonomicDriveController(new PIDConstants(4.5, 0.0, 0), new PIDConstants(0.9, 0.0, 0))
             : new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0), new PIDConstants(1, 0.0, 0));  
-
 
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());
 
         configurePathPlanner();
+        setupNamedCommands();
 
         PathfindingCommand.warmupCommand().schedule();
+    }
+
+    private static void setupNamedCommands() {
+        NamedCommands.registerCommand("ScoreCoralL2", CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
+        NamedCommands.registerCommand("EatFromFeeder", CoralManipulationCommands.eatFromFeeder());
     }
 
     private static void configurePathPlanner() {

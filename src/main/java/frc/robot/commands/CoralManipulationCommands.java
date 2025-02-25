@@ -50,7 +50,6 @@ public class CoralManipulationCommands {
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {
-
         final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
                 ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
                         .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector()),
