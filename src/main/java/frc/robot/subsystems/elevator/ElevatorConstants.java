@@ -21,7 +21,8 @@ public class ElevatorConstants {
         L2(0.6),
         L3(2.1),
         FEEDER(0.05),
-        CLIMB(-0.1);
+        CLIMB_INSERT(0.956),
+        CLIMB_LOWERING(-0.1);
 
         private final double rotations;
 
@@ -63,7 +64,7 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 4.9;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 3.8;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 3.9;
 
         ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 53;
 
