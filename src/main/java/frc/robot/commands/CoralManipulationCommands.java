@@ -38,15 +38,14 @@ public class CoralManipulationCommands {
     public static Command pathfindToFeederAndEat(FieldConstants.Feeder feeder) {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToFeederBezier(feeder);
 
-        return pathfindingCommand.alongWith(
-                eatFromFeeder());
+        return pathfindingCommand.alongWith(eatFromFeeder());
     }
 
     public static Command eatFromFeeder() {
         return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
                         .until(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
-                        .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
-                        .alongWith(CORAL_INTAKE.prepareGamePiece());
+                        .andThen(ALGAE_BLASTER.holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
+                        .alongWith(CORAL_INTAKE.prepareGamePiece()).until(CORAL_INTAKE::hasCoral);
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {

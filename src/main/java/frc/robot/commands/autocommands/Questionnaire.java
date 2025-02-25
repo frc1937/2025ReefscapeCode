@@ -3,6 +3,7 @@ package frc.robot.commands.autocommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.util.flippable.FlippablePose2d;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
@@ -130,7 +131,7 @@ public class Questionnaire {
             return correctStartPose.andThen(followAutoPreset);
         }
       
-        if (PRESET_QUESTION.getSendableChooser9).getSelected() == "Leave") {
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "Leave") {
             return SwerveCommands.driveOpenLoop(() -> 1, () -> 0, () -> 0, () -> true).withTimeout(1);
         }
 
