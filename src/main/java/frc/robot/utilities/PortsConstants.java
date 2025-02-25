@@ -5,7 +5,7 @@ package frc.robot.utilities;
  * This is useful for keeping track of which ports are used, so no port is used twice.
  */
 public class PortsConstants {
-    public static int LEDSTRIP_PORT_PWM = 0;
+    public static int LEDSTRIP_PORT_PWM = 9;
 
     public static class SwervePorts {
         public static final int FL_STEER_MOTOR_PORT = 10;
@@ -28,13 +28,13 @@ public class PortsConstants {
 
     public static class IntakePorts {
         public static final int INTAKE_MOTOR_PORT = 5;
-        public static final int BEAM_BREAK_DIO_PORT = 20;
+        public static final int BEAM_BREAK_DIO_PORT = 0;
     }
 
     public static class AlgaePorts {
-        public static final int ALGAE_ARM_MOTOR_PORT = 16;
+        public static final int ALGAE_BLASTER_MOTOR_PORT = 16;
         public static final int ALGAE_INTAKE_MOTOR_PORT = 17;
-        public static final int ALGAE_BLASTER_MOTOR_PORT = 18;
+        public static final int ALGAE_ARM_MOTOR_PORT = 18;
     }
 
     public static class ElevatorPorts {
