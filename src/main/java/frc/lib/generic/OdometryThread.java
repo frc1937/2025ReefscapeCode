@@ -96,7 +96,7 @@ public class OdometryThread extends Thread {
 
             for (int i = 0; i < ctreThreadedSignals.length; i++) {
                 if (ctreThreadedSignals[i].getName() == "Yaw") {
-                    queues.get(nonCtreSignalsSize + i).offer((ctreThreadedSignals[i].getValueAsDouble()/ 360));
+                    queues.get(nonCtreSignalsSize + i).offer((ctreThreadedSignals[i].getValueAsDouble() / 360));
                 } else
                     queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
