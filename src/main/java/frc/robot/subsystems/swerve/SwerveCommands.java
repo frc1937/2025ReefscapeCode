@@ -51,7 +51,7 @@ public class SwerveCommands {
                     SWERVE.resetRotationController();
                     SWERVE.setGoalRotationController(targetPose.getRotation());
                     },
-                () -> SWERVE.driveToPose(targetPose),
+                () -> SWERVE.driveToPosePID(targetPose),
                 interrupt -> SWERVE.stop(),
                 () -> SWERVE.isAtPose(targetPose, 0.01, 0.3),
                 SWERVE

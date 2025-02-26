@@ -77,7 +77,7 @@ public class SwerveModule {
 
         if (steerInputsLength != driveInputsLength || odometryUpdateIndex >= driveInputsLength) {
             return null;
-        }
+        } //TODO: ERROR IS HERE.
 
         return new SwerveModulePosition(
                 getDriveMetersTraveled(getDriveMotorInputs().threadSystemPosition)[odometryUpdateIndex],

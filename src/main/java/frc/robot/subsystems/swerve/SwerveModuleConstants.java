@@ -34,7 +34,7 @@ public class SwerveModuleConstants {
 
     static final boolean CAN_CODER_INVERT = false;
     static final boolean ANGLE_MOTOR_INVERT = true;
-    static final boolean DRIVE_MOTOR_INVERT = true;
+    static final boolean DRIVE_MOTOR_INVERT = false;
 
     static final int ANGLE_CURRENT_LIMIT = 40;
     static final int DRIVE_STATOR_CURRENT_LIMIT = 55;
@@ -63,7 +63,8 @@ public class SwerveModuleConstants {
             RL_STEER_ENCODER = EncoderFactory.createCanCoder("RL_STEER_ENCODER", RL_STEER_ENCODER_PORT),
             RR_STEER_ENCODER = EncoderFactory.createCanCoder("RR_STEER_ENCODER", RR_STEER_ENCODER_PORT);
 
-    static final double[] STEER_ENCODER_OFFSET = {0.524414, 0.432617, 0.026611, 0.815186};
+//    static final double[] STEER_ENCODER_OFFSET = {0.524414, 0.432617, 0.026611, 0.815186};
+    static final double[] STEER_ENCODER_OFFSET = {0.024414, 0.932617, 0.526611, 0.315186};
 
     static final Encoder[] STEER_ENCODERS = {FL_STEER_ENCODER, FR_STEER_ENCODER, RL_STEER_ENCODER, RR_STEER_ENCODER};
     static final Motor[] STEER_MOTORS = {FL_STEER_MOTOR, FR_STEER_MOTOR, RL_STEER_MOTOR, RR_STEER_MOTOR};

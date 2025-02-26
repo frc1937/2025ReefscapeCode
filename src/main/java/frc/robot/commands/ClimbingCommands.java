@@ -29,19 +29,7 @@ public class ClimbingCommands {
                 .andThen(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.CLIMB_LOWERING));
     }
 
-    //UNTESTED
     public static Command rotateToCage() {
-        //PUT elevator at L2
-        //Rotate so elevator is facing the cage (FROM BEHIND)
-        //Drive forward a bit.
-        //drive backwards a bit
-        //drive elevator downwards.
-        return SwerveCommands.rotateToTarget(new FlippableRotation2d(Rotation2d.kPi, true))
-                .alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2))
-                .andThen(SwerveCommands.driveOpenLoop(() -> 0.5, () -> 0, () -> 0, () -> true))
-                .raceWith(new WaitCommand(0.8))
-                .andThen(SwerveCommands.driveOpenLoop(() -> -0.5, () -> 0, () -> 0, () -> true))
-                .raceWith(new WaitCommand(0.5))
-                .andThen(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.CLIMB_LOWERING));
+        return SwerveCommands.rotateToTarget(new FlippableRotation2d(Rotation2d.fromDegrees(90), true));
     }
 }

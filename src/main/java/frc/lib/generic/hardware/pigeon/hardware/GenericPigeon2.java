@@ -23,6 +23,7 @@ import static frc.lib.generic.hardware.pigeon.hardware.PigeonUtilities.handleThr
 
 public class GenericPigeon2 extends Pigeon {
     private final Pigeon2 pigeon;
+    private double yawOffset = 0;
 
     private final StatusSignal<Angle> yawSignal, pitchSignal, rollSignal;
 
@@ -46,13 +47,15 @@ public class GenericPigeon2 extends Pigeon {
 
         final Pigeon2Configuration configuration  = new Pigeon2Configuration();
 
+        yawOffset = pigeonConfiguration.mountPoseYawDegrees;
+
         configuration.MountPose.MountPoseYaw = pigeonConfiguration.mountPoseYawDegrees;
         configuration.MountPose.MountPosePitch = pigeonConfiguration.mountPosePitchDegrees;
         configuration.MountPose.MountPoseRoll = pigeonConfiguration.mountPoseRollDegrees;
 
         pigeon.optimizeBusUtilization();
 
-        pigeon.getConfigurator().apply(configuration);
+        pigeon.getConfigurator().apply(configuration.Pigeon2Features.withEnableCompass(false));
     }
 
     @Override
@@ -71,7 +74,7 @@ public class GenericPigeon2 extends Pigeon {
 
         inputs.setSignalsToLog(signalsToLog);
 
-        inputs.gyroYawRotations = yawSignal.getValueAsDouble() / 360;
+        inputs.gyroYawRotations = (yawSignal.getValueAsDouble() - yawOffset) / 360;
         inputs.gyroPitchRotations = pitchSignal.getValueAsDouble() / 360;
         inputs.gyroRollRotations = rollSignal.getValueAsDouble() / 360;
 

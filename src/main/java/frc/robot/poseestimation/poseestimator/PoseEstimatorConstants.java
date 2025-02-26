@@ -19,8 +19,7 @@ public class PoseEstimatorConstants {
     static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS
             = new StandardDeviations(0.0003, 0.0000002);
 
-    private static final Pose2d DEFAULT_RED_POSE = new Pose2d(new Translation2d(10,4), Rotation2d.kZero);
-    static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : flipAboutYAxis(DEFAULT_RED_POSE);
+    static final Pose2d DEFAULT_POSE = new Pose2d(new Translation2d(8.5,4.3), Rotation2d.kZero);
 
     static final Transform3d
             ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(

@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.generic.hardware.HardwareManager;
@@ -110,12 +111,14 @@ public class SimulatedTalonMotor extends Motor {
             return false;
         }
 
+//        talonConfig.MotorOutput.Inverted = configuration.inverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
         talonConfig.Feedback.SensorToMechanismRatio = configuration.gearRatio;
 
         configureMotionMagic();
         configurePIDSlot();
 
         applySoftwarePositionLimits();
+
 
         talonConfig.ClosedLoopGeneral.ContinuousWrap = configuration.closedLoopContinuousWrap;
 

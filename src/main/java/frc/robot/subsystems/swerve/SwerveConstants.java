@@ -21,7 +21,6 @@ public class SwerveConstants {
     public static final SwerveDriveKinematics SWERVE_KINEMATICS = new SwerveDriveKinematics(ROBOT_CONFIG.moduleLocations);
     public static final double MAX_SPEED_MPS = 5;
 
-
     protected static final SysIdRoutine.Config SYSID_DRIVE_CONFIG = new SysIdRoutine.Config(
             Volts.per(Second).of(1),
             Volts.of(2),
@@ -54,14 +53,16 @@ public class SwerveConstants {
             : new PID(1.45, 0, 0, 0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
-            ? new ProfiledPID(0.09, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(0.28, 0, 0, new TrapezoidProfile.Constraints(360, 360));
+            ? new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
+            : new ProfiledPID(0.05, 0, 0, new TrapezoidProfile.Constraints(360, 360));
 
     //Different rotational controller for long distances.
     protected static final ProfiledPID SWERVE_ROTATIONAL_CONTROLLER_ACCURATE =
-            new ProfiledPID(0.3, 0, 0.00005,0, new TrapezoidProfile.Constraints(360, 360));
+            new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
+
+    public static double yawOffset = 0;
 
     static {
         configureGyro();
@@ -71,8 +72,10 @@ public class SwerveConstants {
     private static void configureGyro() {
         PigeonConfiguration configuration = new PigeonConfiguration();
 
-        configuration.mountPoseYawDegrees = -89.64400482177734;
-        configuration.mountPoseRollDegrees =  -0.5925159454345703;
+        yawOffset = -89.64400482177734;
+
+        configuration.mountPoseYawDegrees = yawOffset;
+        configuration.mountPoseRollDegrees = -0.5925159454345703;
         configuration.mountPosePitchDegrees = 0.8338062763214111;
 
         GYRO.configurePigeon(configuration);

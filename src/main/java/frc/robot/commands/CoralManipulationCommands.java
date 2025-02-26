@@ -15,12 +15,12 @@ public class CoralManipulationCommands {
     public static boolean SHOULD_BLAST_ALGAE = false;
     public static final Trigger shouldBlastAlgae = new Trigger(() -> SHOULD_BLAST_ALGAE);
 
-    public static Command pathfindToBranchAndScore(PathfindingConstants.Branch branch) {
+    public static Command pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch branch) {
         final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToBranch(branch);
 
         return pathfindingCommand
                 .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
-                .andThen(scoreCoralFromCurrentLevelAndBlastAlgae());
+                .andThen(scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
     }
 
     public static Command pathfindToFeederAndEat() {
@@ -48,6 +48,20 @@ public class CoralManipulationCommands {
                         .alongWith(CORAL_INTAKE.prepareGamePiece()).until(CORAL_INTAKE::hasCoral);
     }
 
+    public static Command scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop() {
+        final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
+                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
+                        .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector())
+                        .until(shouldBlastAlgae.negate()),
+                Commands.none(),
+                shouldBlastAlgae);
+
+        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
+                .andThen(optionallySpitAlgae)
+                .andThen(CORAL_INTAKE.releaseGamePiece());
+    }
+
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {
         final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
                 ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
@@ -59,7 +73,8 @@ public class CoralManipulationCommands {
                 ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
                         .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false)),
                 Commands.none(),
-                shouldBlastAlgae);
+                shouldBlastAlgae
+        );
 
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))

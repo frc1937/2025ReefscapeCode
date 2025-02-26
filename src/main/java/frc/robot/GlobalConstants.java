@@ -17,7 +17,7 @@ public class GlobalConstants {
 
     public static final double VOLTAGE_COMPENSATION_SATURATION = 12;
 
-    public static final boolean IS_REPLAY = false;
+    public static final boolean IS_REPLAY = true;
 
     public static final boolean SHOULD_WRITE_LOGS = true; //for when the RoboRio doesn't have enough space...
     public static final boolean SHOULD_DISPLAY_MECHANISMS = false; //For when we want to save resources.

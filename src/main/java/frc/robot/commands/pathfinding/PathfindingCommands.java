@@ -18,8 +18,10 @@ public class PathfindingCommands {
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
                 () -> SwerveCommands
-                                .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
-                                .andThen(SwerveCommands.goToPosePID(branch.getBranchPose())),
+                                .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2),
+//                                .andThen(SwerveCommands.goToPosePID(branch.getBranchPose())),
+//                () -> SwerveCommands.goToPosePID(branch.getBranchPose()),
+
                 Set.of(SWERVE)
         );
     }
@@ -47,9 +49,9 @@ public class PathfindingCommands {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = feeder.getPose();
 
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05));
+            return SwerveCommands.goToPoseBezier(targetPose);
+//                    .andThen(SwerveCommands.goToPosePID(targetPose))
+//                    .andThen(new WaitCommand(0.05));
         }, Set.of(SWERVE));
     }
 
@@ -57,9 +59,9 @@ public class PathfindingCommands {
         return new DeferredCommand(() -> {
             final Pose2d targetPose = branch.getBranchPose(face);
 
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05));
+            return SwerveCommands.goToPoseBezier(targetPose);
+//                    .andThen(SwerveCommands.goToPosePID(targetPose))
+//                    .andThen(new WaitCommand(0.05));
         }, Set.of(SWERVE));
     }
 
