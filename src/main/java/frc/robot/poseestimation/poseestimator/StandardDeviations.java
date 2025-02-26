@@ -27,16 +27,6 @@ public record StandardDeviations(double translationStandardDeviation, double the
         );
     }
 
-
-
-    public Matrix<N3, N1> toMatrix() {
-        return VecBuilder.fill(
-                translationStandardDeviation,
-                translationStandardDeviation,
-                thetaStandardDeviation
-        );
-    }
-
     public Transform2d scaleTransformFromStandardDeviations(Transform2d transform) {
         return new Transform2d(
                 transform.getX() * translationStandardDeviation,
