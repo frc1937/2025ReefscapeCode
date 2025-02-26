@@ -54,7 +54,7 @@ public class SwerveConstants {
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(0.05, 0, 0, new TrapezoidProfile.Constraints(360, 360));
+            : new ProfiledPID(0.28, 0, 0, new TrapezoidProfile.Constraints(360, 360));
 
     //Different rotational controller for long distances.
     protected static final ProfiledPID SWERVE_ROTATIONAL_CONTROLLER_ACCURATE =
