@@ -49,7 +49,7 @@ public class PathPlannerConstants {
 
     private static void configurePathPlanner() {
         AutoBuilder.configure(
-                POSE_ESTIMATOR::getEstimatedRobotPose,
+                POSE_ESTIMATOR::getOdometryPose,
                 POSE_ESTIMATOR::resetPose,
                 SWERVE::getRobotRelativeVelocity,
                 (ChassisSpeeds speeds) -> SWERVE.driveRobotRelative(speeds, true),

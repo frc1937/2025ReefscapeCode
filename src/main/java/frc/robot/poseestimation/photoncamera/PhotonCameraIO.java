@@ -1,11 +1,8 @@
 package frc.robot.poseestimation.photoncamera;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import frc.lib.generic.advantagekit.LoggableHardware;
 import frc.lib.generic.hardware.HardwareManager;
 import frc.robot.poseestimation.poseestimator.StandardDeviations;
@@ -49,10 +46,10 @@ public class PhotonCameraIO implements LoggableHardware {
         return inputs.estimatedRobotPose.toPose2d();
     }
 
-    public Matrix<N3, N1> getStandardDeviations() {
+    public StandardDeviations getStandardDeviations() {
         return new StandardDeviations(
                 calculateStandardDeviation(TRANSLATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length),
-                calculateStandardDeviation(ROTATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length)).toMatrix();
+                calculateStandardDeviation(ROTATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length));
     }
 
     protected void refreshInputs(CameraInputsAutoLogged inputs) { }
