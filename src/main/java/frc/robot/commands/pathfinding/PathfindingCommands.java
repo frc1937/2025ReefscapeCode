@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
@@ -15,11 +16,17 @@ import static frc.robot.utilities.FieldConstants.*;
 import static frc.robot.utilities.FieldConstants.ReefFace.*;
 
 public class PathfindingCommands {
+    public static boolean IS_ALIGNING_REEF = false;
+
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
-                () -> SwerveCommands
-                                .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
-                                .andThen(SwerveCommands.goToPosePID(branch.getBranchPose())),
+                () -> {
+                    IS_ALIGNING_REEF = true;
+                    return SwerveCommands
+                            .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
+                            .andThen(SwerveCommands.goToPosePID(branch.getBranchPose()))
+                            .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
+                },
 
                 Set.of(SWERVE)
         );
@@ -56,11 +63,14 @@ public class PathfindingCommands {
 
     public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
         return new DeferredCommand(() -> {
+            IS_ALIGNING_REEF = true;
+
             final Pose2d targetPose = branch.getBranchPose(face);
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05));
+                    .andThen(new WaitCommand(0.05))
+                    .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
         }, Set.of(SWERVE));
     }
 

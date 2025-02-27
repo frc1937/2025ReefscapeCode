@@ -26,6 +26,10 @@ public class PhotonCameraIO implements LoggableHardware {
         HardwareManager.addHardware(this);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public double getLastResultTimestamp() {
         return inputs.lastResultTimestamp;
     }

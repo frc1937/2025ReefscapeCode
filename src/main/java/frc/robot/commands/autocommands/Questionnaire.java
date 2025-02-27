@@ -132,7 +132,7 @@ public class Questionnaire {
         }
       
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "Leave") {
-            return SwerveCommands.driveOpenLoop(() -> 1, () -> 0, () -> 0, () -> true)
+            return SwerveCommands.driveOpenLoop(() -> -1, () -> 0, () -> 0, () -> false)
                     .withTimeout(4);
         }
 
