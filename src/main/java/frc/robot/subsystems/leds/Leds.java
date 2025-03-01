@@ -19,20 +19,16 @@ import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
     public enum LEDMode {
-        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateFlashingBuffer(
-                new Color8Bit(Color.kWhite),
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
                 new Color8Bit(Color.kBlue)
         ), timeout)),
 
-        INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateFlashingBuffer(
-                new Color8Bit(0,200,0),
-                new Color8Bit(0,0,200)
+        INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                new Color8Bit(0,200,0)
         ), timeout)),
 
-        INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateFlashingBuffer(
-                new Color8Bit(Color.kCyan),
-                new Color8Bit(Color.kWhite),
-                new Color8Bit(Color.kDeepPink)
+        INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                new Color8Bit(Color.kCyan)
         ), timeout)),
 
         AUTO_START(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(

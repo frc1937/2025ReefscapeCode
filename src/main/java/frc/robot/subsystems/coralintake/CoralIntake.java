@@ -21,7 +21,7 @@ public class CoralIntake extends GenericSubsystem {
     }
 
     public Command rotateAlgaeBlasterEndEffector() {
-        return setMotorVoltage(-2);
+        return setMotorVoltage(-3);
     }
 
     public Command setMotorVoltage(double voltage) {

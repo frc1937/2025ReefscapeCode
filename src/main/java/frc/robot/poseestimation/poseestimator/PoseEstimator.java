@@ -17,6 +17,7 @@ import java.util.Optional;
 
 import static frc.lib.util.QuickSortHandler.sort;
 import static frc.robot.RobotContainer.SWERVE;
+import static frc.robot.commands.pathfinding.PathfindingCommands.IS_ALIGNING_REEF;
 import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_KINEMATICS;
 
@@ -137,12 +138,16 @@ public class PoseEstimator implements AutoCloseable {
 
         sort(aprilTagCameras, PhotonCameraIO::getLastResultTimestamp);
 
-        for (PhotonCameraIO aprilTagCamera : newResultCameras)
+        for (PhotonCameraIO aprilTagCamera : newResultCameras) {
+            if (aprilTagCamera.getName() == "REAR_LEFT" || aprilTagCamera.getName() == "REAR_RIGHT" && IS_ALIGNING_REEF)
+                return;
+
             addVisionObservation(
                     aprilTagCamera.getRobotPose(),
                     aprilTagCamera.getLastResultTimestamp(),
                     aprilTagCamera.getStandardDeviations()
             );
+        }
     }
 
     private PhotonCameraIO[] getCamerasWithResults() {

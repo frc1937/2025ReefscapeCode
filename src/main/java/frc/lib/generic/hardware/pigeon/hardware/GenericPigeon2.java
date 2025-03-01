@@ -52,7 +52,7 @@ public class GenericPigeon2 extends Pigeon {
 
         pigeon.optimizeBusUtilization();
 
-        pigeon.getConfigurator().apply(configuration);
+        pigeon.getConfigurator().apply(configuration.Pigeon2Features.withEnableCompass(false));
     }
 
     @Override

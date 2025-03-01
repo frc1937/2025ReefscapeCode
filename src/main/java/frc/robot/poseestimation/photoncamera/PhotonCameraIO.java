@@ -8,8 +8,6 @@ import frc.lib.generic.hardware.HardwareManager;
 import frc.robot.poseestimation.poseestimator.StandardDeviations;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.inputs.LoggableInputs;
-import org.littletonrobotics.junction.networktables.LoggedNetworkInput;
 
 import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
 
@@ -26,6 +24,10 @@ public class PhotonCameraIO implements LoggableHardware {
         this.robotCenterToCamera = robotCenterToCamera;
 
         HardwareManager.addHardware(this);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public double getLastResultTimestamp() {

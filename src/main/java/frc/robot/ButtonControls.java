@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,8 +16,6 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
-import frc.lib.util.flippable.FlippableRotation2d;
-import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
@@ -36,6 +33,8 @@ import static frc.robot.subsystems.swerve.SwerveCommands.rotateToTarget;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class ButtonControls {
+    public static final DoubleSupplier DRIVE_SIGN = () -> Flippable.isRedAlliance() ? 1 : -1;
+
     public enum ButtonLayout {
         DEVELOPMENT,
         ELEVATOR_KS,
@@ -59,11 +58,11 @@ public class ButtonControls {
         setupUserButtonDebugging();
 
         switch (layout) {
+            case TELEOP -> configureButtonsTeleop();
             case ELEVATOR_KS -> characterizeElevatorKSandKG();
             case DEVELOPMENT -> configureButtonsDevelopment();
             case ALGAE_BLASTER_KS -> configureAlgaeBlasterKs();
             case PATHPLANNER_TEST -> calibratePathPlanner();
-            case TELEOP -> configureButtonsTeleop();
             case CHARACTERIZE_WHEEL_RADIUS -> configureButtonsCharacterizeWheelRadius();
             case CHARACTERIZE_ELEVATOR -> setupSysIdCharacterization(ELEVATOR);
             case CHARACTERIZE_SWERVE_DRIVE_MOTORS -> {
@@ -140,23 +139,16 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.LEFT_BRANCH));
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScore(PathfindingConstants.Branch.RIGHT_BRANCH));
+        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.RIGHT_BRANCH));
 
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
-        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.pathfindToFeederAndEat());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevelAndBlastAlgae());
-
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN)
-                .whileTrue((ELEVATOR.runElevatorDownwards()));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue((ELEVATOR.runElevatorDownwards()));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ELEVATOR.runElevatorUpwards());
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(ELEVATOR.runCurrentZeroing());
-
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP)
-                .whileTrue(rotateToTarget(new FlippableRotation2d(Rotation2d.fromDegrees(90), true))
-                        .alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.CLIMB_INSERT)));
-
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();
@@ -189,18 +181,18 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
 
-        OPERATOR_CONTROLLER.five().whileTrue(ClimbingCommands.climbCageNoAlignment());
         OPERATOR_CONTROLLER.six().onTrue(
-                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true))
-        );
+                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
 
         OPERATOR_CONTROLLER.six().onFalse(
-                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
+                        .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false))
+        );
     }
 
     private static void setupTeleopLEDs() {
         final Trigger hasCoral = new Trigger(CORAL_INTAKE::hasCoral);
-        final Trigger isEndOfMatch = new Trigger(() -> DriverStation.getMatchTime() <= 15);
+        final Trigger isEndOfMatch = new Trigger(() -> DriverStation.getMatchTime() <= 30);
 
         hasCoral.onTrue(LEDS.setLEDStatus(Leds.LEDMode.INTAKE_LOADED, 4)
                 .alongWith(DRIVER_CONTROLLER.rumble(0.5, 1)));
@@ -242,10 +234,8 @@ public class ButtonControls {
     }
 
     private static void setupDriving() {
-        final DoubleSupplier driveSign = () -> Flippable.isRedAlliance() ? 1 : -1;
-
-        final DoubleSupplier translationSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
-        final DoubleSupplier strafeSupplier = () -> driveSign.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
+        final DoubleSupplier translationSupplier = () -> DRIVE_SIGN.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
+        final DoubleSupplier strafeSupplier = () -> DRIVE_SIGN.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
         final DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 4;
 
         SWERVE.setDefaultCommand(
