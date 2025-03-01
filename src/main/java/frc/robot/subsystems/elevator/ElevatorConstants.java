@@ -7,11 +7,9 @@ import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.SimulationProperties;
 import frc.lib.generic.visualization.mechanisms.ElevatorMechanism2d;
 import frc.lib.generic.visualization.mechanisms.MechanismFactory;
-import frc.robot.GlobalConstants;
 
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.GlobalConstants.CURRENT_MODE;
 import static frc.robot.utilities.PortsConstants.ElevatorPorts.MASTER_MOTOR_PORT;
 import static frc.robot.utilities.PortsConstants.ElevatorPorts.SLAVE_MOTOR_PORT;
 
@@ -20,9 +18,7 @@ public class ElevatorConstants {
         L1(0.05),
         L2(0.6),
         L3(2.1),
-        FEEDER(0.05),
-        CLIMB_INSERT(0.956),
-        CLIMB_LOWERING(-0.1);
+        FEEDER(0.05);
 
         private final double rotations;
 

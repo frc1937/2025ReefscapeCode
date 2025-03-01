@@ -71,13 +71,13 @@ public class Elevator extends GenericSubsystem {
                     timer.restart();
                     count[0] = 0;
                 },
-                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1.7),
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1),
                 (interrupt) -> {
                     MASTER_MOTOR.stopMotor();
                     MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS );
                 },
                 () -> {
-                    if (MASTER_MOTOR.getCurrent() > 38.0) count[0]++;
+                    if (MASTER_MOTOR.getCurrent() > 31.0) count[0]++;
                     else count[0] = 0;
 
                     return count[0] > 4 && timer.hasElapsed(0.1);
@@ -89,7 +89,17 @@ public class Elevator extends GenericSubsystem {
     public Command runElevatorDownwards() {
         return new FunctionalCommand(
                 () -> {},
-                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, -1),
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, -1.5),
+                (interrupt) -> stop(),
+                () -> false,
+                this
+        );
+    }
+
+    public Command runElevatorUpwards() {
+        return new FunctionalCommand(
+                () -> {},
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1.5),
                 (interrupt) -> stop(),
                 () -> false,
                 this
