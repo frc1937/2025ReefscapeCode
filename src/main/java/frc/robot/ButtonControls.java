@@ -16,15 +16,12 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.ClimbingCommands;
 import frc.robot.commands.CoralManipulationCommands;
-import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.SwerveCommands;
-import frc.robot.utilities.FieldConstants;
 
 import java.util.function.DoubleSupplier;
 
@@ -148,17 +145,10 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
 
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN)
-                .whileTrue((ELEVATOR.runElevatorDownwards()));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue((ELEVATOR.runElevatorDownwards()));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ELEVATOR.runElevatorUpwards());
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(ELEVATOR.runCurrentZeroing());
-
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP)
-                .whileTrue(ClimbingCommands.rotateToCage()
-                .alongWith(ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.CLIMB_INSERT)));
-
-        //TODO: REmove, THIS IS FOR DEUBGGING.
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(PathfindingCommands.pathfindToBranchBezier(PathfindingConstants.Branch.LEFT_BRANCH, FieldConstants.ReefFace.FACE_0));
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();
