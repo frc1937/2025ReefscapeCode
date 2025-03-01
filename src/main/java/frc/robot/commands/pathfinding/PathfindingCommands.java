@@ -32,6 +32,19 @@ public class PathfindingCommands {
         );
     }
 
+    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
+        return new DeferredCommand(() -> {
+            IS_ALIGNING_REEF = true;
+
+            final Pose2d targetPose = branch.getBranchPose(face);
+
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
+                    .andThen(new WaitCommand(0.05))
+                    .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
+        }, Set.of(SWERVE));
+    }
+
     public static DeferredCommand pathfindToFeeder() {
         return new DeferredCommand(
                 () -> SwerveCommands.goToPoseTrapezoidal(decideFeederPose(), 0.1, 0.5),
@@ -58,19 +71,6 @@ public class PathfindingCommands {
             return SwerveCommands.goToPoseBezier(targetPose)
                     .andThen(SwerveCommands.goToPosePID(targetPose))
                     .andThen(new WaitCommand(0.05));
-        }, Set.of(SWERVE));
-    }
-
-    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
-        return new DeferredCommand(() -> {
-            IS_ALIGNING_REEF = true;
-
-            final Pose2d targetPose = branch.getBranchPose(face);
-
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05))
-                    .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
         }, Set.of(SWERVE));
     }
 
