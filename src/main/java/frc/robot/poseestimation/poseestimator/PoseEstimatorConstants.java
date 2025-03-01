@@ -12,14 +12,13 @@ import frc.robot.poseestimation.photoncamera.PhotonCameraIO;
 import java.util.HashMap;
 import java.util.Map;
 
-import static frc.lib.util.flippable.FlippableUtils.flipAboutYAxis;
-
 public class PoseEstimatorConstants {
     static final double POSE_BUFFER_SIZE_SECONDS = 2;
     static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS
-            = new StandardDeviations(0.0003, 0.000002);
+            = new StandardDeviations(0.0005, 0.000005);
 
-    static final Pose2d DEFAULT_POSE = new Pose2d(new Translation2d(8.5,4.3), Rotation2d.kZero);
+    private static final Pose2d DEFAULT_RED_POSE = new Pose2d(new Translation2d(10,4), Rotation2d.kZero);
+    static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : new Pose2d(new Translation2d(7,4), Rotation2d.k180deg);
 
     static final Transform3d
             ROBOT_TO_FRONT_LEFT_CAMERA = new Transform3d(
