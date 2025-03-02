@@ -10,7 +10,7 @@ public class Sensor implements LoggableHardware {
     private final String name;
 
     public Sensor(String name) {
-        this.name = name;
+        this.name = "Sensors/" +name;
 
         periodic();
         HardwareManager.addHardware(this);
@@ -23,7 +23,7 @@ public class Sensor implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Sensors/" + name, inputs);
+        Logger.processInputs(name, inputs);
     }
 
     public SensorInputsAutoLogged getInputs() {

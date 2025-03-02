@@ -8,8 +8,12 @@ public class QueueUtilities {
         if (queue == null || queue.isEmpty()) return new double[0];
         final double[] array = new double[queue.size()];
 
-        for (int i = 0; i < array.length; i++)
-            array[i] = queue.poll();
+        int i = 0;
+
+        for (double value : queue)
+            array[i++] = value;
+
+        queue.clear();
 
         return array;
     }

@@ -23,7 +23,7 @@ public class Motor implements LoggableHardware {
     private MotorConfiguration configuration;
 
     public Motor(String name) { //every motor has a port. reflect this here.
-        this.name = name;
+        this.name = "Motors/" + name;
 
         periodic();
         HardwareManager.addHardware(this);
@@ -277,7 +277,7 @@ public class Motor implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Motors/" + name, inputs);
+        Logger.processInputs(name, inputs);
     }
 
     @Override

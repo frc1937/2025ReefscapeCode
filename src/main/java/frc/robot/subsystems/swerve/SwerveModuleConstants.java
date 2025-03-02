@@ -116,7 +116,6 @@ public class SwerveModuleConstants {
         driveMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
         driveMotor.setupSignalUpdates(VOLTAGE);
         driveMotor.setupSignalUpdates(VELOCITY);
-        driveMotor.setupSignalUpdates(TEMPERATURE);
     }
 
     private static void configureSteerMotor(Motor steerMotor, Encoder encoder) {

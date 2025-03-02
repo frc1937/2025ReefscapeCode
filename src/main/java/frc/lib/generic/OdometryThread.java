@@ -76,7 +76,6 @@ public class OdometryThread extends Thread {
             return;
 
         final double currentTimestamp = RobotController.getFPGATime() / 1e6;
-        final double resultTimestamp = currentTimestamp - calculateLatency();
 
         FASTER_THREAD_LOCK.lock();
 
@@ -88,7 +87,7 @@ public class OdometryThread extends Thread {
                     queues.get(i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
-            timestamps.offer(resultTimestamp);
+            timestamps.offer(currentTimestamp);
         } finally {
             FASTER_THREAD_LOCK.unlock();
         }
@@ -111,14 +110,14 @@ public class OdometryThread extends Thread {
         Logger.processInputs("OdometryThread", threadInputs);
     }
 
-    private double calculateLatency() {
-        double totalLatency = 0.0;
-
-        for (BaseStatusSignal signal : ctreThreadedSignals)
-            totalLatency += signal.getTimestamp().getLatency();
-
-        return totalLatency / ctreThreadedSignals.length;
-    }
+//    private double calculateLatency() {
+//        double totalLatency = 0.0;
+//
+//        for (BaseStatusSignal signal : ctreThreadedSignals)
+//            totalLatency += signal.getTimestamp().getLatency();
+//
+//        return totalLatency / ctreThreadedSignals.length;
+//    }
 
     public double[] getLatestTimestamps() {
         return threadInputs.timestamps;
