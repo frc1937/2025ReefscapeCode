@@ -7,10 +7,9 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.generic.hardware.HardwareManager;
+import frc.lib.generic.OdometryThread;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.simulation.GenericPhysicsSimulation;
 import frc.robot.GlobalConstants;
@@ -54,9 +53,10 @@ public class SimulatedTalonMotor extends Motor {
         talonConfigurator = talonFX.getConfigurator();
 
         voltageSignal = talonFX.getMotorVoltage().clone();
-        voltageSignal.setUpdateFrequency(1000);
+        voltageSignal.setUpdateFrequency(50);
 
-        HardwareManager.registerCTREStatusSignal(voltageSignal);
+        //registering a random ahh signal just so OdometryThread timestamps get updated w/out logic changes to the class.
+        OdometryThread.getInstance().registerCTRESignal(voltageSignal);
 
         if (CURRENT_MODE != GlobalConstants.Mode.SIMULATION)
             new RuntimeException("DO NOT Initialize THIS MOTOR! Use the factory methods instead!").printStackTrace();
