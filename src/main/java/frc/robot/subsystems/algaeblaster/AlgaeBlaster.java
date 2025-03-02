@@ -32,7 +32,7 @@ public class AlgaeBlaster extends GenericSubsystem {
         return new FunctionalCommand(
                 () -> {},
                 () -> ARM_BLASTER_MOTOR.setOutput(MotorProperties.ControlMode.POSITION,state.getRotations()),
-                interrupt -> {},
+                interrupt -> ARM_BLASTER_MOTOR.stopMotor(),
                 () -> false,
                 this
         );

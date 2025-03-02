@@ -41,7 +41,7 @@ public class RobotContainer {
 
         setupLEDs();
 
-        ButtonControls.initializeButtons(ButtonControls.ButtonLayout.TELEOP);
+        ButtonControls.initializeButtons(ButtonControls.ButtonLayout.ELEVATOR_KS);
     }
 
     public Command getAutonomousCommand() {

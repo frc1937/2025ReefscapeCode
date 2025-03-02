@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Queue;
 
 import static frc.lib.generic.hardware.encoder.EncoderInputs.ENCODER_INPUTS_LENGTH;
-import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
+import static frc.lib.util.QueueUtilities.queueToDoubleArray;
 
 /**
  * Wrapper class for the CAN encoder.
@@ -112,8 +112,8 @@ public class GenericCanCoder extends Encoder {
 
         if (signalQueueList.isEmpty()) return;
 
-        inputs.threadPosition = queueToArrayAndClearQueue(signalQueueList.get("position"));
-        inputs.threadVelocity = queueToArrayAndClearQueue(signalQueueList.get("velocity"));
+        inputs.threadPosition = queueToDoubleArray(signalQueueList.get("position"));
+        inputs.threadVelocity = queueToDoubleArray(signalQueueList.get("velocity"));
     }
 
     private void setupNonThreadedSignal(final BaseStatusSignal correspondingSignal) {

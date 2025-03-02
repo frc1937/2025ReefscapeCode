@@ -6,12 +6,13 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.generic.GenericSubsystem;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_BEAM_BREAK;
 import static frc.robot.subsystems.coralintake.CoralIntakeConstants.INTAKE_MOTOR;
 
 public class CoralIntake extends GenericSubsystem {
+    private int hasSeenCoralCounter = 0;
+
     public Command prepareGamePiece() {
         return setMotorVoltage(2).until(this::hasCoral);
     }
@@ -43,9 +44,18 @@ public class CoralIntake extends GenericSubsystem {
         INTAKE_MOTOR.setIdleMode(idleMode);
     }
 
+    @Override
+    public void periodic() {
+        if (INTAKE_BEAM_BREAK.get() == 0) {
+            hasSeenCoralCounter++;
+        } else {
+            hasSeenCoralCounter = 0;
+        }
+    }
+
     @AutoLogOutput(key="HasCoral")
     public boolean hasCoral() {
-        return INTAKE_BEAM_BREAK.get() == 0;
+        return hasSeenCoralCounter > 1;
     }
 
     private void setVoltage(double voltage) {

@@ -23,7 +23,7 @@ public class Motor implements LoggableHardware {
     private MotorConfiguration configuration;
 
     public Motor(String name) { //every motor has a port. reflect this here.
-        this.name = name;
+        this.name = "Motors/" + name;
 
         periodic();
         HardwareManager.addHardware(this);
@@ -235,7 +235,11 @@ public class Motor implements LoggableHardware {
 
     public void setFollower(Motor motor, boolean invert) { }
 
-    /** Signals are lazily loaded - only these explicitly called will be updated. Thus you must call this method. when using a signal.*/
+    /**
+     Signals are lazily loaded - only these explicitly called will be updated.
+     Thus, you must call this method. when using a signal.
+     Can only be used with CTRE products
+     */
     public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) { }
 
     public void setupSignalUpdates(MotorSignal signal) { setupSignalUpdates(signal, false); }
@@ -273,7 +277,7 @@ public class Motor implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Motors/" + name, inputs);
+        Logger.processInputs(name, inputs);
     }
 
     @Override

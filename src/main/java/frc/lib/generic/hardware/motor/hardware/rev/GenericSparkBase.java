@@ -8,7 +8,6 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.config.SignalsConfig;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.lib.generic.Feedforward;
-import frc.lib.generic.OdometryThread;
 import frc.lib.generic.hardware.motor.*;
 import frc.lib.generic.hardware.motor.hardware.MotorUtilities;
 import frc.lib.scurve.InputParameter;
@@ -16,9 +15,6 @@ import frc.lib.scurve.OutputParameter;
 import frc.lib.scurve.SCurveGenerator;
 import org.littletonrobotics.junction.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
 import static frc.lib.generic.hardware.motor.MotorInputs.MOTOR_INPUTS_LENGTH;
@@ -34,7 +30,6 @@ public abstract class GenericSparkBase extends Motor {
     private final int deviceId;
 
     private final boolean[] signalsToLog = new boolean[MOTOR_INPUTS_LENGTH];
-    private final Map<String, Queue<Double>> signalQueueList = new HashMap<>();
 
     private DoubleSupplier externalPositionSupplier, externalVelocitySupplier;
     private Feedforward feedforward;
@@ -155,6 +150,9 @@ public abstract class GenericSparkBase extends Motor {
      */
     @Override
     public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) {
+        if (useFasterThread)
+            new UnsupportedOperationException("Spark doesn't support faster thread");
+
         final int ms = 1000 / (useFasterThread ? 200 : 50);
 
         signalsToLog[signal.getId()] = true;
@@ -177,27 +175,6 @@ public abstract class GenericSparkBase extends Motor {
                 signalsConfig.appliedOutputPeriodMs(ms);
                 signalsConfig.busVoltagePeriodMs(ms);
             }
-        }
-
-        if (!useFasterThread) return;
-
-        signalsToLog[signal.getId() + MOTOR_INPUTS_LENGTH / 2] = true;
-
-        switch (signal) {
-            case POSITION ->
-                    signalQueueList.put("position", OdometryThread.getInstance().registerSignal(this::getSystemPositionPrivate));
-            case VELOCITY ->
-                    signalQueueList.put("velocity", OdometryThread.getInstance().registerSignal(this::getSystemVelocityPrivate));
-            case CURRENT ->
-                    signalQueueList.put("current", OdometryThread.getInstance().registerSignal(spark::getOutputCurrent));
-            case VOLTAGE ->
-                    signalQueueList.put("voltage", OdometryThread.getInstance().registerSignal(this::getVoltagePrivate));
-            case TEMPERATURE ->
-                    signalQueueList.put("temperature", OdometryThread.getInstance().registerSignal(spark::getMotorTemperature));
-            case CLOSED_LOOP_TARGET ->
-                    signalQueueList.put("target", OdometryThread.getInstance().registerSignal(() -> goalState.position));
-            case ACCELERATION ->
-                    signalQueueList.put("acceleration", OdometryThread.getInstance().registerSignal(this::getEffectiveAcceleration));
         }
 
         configure(currentConfiguration);
@@ -223,8 +200,6 @@ public abstract class GenericSparkBase extends Motor {
         inputs.systemPosition = getEffectivePosition();
         inputs.systemVelocity = getEffectiveVelocity();
         inputs.systemAcceleration = getEffectiveAcceleration();
-
-        MotorUtilities.handleThreadedInputs(inputs, signalQueueList);
     }
 
     private double getVoltagePrivate() {

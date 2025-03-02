@@ -105,24 +105,20 @@ public class ButtonControls {
         setupDriving();
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.RIGHT).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L1));
+                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L1)
+        );
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2));
+                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2)
+        );
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L3));
+                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L3)
+        );
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER));
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(CORAL_INTAKE.releaseGamePiece());
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(
-                Commands.runEnd(() -> ELEVATOR.sysIdDrive(-1.9), ELEVATOR::stop, ELEVATOR));
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(
-                Commands.runEnd(() -> ELEVATOR.sysIdDrive(1.9), ELEVATOR::stop, ELEVATOR));
+                CoralManipulationCommands.eatFromFeeder()
+        );
     }
 
     private static void configureButtonsDevelopment() {
