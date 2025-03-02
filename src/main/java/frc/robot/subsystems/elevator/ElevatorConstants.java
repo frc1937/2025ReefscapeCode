@@ -32,8 +32,8 @@ public class ElevatorConstants {
     }
 
     protected static final SysIdRoutine.Config ELEVATOR_CONFIG = new SysIdRoutine.Config(
-            Volts.per(Second).of(1),
-            Volts.of(2),
+            Volts.per(Second).of(0.5),
+            Volts.of(1),
             Second.of(7)
     );
 
@@ -44,7 +44,8 @@ public class ElevatorConstants {
     protected static final double
             ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.2483952045440674,
             WHEEL_DIAMETER = 0.0328,
-            GEAR_RATIO = 4*(10/3.0);
+            GEAR_RATIO = 4*(10/3.0),
+            KG = 0.18348;
 
     protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = MechanismFactory.createElevatorMechanism("Elevator Mechanism", 1);
 
@@ -59,15 +60,16 @@ public class ElevatorConstants {
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 4.9;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 3.9;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 5.5;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 5;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxJerk = 50;
 
-        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 53;
+        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 52;
 
         ELEVATOR_MOTORS_CONFIGURATION.inverted = true;
         ELEVATOR_MOTORS_CONFIGURATION.gearRatio = GEAR_RATIO;
 
-        ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(0.69,0,0,4.9764,0.21689,0.12065, 0.063824, Feedforward.Type.ELEVATOR);
+        ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(0.3,0,0,1.4962,0.10018,0.15427, KG, Feedforward.Type.ELEVATOR);
 
         ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, Feedforward.Type.ELEVATOR);// S=1.313
         ELEVATOR_MOTORS_CONFIGURATION.simulationProperties = new SimulationProperties.Slot(
@@ -92,7 +94,6 @@ public class ElevatorConstants {
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
         SLAVE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-
         SLAVE_MOTOR.setFollower(MASTER_MOTOR, true);
     }
 }

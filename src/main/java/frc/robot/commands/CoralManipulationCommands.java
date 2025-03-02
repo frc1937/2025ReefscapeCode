@@ -42,10 +42,11 @@ public class CoralManipulationCommands {
     }
 
     public static Command eatFromFeeder() {
-        return ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
-                        .until(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
-                        .andThen(ALGAE_BLASTER.holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
-                        .alongWith(CORAL_INTAKE.prepareGamePiece()).until(CORAL_INTAKE::hasCoral);
+        return (ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
+                .until(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
+                .alongWith(CORAL_INTAKE.prepareGamePiece()))
+                .alongWith(ALGAE_BLASTER.holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
+                .until(CORAL_INTAKE::hasCoral);
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop() {
@@ -58,8 +59,8 @@ public class CoralManipulationCommands {
 
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
-                .andThen(optionallySpitAlgae)
-                .andThen(CORAL_INTAKE.releaseGamePiece());
+                .andThen(optionallySpitAlgae.andThen(CORAL_INTAKE.releaseGamePiece()))
+                .alongWith(ELEVATOR.maintainPosition());
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {
@@ -78,15 +79,22 @@ public class CoralManipulationCommands {
 
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
-                .andThen(optionallySpitAlgae)
-                .andThen(CORAL_INTAKE.releaseGamePiece())
-                .andThen(optionallyRetractAlgae);
+                .andThen(optionallySpitAlgae.andThen(CORAL_INTAKE.releaseGamePiece()).andThen(optionallyRetractAlgae))
+                .alongWith(ELEVATOR.maintainPosition());
     }
 
     public static Command scoreCoralFromHeight(ElevatorConstants.ElevatorHeight elevatorHeight) {
-        return ELEVATOR.setTargetHeight(elevatorHeight)
-                .alongWith(CORAL_INTAKE.prepareGamePiece())
-                .andThen(CORAL_INTAKE.releaseGamePiece());
+        final ParallelCommandGroup prepareMechanism = new ParallelCommandGroup(
+                CORAL_INTAKE.prepareGamePiece(),
+                ELEVATOR.setTargetHeight(elevatorHeight)
+        );
+
+        final ParallelRaceGroup releaseCoral = new ParallelRaceGroup(
+                CORAL_INTAKE.releaseGamePiece(),
+                ELEVATOR.maintainPosition()
+        );
+
+        return prepareMechanism.andThen(releaseCoral);
     }
 
     private static Command getAlgaeCommand() {
