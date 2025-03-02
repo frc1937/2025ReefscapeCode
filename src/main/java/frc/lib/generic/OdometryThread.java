@@ -1,7 +1,7 @@
 package frc.lib.generic;
 
 import com.ctre.phoenix6.BaseStatusSignal;
-import edu.wpi.first.wpilibj.Notifier;
+import com.ctre.phoenix6.StatusCode;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.function.DoubleSupplier;
 
-import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
+import static frc.lib.util.QueueUtilities.queueToDoubleArray;
 import static frc.robot.GlobalConstants.*;
-import static frc.robot.subsystems.swerve.SwerveConstants.yawOffset;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -27,12 +25,11 @@ public class OdometryThread extends Thread {
     private final List<Queue<Double>> queues = new ArrayList<>();
     private final Queue<Double> timestamps = new ArrayBlockingQueue<>(100);
 
-    private DoubleSupplier[] nonCtreThreadedSignals = new DoubleSupplier[0];
     private BaseStatusSignal[] ctreThreadedSignals = new BaseStatusSignal[0];
 
-    private static OdometryThread INSTANCE = null;
-
     private final ThreadInputsAutoLogged threadInputs = new ThreadInputsAutoLogged();
+
+    private static OdometryThread INSTANCE = null;
 
     public static OdometryThread getInstance() {
         if (INSTANCE == null)
@@ -44,11 +41,13 @@ public class OdometryThread extends Thread {
     private OdometryThread() {
         if (CURRENT_MODE == Mode.REPLAY) return;
 
-        Notifier notifier = new Notifier(this::periodic);
-        notifier.setName("OdometryThread");
+        setName("OdometryThread");
+        setDaemon(true);
 
         Timer.delay(5);
-        notifier.startPeriodic(1.0 / ODOMETRY_FREQUENCY_HERTZ);
+
+        super.start();
+
     }
 
     public Queue<Double> registerCTRESignal(BaseStatusSignal signal) {
@@ -65,43 +64,30 @@ public class OdometryThread extends Thread {
         return queue;
     }
 
-    public Queue<Double> registerSignal(DoubleSupplier signal) {
-        Queue<Double> queue = new ArrayBlockingQueue<>(100);
-        FASTER_THREAD_LOCK.lock();
-
-        try {
-            insertSignalToSignalArray(signal);
-            queues.add(queue);
-        } finally {
-            FASTER_THREAD_LOCK.unlock();
+    @Override
+    public void run() {
+        while (true) {
+            periodic();
         }
-
-        return queue;
     }
 
     private void periodic() {
-        if (ctreThreadedSignals.length >= 1)
-            BaseStatusSignal.refreshAll(ctreThreadedSignals);
+        if (BaseStatusSignal.refreshAll(ctreThreadedSignals) != StatusCode.OK)
+            return;
 
-        final double updateTimestamp = (RobotController.getFPGATime() / 1.0e6);
+        final double currentTimestamp = RobotController.getFPGATime() / 1e6;
 
         FASTER_THREAD_LOCK.lock();
 
         try {
-            final int nonCtreSignalsSize = nonCtreThreadedSignals.length;
-
-            for (int i = 0; i < nonCtreSignalsSize; i++) {
-                queues.get(i).offer(nonCtreThreadedSignals[i].getAsDouble());
-            }
-
             for (int i = 0; i < ctreThreadedSignals.length; i++) {
                 if (ctreThreadedSignals[i].getName() == "Yaw") {
-                    queues.get(nonCtreSignalsSize + i).offer((ctreThreadedSignals[i].getValueAsDouble() / 360));
+                    queues.get(i).offer((ctreThreadedSignals[i].getValueAsDouble() / 360));
                 } else
-                    queues.get(nonCtreSignalsSize + i).offer(ctreThreadedSignals[i].getValueAsDouble());
+                    queues.get(i).offer(ctreThreadedSignals[i].getValueAsDouble());
             }
 
-            timestamps.offer(updateTimestamp);
+            timestamps.offer(currentTimestamp);
         } finally {
             FASTER_THREAD_LOCK.unlock();
         }
@@ -116,22 +102,22 @@ public class OdometryThread extends Thread {
         ctreThreadedSignals = newSignals;
     }
 
-    private void insertSignalToSignalArray(DoubleSupplier statusSignal) {
-        final DoubleSupplier[] newSignals = new DoubleSupplier[nonCtreThreadedSignals.length + 1];
-
-        System.arraycopy(nonCtreThreadedSignals, 0, newSignals, 0, nonCtreThreadedSignals.length);
-        newSignals[nonCtreThreadedSignals.length] = statusSignal;
-
-        nonCtreThreadedSignals = newSignals;
-    }
-
     public void updateLatestTimestamps() {
         if (CURRENT_MODE != Mode.REPLAY) {
-            threadInputs.timestamps = queueToArrayAndClearQueue(timestamps);
+            threadInputs.timestamps = queueToDoubleArray(timestamps);
         }
 
         Logger.processInputs("OdometryThread", threadInputs);
     }
+
+//    private double calculateLatency() {
+//        double totalLatency = 0.0;
+//
+//        for (BaseStatusSignal signal : ctreThreadedSignals)
+//            totalLatency += signal.getTimestamp().getLatency();
+//
+//        return totalLatency / ctreThreadedSignals.length;
+//    }
 
     public double[] getLatestTimestamps() {
         return threadInputs.timestamps;
@@ -139,6 +125,6 @@ public class OdometryThread extends Thread {
 
     @AutoLog
     public static class ThreadInputs {
-        public double[] timestamps = {0.0};
+        public double[] timestamps;
     }
 }

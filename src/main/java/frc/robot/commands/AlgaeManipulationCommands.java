@@ -29,7 +29,8 @@ public class AlgaeManipulationCommands {
      */
     public static Command blastAlgaeOffReefWithElevator(FieldConstants.ReefFace face) {
         return ELEVATOR.setTargetHeight(getAlgaeHeightFromFace(face))
-                .andThen(blastAlgaeOffReef());
+                .andThen(ELEVATOR.maintainPosition())
+                .raceWith(blastAlgaeOffReef());
     }
 
     public static Command blastAlgaeOffReef() {

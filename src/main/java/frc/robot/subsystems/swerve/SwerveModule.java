@@ -12,16 +12,14 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.math.Conversions;
 import frc.lib.math.Optimizations;
 
-import java.util.Arrays;
-
 import static edu.wpi.first.units.Units.*;
-import static frc.lib.math.Conversions.rotationsToMetres;
 import static frc.robot.GlobalConstants.VOLTAGE_COMPENSATION_SATURATION;
 import static frc.robot.subsystems.swerve.SwerveConstants.MAX_SPEED_MPS;
 import static frc.robot.subsystems.swerve.SwerveConstants.WHEEL_DIAMETER;
-import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class SwerveModule {
+    private final double PRECOMPUTED_WHEEL_RADIUS_PI = Math.PI * WHEEL_DIAMETER;
+
     private final Motor steerMotor, driveMotor;
     private final Encoder steerEncoder;
 
@@ -90,8 +88,6 @@ public class SwerveModule {
     }
 
     protected void setTargetVelocity(double velocityMetresPerSecond, boolean shouldUseClosedLoop) {
-        if (!isTemperatureOkay()) System.out.println("SWERVE MODULE " + driveMotor.getDeviceID() + " is TOO HOT!" );
-
         if (shouldUseClosedLoop) {
             final double targetVelocityRPSClosedLoop = Conversions.mpsToRps(velocityMetresPerSecond, WHEEL_DIAMETER);
             driveMotor.setOutput(MotorProperties.ControlMode.VELOCITY, targetVelocityRPSClosedLoop);
@@ -130,13 +126,9 @@ public class SwerveModule {
         final double[] metersTraveled = new double[rotationsPositions.length];
 
         for (int i = 0; i < rotationsPositions.length; i++) {
-            metersTraveled[i] = rotationsToMetres(rotationsPositions[i], WHEEL_DIAMETER);
+            metersTraveled[i] = rotationsPositions[i] * PRECOMPUTED_WHEEL_RADIUS_PI;
         }
 
         return metersTraveled;
-    }
-
-    private boolean isTemperatureOkay() {
-        return driveMotor.getTemperature() < 80;
     }
 }

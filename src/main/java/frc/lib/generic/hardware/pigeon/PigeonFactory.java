@@ -1,6 +1,6 @@
 package frc.lib.generic.hardware.pigeon;
 
-import frc.lib.generic.hardware.pigeon.hardware.GenericIMU;
+import frc.lib.generic.hardware.pigeon.hardware.GenericPigeon1;
 import frc.lib.generic.hardware.pigeon.hardware.GenericPigeon2;
 import frc.lib.generic.hardware.pigeon.hardware.SimulatedIMU;
 import frc.robot.GlobalConstants;
@@ -15,7 +15,7 @@ public class PigeonFactory {
         if (CURRENT_MODE == GlobalConstants.Mode.SIMULATION)
             return new SimulatedIMU(name);
 
-        return new GenericIMU(name, deviceId);
+        return new GenericPigeon1(name, deviceId);
     }
 
     public static Pigeon createPigeon2(String name, int deviceId) {

@@ -16,7 +16,7 @@ public class Encoder implements LoggableHardware {
     private final String name;
 
     public Encoder(String name) {
-        this.name = name;
+        this.name = "Encoders/" + name;
 
         periodic();
         HardwareManager.addHardware(this);
@@ -50,7 +50,7 @@ public class Encoder implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Encoders/" + name, inputs);
+        Logger.processInputs(name, inputs);
     }
 
     @Override

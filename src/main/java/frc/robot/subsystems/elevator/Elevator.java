@@ -50,6 +50,16 @@ public class Elevator extends GenericSubsystem {
         );
     }
 
+    public Command maintainPosition() {
+        return new FunctionalCommand(
+                () -> {},
+                () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, KG),
+                interrupt -> stopMotors(),
+                () -> false,
+                this
+        );
+    }
+
     public boolean isAtTargetHeight(ElevatorHeight level) {
         return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.1;
     }

@@ -15,7 +15,7 @@ public class Pigeon implements LoggableHardware {
     private final String name;
 
     public Pigeon(String name) {
-        this.name = name;
+        this.name = "Pigeons/" + name;
 
         periodic();
         HardwareManager.addHardware(this);
@@ -54,7 +54,7 @@ public class Pigeon implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Pigeons/" + name, inputs);
+        Logger.processInputs(name, inputs);
     }
 
     @Override
