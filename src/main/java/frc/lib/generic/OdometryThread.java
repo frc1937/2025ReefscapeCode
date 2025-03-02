@@ -13,9 +13,8 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.function.DoubleSupplier;
 
-import static frc.lib.util.QueueUtilities.queueToArrayAndClearQueue;
+import static frc.lib.util.QueueUtilities.queueToDoubleArray;
 import static frc.robot.GlobalConstants.*;
-import static frc.robot.subsystems.swerve.SwerveConstants.yawOffset;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.
@@ -127,7 +126,7 @@ public class OdometryThread extends Thread {
 
     public void updateLatestTimestamps() {
         if (CURRENT_MODE != Mode.REPLAY) {
-            threadInputs.timestamps = queueToArrayAndClearQueue(timestamps);
+            threadInputs.timestamps = queueToDoubleArray(timestamps);
         }
 
         Logger.processInputs("OdometryThread", threadInputs);
