@@ -57,10 +57,14 @@ public class CoralManipulationCommands {
                 Commands.none(),
                 shouldBlastAlgae);
 
+        final ParallelCommandGroup releaseCoral = new ParallelCommandGroup(
+                CORAL_INTAKE.releaseGamePiece(),
+                ELEVATOR.maintainPosition()
+        );
+
         return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                 .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
-                .andThen(optionallySpitAlgae.andThen(CORAL_INTAKE.releaseGamePiece()))
-                .alongWith(ELEVATOR.maintainPosition());
+                .andThen(optionallySpitAlgae).andThen(releaseCoral);
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {
