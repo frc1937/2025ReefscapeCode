@@ -25,9 +25,9 @@ public class CoralIntakeConstants {
 
         intakeMotorConfiguration.simulationProperties = new SimulationProperties.Slot(SimulationProperties.SimulationType.SIMPLE_MOTOR, DCMotor.getFalcon500(1), 1, 0.2);
 
+        INTAKE_MOTOR.configure(intakeMotorConfiguration);
+
         INTAKE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
         INTAKE_MOTOR.setupSignalUpdates(MotorSignal.CURRENT);
-
-        INTAKE_MOTOR.configure(intakeMotorConfiguration);
     }
 }

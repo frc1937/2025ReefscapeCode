@@ -102,29 +102,30 @@ public class SwerveModuleConstants {
         steerEncoder.setupSignalUpdates(EncoderSignal.POSITION, true);
     }
 
+
     private static void setSimulatedEncoderSources(Encoder steerEncoder, Motor simulationSource) {
         steerEncoder.setSimulatedEncoderPositionSource(simulationSource::getSystemPosition);
         steerEncoder.setSimulatedEncoderVelocitySource(simulationSource::getSystemVelocity);
     }
 
     private static void configureDriveMotor(Motor driveMotor) {
+        driveMotor.configure(driveMotorConfiguration);
+
         driveMotor.setupSignalUpdates(POSITION, true);
 
         driveMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
         driveMotor.setupSignalUpdates(VOLTAGE);
         driveMotor.setupSignalUpdates(VELOCITY);
         driveMotor.setupSignalUpdates(TEMPERATURE);
-
-        driveMotor.configure(driveMotorConfiguration);
     }
 
     private static void configureSteerMotor(Motor steerMotor, Encoder encoder) {
+        steerMotor.configure(steerMotorConfiguration);
+
         steerMotor.setupSignalUpdates(POSITION);
         steerMotor.setupSignalUpdates(VELOCITY);
         steerMotor.setupSignalUpdates(VOLTAGE);
         steerMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
-
-        steerMotor.configure(steerMotorConfiguration);
 
         steerMotor.setExternalPositionSupplier(encoder::getEncoderPosition);
     }

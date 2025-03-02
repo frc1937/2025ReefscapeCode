@@ -44,7 +44,7 @@ public class ElevatorConstants {
     protected static final double
             ELEVATOR_MAX_EXTENSION_ROTATIONS = 2.2483952045440674,
             WHEEL_DIAMETER = 0.0328,
-            GEAR_RATIO = 48;
+            GEAR_RATIO = 4*(10/3.0);
 
     protected static final ElevatorMechanism2d ELEVATOR_MECHANISM = MechanismFactory.createElevatorMechanism("Elevator Mechanism", 1);
 
@@ -81,6 +81,9 @@ public class ElevatorConstants {
                 false
         );
 
+        MASTER_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
+        SLAVE_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
+
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.CURRENT);
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.POSITION);
@@ -89,9 +92,6 @@ public class ElevatorConstants {
         MASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
         SLAVE_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
-
-        MASTER_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
-        SLAVE_MOTOR.configure(ELEVATOR_MOTORS_CONFIGURATION);
 
         SLAVE_MOTOR.setFollower(MASTER_MOTOR, true);
     }
