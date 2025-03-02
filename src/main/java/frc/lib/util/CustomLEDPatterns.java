@@ -140,6 +140,8 @@ public class CustomLEDPatterns {
      * @return The filled buffer.
      */
     public static Color8Bit[] generateFlashingBuffer(Color8Bit... colors) {
+        if (previousColor++ >= colors.length) return buffer;
+
         if (counter % 25 == 0) buffer = generateSingleColorBuffer(colors[previousColor++]);
 
         previousColor %= colors.length;

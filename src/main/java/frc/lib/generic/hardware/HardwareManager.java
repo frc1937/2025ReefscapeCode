@@ -23,7 +23,7 @@ import static frc.robot.GlobalConstants.*;
 public enum HardwareManager {
     INSTANCE;
 
-    private static final boolean IS_PRACTICE = true;
+    private static final boolean IS_PRACTICE = false;
     private static final long MIN_FREE_SPACE = IS_PRACTICE ? 100_000_000 /*100 MB*/ : 1_000_000_000 /*1 GB*/;
 
     private static LoggableHardware[] HARDWARE = new LoggableHardware[0];
@@ -76,7 +76,7 @@ public enum HardwareManager {
             }
 
         } else {
-            robot.setUseTiming(true);
+            robot.setUseTiming(false);
             logPath = LogFileUtil.findReplayLog();
 
             final String logWriterPath = LogFileUtil.addPathSuffix(logPath, "_replay");

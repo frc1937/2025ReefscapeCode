@@ -15,7 +15,6 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -118,12 +117,6 @@ public class Swerve extends GenericSubsystem {
     }
 
     public void rotateToTargetAccurate() {
-        double current = POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees();
-        double target = SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.getGoal().position;
-
-        Logger.recordOutput("Profiled/Current", current);
-        Logger.recordOutput("Profiled/Target", target);
-
         driveFieldRelative(
                 0,
                 0,
@@ -150,10 +143,10 @@ public class Swerve extends GenericSubsystem {
             driveFieldRelative(xPower, yPower, controllerOutput, false);
     }
 
-    protected void driveToPose(Pose2d target) {
+    protected void driveToPosePID(Pose2d target) {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
-        driveFieldRelative(
+        driveRobotRelative(
                 PID_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getX(),
                         target.getX()
@@ -173,8 +166,8 @@ public class Swerve extends GenericSubsystem {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
         driveFieldRelative(
-                PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX()),
-                PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY()),
+                PROFILED_TRANSLATION_CONTROLLER.calculate(currentPose.getX(), target.getX()),
+                PROFILED_STRAFE_CONTROLLER.calculate(currentPose.getY(), target.getY()),
                 SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees()),
                 true
         );

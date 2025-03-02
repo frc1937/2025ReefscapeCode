@@ -3,6 +3,7 @@ package frc.robot.commands.autocommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.util.flippable.FlippablePose2d;
 import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.CoralManipulationCommands;
@@ -14,6 +15,8 @@ import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+import static frc.robot.RobotContainer.CORAL_INTAKE;
+import static frc.robot.RobotContainer.ELEVATOR;
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
 
 public class Questionnaire {
@@ -44,7 +47,7 @@ public class Questionnaire {
 
         question.addDefaultOption("None", "None");
         question.addOption("L2x3", "L2x3");
-        question.addOption("Leave the midline", "Leave");
+        question.addOption("TryL2", "TryL2");
 
         return question;
     }
@@ -55,7 +58,7 @@ public class Questionnaire {
         question.addDefaultOption("None", null);
 
         for (ReefFace face : ReefFace.values()) {
-            question.addOption("Face " + face.ordinal(), face.getAllianceCorrectedFace());
+            question.addOption("Face " + face.ordinal(), face);
         }
 
         return question;
@@ -130,9 +133,14 @@ public class Questionnaire {
             final Command correctStartPose = SwerveCommands.goToPoseTrapezoidal(new FlippablePose2d(followAutoPreset.getStartingPose(), true).get(), 0.02, 0.5);
             return correctStartPose.andThen(followAutoPreset);
         }
-      
-        if (PRESET_QUESTION.getSendableChooser().getSelected() == "Leave") {
-            return SwerveCommands.driveOpenLoop(() -> 1, () -> 0, () -> 0, () -> true).withTimeout(1);
+
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "TryL2") {
+            return SwerveCommands.driveOpenLoop(() -> 0.2, () -> 0, () -> 0, () -> true)
+                    .withTimeout(8)
+                    .andThen(SwerveCommands.driveOpenLoop(() -> 0, () -> 0, () -> 0, () -> true))
+                    .raceWith(new WaitCommand(0.5))
+                    .andThen(new WaitCommand(2))
+                    .andThen(CORAL_INTAKE.releaseGamePiece());
         }
 
         return Commands.sequence(
