@@ -46,9 +46,11 @@ public class Leds extends SubsystemBase {
                 new Color8Bit(Color.kRed)),
                 timeout)),
 
-        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(
-                new Color8Bit(Color.kBlue),
-                new Color8Bit(Color.kWhite)),
+        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(new Color8Bit[]{
+                new Color8Bit(Color.kWhite),
+                new Color8Bit(Color.kRed),
+                new Color8Bit(Color.kGreen),
+                new Color8Bit(Color.kBlack)}),
                 0));
 
         private final Function<Double, Command> ledCommandFunction;
