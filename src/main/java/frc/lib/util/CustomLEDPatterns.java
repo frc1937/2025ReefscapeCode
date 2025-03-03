@@ -134,15 +134,17 @@ public class CustomLEDPatterns {
     }
 
     public static Color8Bit[] generateScrollBuffer(Color8Bit firstColor, Color8Bit secondColor) {
-        for (int i = 0; i < LEDS_COUNT / 2; i++) {
-            buffer[(i + scrollingFirstPixel) % LEDS_COUNT] = interpolateColors(firstColor, secondColor, i / (LEDS_COUNT / 2.0));
+        final int halfLeds = LEDS_COUNT / 2;
+
+        for (int i = 0; i < LEDS_COUNT; i++) {
+            double ratio = (i < halfLeds)
+                    ? i / (double) halfLeds
+                    : (i - halfLeds) / (double) halfLeds;
+
+            buffer[(i + scrollingFirstPixel) % LEDS_COUNT] = interpolateColors(firstColor, secondColor, ratio);
         }
 
-        for (int j = LEDS_COUNT / 2; j < LEDS_COUNT; j++) {
-            buffer[(j + scrollingFirstPixel) % LEDS_COUNT] = interpolateColors(firstColor, secondColor, (j - LEDS_COUNT / 2.0) / (LEDS_COUNT / 2.0));
-        }
-
-        scrollingFirstPixel += 1;
+        scrollingFirstPixel = (scrollingFirstPixel + 1) % LEDS_COUNT;
 
         return buffer;
     }
