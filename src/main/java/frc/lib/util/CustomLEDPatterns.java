@@ -19,6 +19,7 @@ public class CustomLEDPatterns {
     private static int counter;
     private static int previousColor = 0;
     private static int rainbowFirstPixel;
+    private static int scrollingFirstPixel;
 
     static {
         timer.start();
@@ -128,6 +129,20 @@ public class CustomLEDPatterns {
 
         rainbowFirstPixel += 3;
         rainbowFirstPixel %= 180;
+
+        return buffer;
+    }
+
+    public static Color8Bit[] generateScrollBuffer(Color8Bit firstColor, Color8Bit secondColor) {
+        for (int i = 0; i < LEDS_COUNT / 2; i++) {
+            buffer[(i + scrollingFirstPixel) % LEDS_COUNT] = interpolateColors(firstColor, secondColor, i / (LEDS_COUNT / 2.0));
+        }
+
+        for (int j = LEDS_COUNT / 2; j < LEDS_COUNT; j++) {
+            buffer[(j + scrollingFirstPixel) % LEDS_COUNT] = interpolateColors(firstColor, secondColor, (j - LEDS_COUNT / 2.0) / (LEDS_COUNT / 2.0));
+        }
+
+        scrollingFirstPixel += 1;
 
         return buffer;
     }

@@ -19,29 +19,37 @@ import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
     public enum LEDMode {
-        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kBlue)
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateLoadingAnimationBuffer(
+                new Color8Bit(Color.kYellow),
+                new Color8Bit(Color.kGold)
         ), timeout)),
 
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(0,200,0)
+                new Color8Bit(Color.kLime)
         ), timeout)),
 
         INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                new Color8Bit(Color.kGray)
+        ), timeout)),
+
+        AUTO_START(timeout -> getCommandFromColours(() -> generateCirclingBuffer(
+                new Color8Bit(Color.kWhite),
                 new Color8Bit(Color.kCyan)
         ), timeout)),
 
-        AUTO_START(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kOrangeRed)
-        ), timeout)),
-
         DEBUG_MODE(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
-                new Color8Bit(Color.kCyan),
-                new Color8Bit(Color.kWhite)
+                new Color8Bit(57, 255, 20),
+                new Color8Bit(Color.kBlack)
         ), timeout)),
 
-        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout)),
-        DEFAULT(timeout -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, 0));
+        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                new Color8Bit(Color.kRed)),
+                timeout)),
+
+        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(
+                new Color8Bit(Color.kBlue),
+                new Color8Bit(Color.kWhite)),
+                0));
 
         private final Function<Double, Command> ledCommandFunction;
 
