@@ -78,7 +78,11 @@ public class WheelRadiusCharacterization extends Command {
         if (accumulatedYawRadians <= 6.283185307179586) {
             System.out.println("Not enough data for characterization. Rotate at least a full rotation nigga.");
         } else {
-            System.out.println("Drive Wheel Radius: " + currentDriveWheelRadius + " meters");
+            for (int i = 0; i < 3; i++) {
+                System.out.println("-----------------------------------");
+                System.out.println("Drive Wheel Radius: " + currentDriveWheelRadius + " meters");
+                System.out.println("-----------------------------------");
+            }
         }
     }
 
