@@ -116,7 +116,7 @@ public class Swerve extends GenericSubsystem {
             MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
     }
 
-    public void rotateToTargetAccurate() {
+    public void rotateToTargetFromPresetGoal() {
         driveFieldRelative(
                 0,
                 0,
