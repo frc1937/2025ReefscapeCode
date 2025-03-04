@@ -1,27 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
-import frc.robot.subsystems.algaeintake.AlgaeIntakeConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants;
 
 import static frc.robot.RobotContainer.*;
 
 public class AlgaeManipulationCommands {
-    public static Command intakeAlgae() {
-        return ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeArmState.EXTENDED)
-                .raceWith(new WaitCommand(1))
-                .andThen(ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeArmState.RETRACTED));
-    }
-
-    public static Command releaseAlgaeFromIntake() {
-        return ALGAE_INTAKE.setAlgaeIntakeState(AlgaeIntakeConstants.IntakeArmState.RETRACTED)
-                .andThen(ALGAE_INTAKE.setRollersVoltage(6)
-                        .raceWith(new WaitCommand(1.2)));
-    }
-
     /**
      * Sets the elevator to the height of the algae, then removes the algae.
      *

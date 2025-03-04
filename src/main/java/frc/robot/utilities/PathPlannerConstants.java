@@ -27,11 +27,11 @@ public class PathPlannerConstants {
 
     public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
             ? new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, 6, 4)
-            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, Math.PI, Math.PI);
+            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2.7, Math.PI*1.3, Math.PI*1.3);
 
     private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
             ? new PPHolonomicDriveController(new PIDConstants(4.5, 0.0, 0), new PIDConstants(0.9, 0.0, 0))
-            : new PPHolonomicDriveController(new PIDConstants(2, 0.0, 0), new PIDConstants(1, 0.0, 0));  
+            : new PPHolonomicDriveController(new PIDConstants(2.74, 0.0, 0), new PIDConstants(1.5, 0.0, 0));
 
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());

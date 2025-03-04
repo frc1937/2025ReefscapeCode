@@ -20,7 +20,7 @@ public class PhotonCameraIO implements LoggableHardware {
     private double lastUpdatedTimestamp;
 
     public PhotonCameraIO(String name, Transform3d robotCenterToCamera) {
-        this.name = name;
+        this.name = "Cameras/" + name;
         this.robotCenterToCamera = robotCenterToCamera;
 
         HardwareManager.addHardware(this);
@@ -52,25 +52,11 @@ public class PhotonCameraIO implements LoggableHardware {
 
     public StandardDeviations getStandardDeviations() {
         return new StandardDeviations(
-                calculateStandardDeviation(TRANSLATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length),
-                calculateStandardDeviation(ROTATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length));
+                calculateStandardDeviation(VISION_TRANSLATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length),
+                calculateStandardDeviation(VISION_ROTATION_STD_EXPONENT, inputs.averageDistanceFromTags, inputs.visibleTagIDs.length));
     }
 
     protected void refreshInputs(CameraInputsAutoLogged inputs) { }
-
-    private void logVisibleTags() {
-        if (!inputs.hasResult) {
-            Logger.recordOutput("UsedTags/" + name, new Pose3d[0]);
-            return;
-        }
-
-        final Pose3d[] visibleTagPoses = new Pose3d[inputs.visibleTagIDs.length];
-
-        for (int i = 0; i < visibleTagPoses.length; i++)
-            visibleTagPoses[i] = TAG_ID_TO_POSE.get(inputs.visibleTagIDs[i]);
-
-        Logger.recordOutput("UsedTags/" + name, visibleTagPoses);
-    }
 
     private boolean isNewTimestamp() {
         if (lastUpdatedTimestamp == getLastResultTimestamp())
@@ -87,9 +73,7 @@ public class PhotonCameraIO implements LoggableHardware {
     @Override
     public void periodic() {
         refreshInputs(inputs);
-        Logger.processInputs("Cameras/" + name, inputs);
-
-        logVisibleTags();
+        Logger.processInputs(name, inputs);
     }
 
     @Override

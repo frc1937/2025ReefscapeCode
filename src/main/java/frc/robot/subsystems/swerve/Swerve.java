@@ -116,11 +116,11 @@ public class Swerve extends GenericSubsystem {
             MODULES[i].setTargetState(swerveModuleStates[i], shouldUseClosedLoop);
     }
 
-    public void rotateToTargetAccurate() {
+    public void rotateToTargetFromPresetGoal() {
         driveFieldRelative(
                 0,
                 0,
-                SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.calculate(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees()),
+                SWERVE_ROTATION_CONTROLLER.calculate(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees()),
                 true
         );
     }
@@ -146,7 +146,7 @@ public class Swerve extends GenericSubsystem {
     protected void driveToPosePID(Pose2d target) {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
-        driveRobotRelative(
+        driveFieldRelative(
                 PID_TRANSLATION_CONTROLLER.calculate(
                         currentPose.getX(),
                         target.getX()

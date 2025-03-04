@@ -15,7 +15,7 @@ import java.util.Map;
 public class PoseEstimatorConstants {
     static final double POSE_BUFFER_SIZE_SECONDS = 2;
     static final StandardDeviations ODOMETRY_STANDARD_DEVIATIONS
-            = new StandardDeviations(0.0005, 0.000005);
+            = new StandardDeviations(0.0003, 0.000005);
 
     private static final Pose2d DEFAULT_RED_POSE = new Pose2d(new Translation2d(10,4), Rotation2d.kZero);
     static final Pose2d DEFAULT_POSE = Flippable.isRedAlliance() ? DEFAULT_RED_POSE : new Pose2d(new Translation2d(7,4), Rotation2d.k180deg);
@@ -42,10 +42,10 @@ public class PoseEstimatorConstants {
             REAR_LEFT_CAMERA = CameraFactory.generateCamera("REAR_LEFT", ROBOT_TO_REAR_LEFT_CAMERA),
             REAR_RIGHT_CAMERA = CameraFactory.generateCamera("REAR_RIGHT", ROBOT_TO_REAR_RIGHT_CAMERA);
 
-    public static final double TRANSLATION_STD_EXPONENT = 0.05;
-    public static final double ROTATION_STD_EXPONENT = 0.01;
+    public static final double VISION_TRANSLATION_STD_EXPONENT = 0.07;
+    public static final double VISION_ROTATION_STD_EXPONENT = 0.01;
 
-    public static final double MAXIMUM_AMBIGUITY = 0.4;
+    public static final double MAXIMUM_AMBIGUITY = 0.3;
 
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
     public static final Map<Integer, Pose3d> TAG_ID_TO_POSE = new HashMap<>();

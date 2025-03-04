@@ -4,7 +4,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -14,9 +13,8 @@ import frc.lib.util.flippable.FlippableRotation2d;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
-import static frc.robot.subsystems.swerve.SwerveConstants.*;
+import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_ROTATION_CONTROLLER;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
 import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
@@ -53,7 +51,7 @@ public class SwerveCommands {
                     },
                 () -> SWERVE.driveToPosePID(targetPose),
                 interrupt -> SWERVE.stop(),
-                () -> SWERVE.isAtPose(targetPose, 0.01, 0.3),
+                () -> SWERVE.isAtPose(targetPose, 0.03, 0.25),
                 SWERVE
         );
     }
@@ -78,6 +76,16 @@ public class SwerveCommands {
         return Commands.runOnce(() -> SWERVE.setGyroHeading(Rotation2d.fromDegrees(0)), SWERVE);
     }
 
+    public static Command driveWithTimeout(double x, double y, double rotation, boolean robotCentric, double timeout) {
+        return new FunctionalCommand(
+                () -> {},
+                () -> SWERVE.driveOpenLoop(x,y,rotation,robotCentric),
+                (interrupt) -> {},
+                () -> false,
+                SWERVE
+        ).withTimeout(timeout).andThen(stopDriving());
+    }
+
     public static Command driveOpenLoop(DoubleSupplier x, DoubleSupplier y, DoubleSupplier rotation, BooleanSupplier robotCentric) {
         return Commands.run(
                 () -> SWERVE.driveOpenLoop(x.getAsDouble(), y.getAsDouble(), rotation.getAsDouble(), robotCentric.getAsBoolean()),
@@ -99,40 +107,20 @@ public class SwerveCommands {
     }
 
     public static Command rotateToTarget(Pose2d target) {
+        return rotateToTarget(target.getRotation());
+    }
+
+    public static Command rotateToTarget(FlippableRotation2d rotationTarget) {
+        return rotateToTarget(rotationTarget.get());
+    }
+
+    public static Command rotateToTarget(Rotation2d rotationTarget) {
         return new FunctionalCommand(
                 () -> {
                     SWERVE.resetRotationController();
-                    SWERVE.setGoalRotationController(target.getRotation());
+                    SWERVE.setGoalRotationController(rotationTarget);
                 },
-                () -> SWERVE.driveWithTarget(0, 0, false),
-                interrupt -> {},
-                SWERVE_ROTATION_CONTROLLER::atGoal,
-                SWERVE
-        );
-    }
-
-    public static Command rotateToTarget(FlippableRotation2d rotationTraget) {
-        return new FunctionalCommand(
-                () -> {
-                    SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.reset(POSE_ESTIMATOR.getCurrentPose().getRotation().getDegrees());
-                    SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.setGoal(new TrapezoidProfile.State(rotationTraget.get().getDegrees(), 0));
-                },
-                () -> {
-                    SWERVE.rotateToTargetAccurate();
-                },
-                interrupt -> {},
-                SWERVE_ROTATIONAL_CONTROLLER_ACCURATE::atGoal,
-                SWERVE
-        );
-    }
-
-    public static Command rotateToTarget(Rotation2d rotationTraget) {
-        return new FunctionalCommand(
-                () -> {
-                    SWERVE.resetRotationController();
-                    SWERVE.setGoalRotationController(rotationTraget);
-                },
-                () -> SWERVE.driveWithTarget(0, 0, false),
+                SWERVE::rotateToTargetFromPresetGoal,
                 interrupt -> {},
                 SWERVE_ROTATION_CONTROLLER::atGoal,
                 SWERVE

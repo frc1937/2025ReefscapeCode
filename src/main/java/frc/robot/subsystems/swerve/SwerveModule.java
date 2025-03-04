@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -40,8 +41,7 @@ public class SwerveModule {
     }
 
     protected double getDriveWheelPositionRadians() {
-        return 2 * Math.PI * getDriveMotorInputs().threadSystemPosition[
-                getDriveMotorInputs().threadSystemPosition.length - 1];
+        return 2 * Math.PI * driveMotor.getSystemPosition();
     }
 
     protected void logForSysId(SysIdRoutineLog log) {
@@ -111,7 +111,7 @@ public class SwerveModule {
     }
 
     private Rotation2d getCurrentAngle() {
-        return Rotation2d.fromRotations(steerEncoder.getEncoderPosition());
+        return Rotation2d.fromRotations( MathUtil.inputModulus(steerEncoder.getEncoderPosition(),-180,180));
     }
 
     private EncoderInputs getSteerEncoderInputs() {

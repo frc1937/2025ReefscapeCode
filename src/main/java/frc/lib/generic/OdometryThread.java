@@ -2,6 +2,7 @@ package frc.lib.generic;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusCode;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import org.littletonrobotics.junction.AutoLog;
@@ -21,7 +22,7 @@ import static frc.robot.GlobalConstants.*;
  * <p>This version is intended for devices like the SparkMax that require polling rather than a
  * blocking thread. A Notifier thread is used to gather samples with consistent timing.
  */
-public class OdometryThread extends Thread {
+public class OdometryThread {
     private final List<Queue<Double>> queues = new ArrayList<>();
     private final Queue<Double> timestamps = new ArrayBlockingQueue<>(100);
 
@@ -41,13 +42,12 @@ public class OdometryThread extends Thread {
     private OdometryThread() {
         if (CURRENT_MODE == Mode.REPLAY) return;
 
-        setName("OdometryThread");
-        setDaemon(true);
+        Notifier notifier = new Notifier(this::periodic);
+        notifier.setName("OdometryThread");
 
         Timer.delay(5);
 
-        super.start();
-
+        notifier.startPeriodic(1.0 / ODOMETRY_FREQUENCY_HERTZ);
     }
 
     public Queue<Double> registerCTRESignal(BaseStatusSignal signal) {
@@ -62,13 +62,6 @@ public class OdometryThread extends Thread {
         }
 
         return queue;
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            periodic();
-        }
     }
 
     private void periodic() {

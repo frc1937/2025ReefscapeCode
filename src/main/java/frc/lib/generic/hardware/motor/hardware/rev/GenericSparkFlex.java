@@ -31,8 +31,6 @@ public class GenericSparkFlex extends GenericSparkBase {
 
     public GenericSparkFlex(String name, int deviceId) {
         super(name, deviceId);
-
-        timer.start();
     }
 
     @Override
@@ -65,6 +63,10 @@ public class GenericSparkFlex extends GenericSparkBase {
 
     @Override
     protected void refreshExtras() {
+        if (super.externalPositionSupplier == null) return;
+
+        if (!timer.isRunning()) timer.start();
+
         if (timer.advanceIfElapsed(4)) {
             encoder.setPosition(getEffectivePosition());
         }
