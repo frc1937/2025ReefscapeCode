@@ -31,7 +31,7 @@ public class SwerveConstants {
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),
             MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
-            WHEEL_DIAMETER = ROBOT_CONFIG.moduleConfig.wheelRadiusMeters * 2;
+            WHEEL_DIAMETER = 0.101;
 
     public static final double
             DRIVE_NEUTRAL_DEADBAND = 0.15,
@@ -43,22 +43,18 @@ public class SwerveConstants {
 
     private static final PIDConstants TRANSLATIONAL_PROFILES_CONSTANTS = IS_SIMULATION
             ? new PIDConstants(1.1, 0, 0)
-            : new PIDConstants(1.5958, 0, 0.007);
+            : new PIDConstants(1.6958, 0, 0.009);
 
     protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
     protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
 
     protected static final PID PID_TRANSLATION_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(1.45, 0, 0, 0);
+            : new PID(1.55, 0, 0, 0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(0.28, 0, 0, new TrapezoidProfile.Constraints(360, 360));
-
-    //Different rotational controller for long distances.
-    protected static final ProfiledPID SWERVE_ROTATIONAL_CONTROLLER_ACCURATE =
-            new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360));
+            : new ProfiledPID(0.2, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
