@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,38 +19,38 @@ import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 public class Leds extends SubsystemBase {
     public enum LEDMode {
         END_OF_MATCH(timeout -> getCommandFromColours(() -> generateLoadingAnimationBuffer(
-                new Color8Bit(Color.kYellow),
-                new Color8Bit(Color.kGold)
+                Color.kYellow,
+                Color.kGold
         ), timeout)),
 
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kLime)
+                Color.kLime
         ), timeout)),
 
         INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kGray)
+                Color.kGray
         ), timeout)),
 
-        AUTO_START(timeout -> getCommandFromColours(() -> generateCirclingBuffer(
-                new Color8Bit(Color.kWhite),
-                new Color8Bit(Color.kCyan)
+        AUTO_START(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Color[]{
+                Color.kWhite,
+                Color.kCyan}
         ), timeout)),
 
         DEBUG_MODE(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
-                new Color8Bit(57, 255, 20),
-                new Color8Bit(Color.kBlack)
+                new Color (57, 255, 20),
+                Color.kBlack
         ), timeout)),
 
         BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kRed)),
-                timeout)),
+                Color.kRed
+        ), timeout)),
 
-        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(new Color8Bit[]{
-                new Color8Bit(Color.kWhite),
-                new Color8Bit(Color.kRed),
-                new Color8Bit(Color.kGreen),
-                new Color8Bit(Color.kBlack)}),
-                0));
+        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(new Color[]{
+                Color.kGreen,
+                Color.kBlack,
+                Color.kWhite,
+                Color.kBlue}
+        ), 0));
 
         private final Function<Double, Command> ledCommandFunction;
 
@@ -87,21 +86,21 @@ public class Leds extends SubsystemBase {
     public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
         flashLEDStrip(
                 generatePositionIndicatorBuffer(
-                        new Color8Bit(Color.kRed),
-                        new Color8Bit(Color.kGreen),
+                        Color.kRed,
+                        Color.kGreen,
                         robotPosition,
                         targetPosition
                 ));
     }
 
-    private static Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
+    private static Command getCommandFromColours(Supplier<Color[]> colours, double timeout) {
         if (timeout == 0)
             return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).ignoringDisable(true);
 
         return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
     }
 
-    private static void flashLEDStrip(Color8Bit[] colours) {
+    private static void flashLEDStrip(Color[] colours) {
         ledstrip.setData(getBufferFromColors(buffer, colours));
     }
 }
