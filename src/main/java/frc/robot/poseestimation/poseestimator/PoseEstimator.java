@@ -10,6 +10,7 @@ import frc.robot.poseestimation.photoncamera.PhotonCameraIO;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -133,12 +134,13 @@ public class PoseEstimator implements AutoCloseable {
     }
 
     private void updateFromAprilTagCameras() {
+        final PhotonCameraIO[] newResultCameras = getCamerasWithResults();
+
         sort(aprilTagCameras, PhotonCameraIO::getLastResultTimestamp);
 
-        for (PhotonCameraIO aprilTagCamera : aprilTagCameras) {
-            if (!aprilTagCamera.hasNewResult()) return;
-
-            if (aprilTagCamera.getName() == "REAR_LEFT" || aprilTagCamera.getName() == "REAR_RIGHT" && IS_ALIGNING_REEF)
+        for (PhotonCameraIO aprilTagCamera : newResultCameras) {
+            if (aprilTagCamera.getName() == "Cameras/REAR_LEFT" ||
+                    aprilTagCamera.getName() == "Cameras/REAR_RIGHT" && IS_ALIGNING_REEF)
                 return;
 
             addVisionObservation(
@@ -147,6 +149,19 @@ public class PoseEstimator implements AutoCloseable {
                     aprilTagCamera.getStandardDeviations()
             );
         }
+    }
+
+    private PhotonCameraIO[] getCamerasWithResults() {
+        final PhotonCameraIO[] camerasWithNewResult = new PhotonCameraIO[aprilTagCameras.length];
+        int index = 0;
+
+        for (PhotonCameraIO aprilTagCamera : aprilTagCameras) {
+            if (!aprilTagCamera.hasNewResult()) continue;
+
+            camerasWithNewResult[index++] = aprilTagCamera;
+        }
+
+        return Arrays.copyOf(camerasWithNewResult, index);
     }
 
     private Pose2d getOdometryPoseAtTimestamp(double timestamp) {
