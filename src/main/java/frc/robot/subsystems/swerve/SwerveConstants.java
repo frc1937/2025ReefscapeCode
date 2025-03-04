@@ -87,9 +87,6 @@ public class SwerveConstants {
         SWERVE_ROTATION_CONTROLLER.enableContinuousInput(-180, 180);
         SWERVE_ROTATION_CONTROLLER.setTolerance(1);
 
-        SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.enableContinuousInput(-180, 180);
-        SWERVE_ROTATIONAL_CONTROLLER_ACCURATE.setTolerance(1);
-
         PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.08);
         PROFILED_STRAFE_CONTROLLER.setTolerance(0.08);
     }
