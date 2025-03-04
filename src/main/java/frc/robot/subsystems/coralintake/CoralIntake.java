@@ -14,11 +14,12 @@ public class CoralIntake extends GenericSubsystem {
     private int hasSeenCoralCounter = 0;
 
     public Command prepareGamePiece() {
-        return setMotorVoltage(2).until(this::hasCoral);
+        return setMotorVoltage(2.6).until(this::hasCoral);
     }
 
     public Command releaseGamePiece() {
-        return setMotorVoltage(2).until(() -> !hasCoral()).andThen(setMotorVoltage(3)).withTimeout(0.9);
+        return setMotorVoltage(2).until(() -> !hasCoral()).andThen(setMotorVoltage(3))
+                .withTimeout(0.9);
     }
 
     public Command rotateAlgaeBlasterEndEffector() {

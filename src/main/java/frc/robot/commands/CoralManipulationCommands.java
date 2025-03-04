@@ -104,6 +104,7 @@ public class CoralManipulationCommands {
     }
 
     private static Command releaseCoral() {
-        return CORAL_INTAKE.releaseGamePiece().alongWith(ELEVATOR.maintainPosition());
+        return CORAL_INTAKE.releaseGamePiece()
+                .raceWith(ELEVATOR.maintainPosition());
     }
 }

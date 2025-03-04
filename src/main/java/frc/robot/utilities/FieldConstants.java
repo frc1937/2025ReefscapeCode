@@ -42,11 +42,11 @@ public class FieldConstants {
     }
 
     public enum Feeder {
-        TOP_FEEDER(
+        BLUES_LEFT_REDS_RIGHT_FEEDER(
                 new Pose2d(0.851, 7.396, Rotation2d.fromDegrees(-54)),
                 new Pose2d(16.697, 7.396, Rotation2d.fromDegrees(-126))
         ),
-        BOTTOM_FEEDER(
+        BLUES_RIGHT_REDS_LEFT_FEEDER(
                 new Pose2d(0.851, 0.63605, Rotation2d.fromDegrees(54)),
                 new Pose2d(16.697, 0.63605, Rotation2d.fromDegrees(126))
         );
@@ -69,8 +69,8 @@ public class FieldConstants {
     }
 
     private static final Transform2d
-            ROBOT_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.4, 0), Rotation2d.fromDegrees(270)),
-            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.5, 0), Rotation2d.fromDegrees(180));
+            ROBOT_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.45, 0), Rotation2d.fromDegrees(270)),
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.45, 0), Rotation2d.fromDegrees(180));
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.084), Rotation2d.kZero),

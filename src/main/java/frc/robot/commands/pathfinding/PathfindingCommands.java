@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.swerve.SwerveCommands;
 
 import java.util.Set;
@@ -22,9 +21,10 @@ public class PathfindingCommands {
         return new DeferredCommand(
                 () -> {
                     IS_ALIGNING_REEF = true;
-                    return SwerveCommands
-                            .goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
-                            .andThen(SwerveCommands.goToPosePID(branch.getBranchPose()))
+//                    return SwerveCommands.goToPoseBezier(branch.getBranchPose())
+//                    return SwerveCommands.goToPosePID(branch.getBranchPose())
+                    return SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
+                            .andThen(SwerveCommands.driveWithTimeout(0.07,0,0,true,0.2))
                             .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
                 },
 
@@ -39,9 +39,17 @@ public class PathfindingCommands {
             final Pose2d targetPose = branch.getBranchPose(face);
 
             return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05))
+                    .andThen(SwerveCommands.driveWithTimeout(0.1,0,0,true,0.2))
                     .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
+        }, Set.of(SWERVE));
+    }
+
+    public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
+        return new DeferredCommand(() -> {
+            final Pose2d targetPose = feeder.getPose();
+
+            return SwerveCommands.goToPoseBezier(targetPose)
+                    .andThen(SwerveCommands.driveWithTimeout(0,-0.1,0,true,0.2));
         }, Set.of(SWERVE));
     }
 
@@ -64,16 +72,6 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    public static DeferredCommand pathfindToFeederBezier(Feeder feeder) {
-        return new DeferredCommand(() -> {
-            final Pose2d targetPose = feeder.getPose();
-
-            return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(new WaitCommand(0.05));
-        }, Set.of(SWERVE));
-    }
-
     protected static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
@@ -90,10 +88,10 @@ public class PathfindingCommands {
     }
 
     private static Pose2d decideFeederPose() {
-        Pose2d originalPose = Feeder.TOP_FEEDER.getPose();
+        Pose2d originalPose = Feeder.BLUES_LEFT_REDS_RIGHT_FEEDER.getPose();
 
         if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 < 0)
-            originalPose = Feeder.BOTTOM_FEEDER.getPose();
+            originalPose = Feeder.BLUES_RIGHT_REDS_LEFT_FEEDER.getPose();
 
         return originalPose;
     }
