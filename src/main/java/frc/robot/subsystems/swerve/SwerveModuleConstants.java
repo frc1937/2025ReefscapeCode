@@ -40,8 +40,8 @@ public class SwerveModuleConstants {
     static final int DRIVE_STATOR_CURRENT_LIMIT = 55;
 
     static final MotorProperties.Slot DRIVE_SLOT = new MotorProperties.Slot(
-            0.45259, 0.0, 0.0,
-            0.77349,
+            0.55259, 0.0, 0.0,
+            0.77849,
             0.08223,
             0.036002);
 
@@ -63,7 +63,6 @@ public class SwerveModuleConstants {
             RL_STEER_ENCODER = EncoderFactory.createCanCoder("RL_STEER_ENCODER", RL_STEER_ENCODER_PORT),
             RR_STEER_ENCODER = EncoderFactory.createCanCoder("RR_STEER_ENCODER", RR_STEER_ENCODER_PORT);
 
-//    static final double[] STEER_ENCODER_OFFSET = {0.524414, 0.432617, 0.026611, 0.815186};
     static final double[] STEER_ENCODER_OFFSET = {0.024414, 0.932617, 0.526611, 0.315186};
 
     static final Encoder[] STEER_ENCODERS = {FL_STEER_ENCODER, FR_STEER_ENCODER, RL_STEER_ENCODER, RR_STEER_ENCODER};
