@@ -31,7 +31,7 @@ public abstract class GenericSparkBase extends Motor {
 
     private final boolean[] signalsToLog = new boolean[MOTOR_INPUTS_LENGTH];
 
-    private DoubleSupplier externalPositionSupplier, externalVelocitySupplier;
+    protected DoubleSupplier externalPositionSupplier, externalVelocitySupplier;
     private Feedforward feedforward;
 
     private double previousVelocity = 0;
