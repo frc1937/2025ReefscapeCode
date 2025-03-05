@@ -48,13 +48,16 @@ public class SwerveConstants {
     protected static final ProfiledPID PROFILED_TRANSLATION_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
     protected static final ProfiledPID PROFILED_STRAFE_CONTROLLER = new ProfiledPID(TRANSLATIONAL_PROFILES_CONSTANTS, 0, TRANSLATIONAL_PROFILES_CONSTRAINTS);
 
-    protected static final PID PID_TRANSLATION_CONTROLLER = IS_SIMULATION
+    protected static final PID PID_TRANSLATION_X_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(1.55, 0, 0, 0);
+            : new PID(1.1,0,0);
+    protected static final PID PID_TRANSLATION_Y_CONTROLLER = IS_SIMULATION
+            ? new PID(1.2, 0, 0, 0.001)
+            : new PID(1.13,0.013,0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(0.2, 0, 0.0005, new TrapezoidProfile.Constraints(360, 360));
+            : new ProfiledPID(0.21, 0, 0/*0.0005*/, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 
@@ -85,5 +88,8 @@ public class SwerveConstants {
 
         PROFILED_TRANSLATION_CONTROLLER.setTolerance(0.08);
         PROFILED_STRAFE_CONTROLLER.setTolerance(0.08);
+
+        PID_TRANSLATION_Y_CONTROLLER.setTolerance(0.03);
+        PID_TRANSLATION_X_CONTROLLER.setTolerance(0.03);
     }
 }

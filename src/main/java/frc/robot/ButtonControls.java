@@ -19,6 +19,7 @@ import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
+import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -28,7 +29,7 @@ import java.util.function.DoubleSupplier;
 import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_X;
 import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.commands.CoralManipulationCommands.SHOULD_BLAST_ALGAE;
+import static frc.robot.commands.CoralManipulationCommands.*;
 import static frc.robot.subsystems.swerve.SwerveCommands.rotateToTarget;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
@@ -44,9 +45,9 @@ public class ButtonControls {
         CHARACTERIZE_SWERVE_DRIVE_MOTORS,
         CHARACTERIZE_WHEEL_RADIUS,
         CHARACTERIZE_ALGAE_BLASTER_ARM,
-        CHARACTERIZE_ALGAE_INTAKE_ARM,
         CHARACTERIZE_SWERVE_AZIMUTH,
-        PATHPLANNER_TEST
+        PATHPLANNER_TEST,
+        CLIMB_CHARACTERIZATION
     }
 
     private static final Controller DRIVER_CONTROLLER = new Controller(0);
@@ -59,6 +60,7 @@ public class ButtonControls {
 
         switch (layout) {
             case TELEOP -> configureButtonsTeleop();
+            case CLIMB_CHARACTERIZATION -> configureClimbCharacterization();
             case ELEVATOR_KS -> characterizeElevatorKSandKG();
             case DEVELOPMENT -> configureButtonsDevelopment();
             case ALGAE_BLASTER_KS -> configureAlgaeBlasterKs();
@@ -70,9 +72,15 @@ public class ButtonControls {
                 setupSysIdCharacterization(SWERVE);
             }
             case CHARACTERIZE_ALGAE_BLASTER_ARM -> setupSysIdCharacterization(ALGAE_BLASTER);
-            case CHARACTERIZE_ALGAE_INTAKE_ARM -> setupSysIdCharacterization(ALGAE_INTAKE);
             case CHARACTERIZE_SWERVE_AZIMUTH -> setupAzimuthCharacterization();
         }
+    }
+
+    private static void configureClimbCharacterization() {
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(CLIMB.runVoltage(-4));
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(CLIMB.runVoltage(4));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.setClimbState(ClimbConstants.ClimbState.INITIAL_STATE));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.setClimbState(ClimbConstants.ClimbState.READY_CLIMB));
     }
 
     private static void calibratePathPlanner() {
@@ -105,20 +113,23 @@ public class ButtonControls {
         setupDriving();
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.RIGHT).whileTrue(
-                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L1)
-        );
+                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L1).andThen(
+                        ELEVATOR.maintainPosition()
+                ));
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(
-                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2)
-        );
-
+                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2).andThen(
+                        ELEVATOR.maintainPosition()
+                ));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(
-                CoralManipulationCommands.scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L3)
-        );
+                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L3).andThen(
+                        ELEVATOR.maintainPosition()
+                ));
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(
-                CoralManipulationCommands.eatFromFeeder()
-        );
+                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER).andThen(
+                        ELEVATOR.maintainPosition()
+                ));
     }
 
     private static void configureButtonsDevelopment() {
@@ -135,11 +146,11 @@ public class ButtonControls {
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
-        leftBumper.and(rightBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.LEFT_BRANCH));
-        rightBumper.and(leftBumper.negate()).whileTrue(CoralManipulationCommands.pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.RIGHT_BRANCH));
+        leftBumper.and(rightBumper.negate()).whileTrue(pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.LEFT_BRANCH));
+        rightBumper.and(leftBumper.negate()).whileTrue(pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.RIGHT_BRANCH));
 
-        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(CoralManipulationCommands.eatFromFeeder());
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(CoralManipulationCommands.scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue((ELEVATOR.runElevatorDownwards()));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ELEVATOR.runElevatorUpwards());
@@ -212,7 +223,6 @@ public class ButtonControls {
         ELEVATOR.setIdleMode(idleMode);
         CORAL_INTAKE.setIdleMode(idleMode);
         ALGAE_BLASTER.setIdleMode(idleMode);
-        ALGAE_INTAKE.setIdleMode(idleMode);
     }
 
     private static void setupAzimuthCharacterization() {

@@ -51,7 +51,7 @@ public class SwerveCommands {
                     },
                 () -> SWERVE.driveToPosePID(targetPose),
                 interrupt -> SWERVE.stop(),
-                () -> SWERVE.isAtPose(targetPose, 0.03, 0.25),
+                () -> SWERVE.isAtPose(targetPose, 0.04, 0.25),
                 SWERVE
         );
     }
