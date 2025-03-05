@@ -8,6 +8,7 @@ import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.autocommands.Questionnaire;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
+import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.coralintake.CoralIntake;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.leds.Leds;
@@ -28,6 +29,7 @@ public class RobotContainer {
     public static final Elevator ELEVATOR = new Elevator();
     public static final CoralIntake CORAL_INTAKE = new CoralIntake();
     public static final AlgaeBlaster ALGAE_BLASTER = new AlgaeBlaster();
+    public static final Climb CLIMB = new Climb();
     public static final Leds LEDS = new Leds();
     public static final Questionnaire QUESTIONNAIRE = new Questionnaire();
 

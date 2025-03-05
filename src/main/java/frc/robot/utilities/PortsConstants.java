@@ -40,7 +40,10 @@ public class PortsConstants {
     public static class ElevatorPorts {
         public static final int
                 MASTER_MOTOR_PORT = 28,
-                SLAVE_MOTOR_PORT = 15,
-                TOP_BEAM_BREAK_DIO_PORT = 15;
+                SLAVE_MOTOR_PORT = 15;
+    }
+
+    public static class ClimbPorts {
+        public static final int CLIMB_MOTOR_PORT = 7;
     }
 }
