@@ -69,8 +69,8 @@ public class FieldConstants {
     }
 
     private static final Transform2d
-            ROBOT_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.45, 0), Rotation2d.fromDegrees(270)),
-            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.45, 0), Rotation2d.fromDegrees(180));
+            ROBOT_FEEDER_TRANSFORM = new Transform2d(new Translation2d(0.48, 0), Rotation2d.fromDegrees(270)),
+            ROBOT_REEF_TRANSFORM = new Transform2d(new Translation2d(0.48, 0), Rotation2d.fromDegrees(180));
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.084), Rotation2d.kZero),
