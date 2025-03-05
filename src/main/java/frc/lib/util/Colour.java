@@ -67,11 +67,7 @@ public class Colour {
         return new Color8Bit(red, green, blue);
     }
 
-    public Colour getGRB(Colour colour) {
-        return new Colour(green, red, blue);
-    }
-
     public Colour toGRB() {
-        return new Colour(getGreen(), getRed(), getBlue());
+        return new Colour(green, red, blue);
     }
 }
