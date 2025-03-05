@@ -21,10 +21,8 @@ public class PathfindingCommands {
         return new DeferredCommand(
                 () -> {
                     IS_ALIGNING_REEF = true;
-//                    return SwerveCommands.goToPoseBezier(branch.getBranchPose())
-//                    return SwerveCommands.goToPosePID(branch.getBranchPose())
-                    return SwerveCommands.goToPoseTrapezoidal(branch.getBranchPose(), 0.01, 0.2)
-                            .andThen(SwerveCommands.driveWithTimeout(0.07,0,0,true,0.2))
+
+                    return SwerveCommands.goToPosePID(branch.getBranchPose())
                             .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
                 },
 

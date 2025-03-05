@@ -147,16 +147,12 @@ public class Swerve extends GenericSubsystem {
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
         driveFieldRelative(
-                PID_TRANSLATION_CONTROLLER.calculate(
+                PID_TRANSLATION_X_CONTROLLER.calculate(
                         currentPose.getX(),
-                        target.getX()
-                ),
-
-                PID_TRANSLATION_CONTROLLER.calculate(
+                        target.getX()),
+                PID_TRANSLATION_Y_CONTROLLER.calculate(
                         currentPose.getY(),
-                        target.getY()
-                ),
-
+                        target.getY()),
                 SWERVE_ROTATION_CONTROLLER.calculate(currentPose.getRotation().getDegrees()),
                 true
         );
