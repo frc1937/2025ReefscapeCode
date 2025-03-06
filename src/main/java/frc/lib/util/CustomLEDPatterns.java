@@ -21,8 +21,8 @@ public class CustomLEDPatterns {
     private static int rainbowFirstPixel;
     private static int scrollingFirstPixel;
 
-    private static boolean hasBeenCalledScrolling = false;
-    private static boolean hasBeenCalledRainbow = false;
+    private static boolean wasScrollInitialized = false;
+    private static boolean wasRainbowInitialized = false;
 
     static {
         timer.start();
@@ -122,7 +122,7 @@ public class CustomLEDPatterns {
      * @return The filled buffer.
      */
     public static Colour[] generateRainbowBuffer() {
-        if (!hasBeenCalledRainbow) {
+        if (!wasRainbowInitialized) {
             final Colour[] colours = new Colour[]{Colour.RED, Colour.ORANGE, Colour.YELLOW, Colour.GREEN, Colour.BLUE, Colour.INDIGO, Colour.VIOLET};
 
             for (int i = 0; i < LEDS_COUNT; i++) {
@@ -137,7 +137,7 @@ public class CustomLEDPatterns {
             }
 
             buffer = rainbowBuffer.clone();
-            hasBeenCalledRainbow = true;
+            wasRainbowInitialized = true;
         } else {
             for (int i = 0; i < LEDS_COUNT; i++) {
                 buffer[i] = rainbowBuffer[(i + rainbowFirstPixel) % LEDS_COUNT];
@@ -150,7 +150,7 @@ public class CustomLEDPatterns {
     }
 
     public static Colour[] generateScrollBuffer(Colour[] colours) {
-        if (!hasBeenCalledScrolling) {
+        if (!wasScrollInitialized) {
             final int totalColours = colours.length;
 
             for (int i = 0; i < LEDS_COUNT; i++) {
@@ -165,7 +165,7 @@ public class CustomLEDPatterns {
             }
 
             buffer = scrollingBuffer.clone();
-            hasBeenCalledScrolling = true;
+            wasScrollInitialized = true;
         } else {
             for (int i = 0; i < LEDS_COUNT; i++) {
                 buffer[i] = scrollingBuffer[(i + scrollingFirstPixel) % LEDS_COUNT];

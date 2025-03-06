@@ -5,35 +5,33 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 
 public class Colour {
     public static final Colour
-            RED = new Colour(Color.kRed),
-            GREEN = new Colour(Color.kGreen),
-            BLUE = new Colour(Color.kBlue),
-            BLACK = new Colour(Color.kBlack),
-            WHITE = new Colour(Color.kWhite),
-            GRAY = new Colour(Color.kGray),
-            LIGHT_BLUE = new Colour(Color.kLightBlue),
-            CYAN = new Colour(Color.kCyan),
-            DARK_RED = new Colour(Color.kDarkRed),
-            DARK_GREEN = new Colour(Color.kDarkGreen),
-            DARK_BLUE = new Colour(Color.kDarkBlue),
-            ORANGE = new Colour(Color.kOrange),
-            YELLOW = new Colour(Color.kGold),
-            PINK = new Colour(Color.kPink),
-            PURPLE = new Colour(Color.kPurple),
-            BROWN = new Colour(Color.kBrown),
-            LIME = new Colour(Color.kLime),
-            MAGENTA = new Colour(Color.kMagenta),
-            SILVER = new Colour(Color.kSilver),
-            GOLD = new Colour(Color.kGold),
-            INDIGO = new Colour(Color.kIndigo),
-            CORNFLOWER_BLUE = new Colour(Color.kCornflowerBlue),
-            ROYAL_BLUE = new Colour(Color.kRoyalBlue),
-            MEDIUM_BLUE = new Colour(Color.kMediumBlue),
-            VIOLET = new Colour(Color.kViolet);
+            RED = new Colour(255, 0, 0),
+            GREEN = new Colour(0, 255, 0),
+            BLUE = new Colour(0, 0, 255),
+            BLACK = new Colour(0, 0, 0),
+            WHITE = new Colour(255, 255, 255),
+            GRAY = new Colour(128, 128, 128),
+            LIGHT_BLUE = new Colour(173, 216, 230),
+            CYAN = new Colour(0, 255, 255),
+            DARK_RED = new Colour(139, 0, 0),
+            DARK_GREEN = new Colour(0, 100, 0),
+            DARK_BLUE = new Colour(0, 0, 139),
+            ORANGE = new Colour(255, 165, 0),
+            YELLOW = new Colour(255, 255, 0),
+            PINK = new Colour(255, 192, 203),
+            PURPLE = new Colour(128, 0, 128),
+            BROWN = new Colour(165, 42, 42),
+            LIME = new Colour(0, 255, 0),
+            MAGENTA = new Colour(255, 0, 255),
+            SILVER = new Colour(192, 192, 192),
+            GOLD = new Colour(255, 215, 0),
+            INDIGO = new Colour(75, 0, 130),
+            CORNFLOWER_BLUE = new Colour(100, 149, 237),
+            ROYAL_BLUE = new Colour(65, 105, 225),
+            MEDIUM_BLUE = new Colour(0, 0, 205),
+            VIOLET = new Colour(238, 130, 238);
 
-    private final int red;
-    private final int green;
-    private final int blue;
+    private final int red, green, blue;
 
     public Colour(int red, int green, int blue) {
         this.red = red;
