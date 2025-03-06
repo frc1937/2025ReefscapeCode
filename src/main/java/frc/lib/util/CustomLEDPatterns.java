@@ -2,7 +2,6 @@ package frc.lib.util;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.Timer;
 
 import java.util.Arrays;
 
@@ -10,23 +9,25 @@ public class CustomLEDPatterns {
     public static final int LEDS_COUNT = 69;
     private static final double MAX_GREEN_RANGE_METERS = 2;
 
-    private static final Timer timer = new Timer();
-
     private static Colour[] buffer = new Colour[LEDS_COUNT];
-    private static final Colour[] scrollingBuffer = buffer.clone();
-    private static final Colour[] rainbowBuffer = buffer.clone();
+    private static final Colour[]
+            scrollingBuffer = buffer.clone(),
+            rainbowBuffer = buffer.clone();
 
-    private static int counter;
-    private static int previousColour = 0;
-    private static int rainbowFirstPixel;
-    private static int scrollingFirstPixel;
+    private static double
+            flashingCounter,
+            loadingCounter,
+            breathingCounter,
+            outwardPointsCounter;
 
-    private static boolean wasScrollInitialized = false;
-    private static boolean wasRainbowInitialized = false;
+    private static int
+            previousColour = 0,
+            rainbowFirstPixel,
+            scrollingFirstPixel;
 
-    static {
-        timer.start();
-    }
+    private static boolean
+            wasScrollInitialized = false,
+            wasRainbowInitialized = false;
 
     public static Colour[] reduceBrightness(Colour[] colours, int brightnessPercentage) {
         final double brightnessFactor = brightnessPercentage / 100.0;
@@ -185,12 +186,14 @@ public class CustomLEDPatterns {
      * @return The filled buffer.
      */
     public static Colour[] generateFlashingBuffer(Colour... colours) {
-        if (previousColour++ >= colours.length) return buffer;
+        if (colours.length == 0) return buffer;
 
-        if (counter % 25 == 0) buffer = generateSingleColourBuffer(colours[previousColour++]);
+        if (flashingCounter % 25 == 0) {
+            buffer = generateSingleColourBuffer(colours[previousColour]);
+            previousColour = (previousColour + 1) % colours.length;
+        }
 
-        previousColour %= colours.length;
-        counter++;
+        flashingCounter++;
 
         return buffer;
     }
@@ -207,8 +210,7 @@ public class CustomLEDPatterns {
         buffer = generateSingleColourBuffer(Colour.BLACK);
 
         final int midPoint = LEDS_COUNT / 2;
-        final double time = timer.get() * 5;
-        final int progress = (int) time % (LEDS_COUNT / 2);
+        final int progress = (int) (loadingCounter % (LEDS_COUNT / 2.0));
 
         for (int i = midPoint - progress; i <= midPoint; i++) {
             if (i >= 0) buffer[i] = colour1;
@@ -217,6 +219,8 @@ public class CustomLEDPatterns {
         for (int i = midPoint + progress; i >= midPoint; i--) {
             if (i < LEDS_COUNT) buffer[i] = colour2;
         }
+
+        loadingCounter += 0.5;
 
         return buffer;
     }
@@ -229,8 +233,8 @@ public class CustomLEDPatterns {
      * @return The filled buffer.
      */
     public static Colour[] generateBreathingBuffer(Colour firstColour, Colour secondColour) {
-        final double x = timer.get();
-        return generateSingleColourBuffer(interpolateColours(firstColour, secondColour, cosInterpolate(x)));
+        breathingCounter += 0.02;
+        return generateSingleColourBuffer(interpolateColours(firstColour, secondColour, cosInterpolate(breathingCounter)));
     }
 
     /**
@@ -245,9 +249,7 @@ public class CustomLEDPatterns {
 
         final int quarter = LEDS_COUNT / 4;
 
-        final double time = timer.get();
-
-        final int x = time == (int) time ? ((int) (time) % 11) : ((int) (time * 32 % 11));
+        final int x = (int) (outwardPointsCounter % 11);
 
         for (int i = quarter - 1 - x; i < quarter + 1 + x; i++) {
             buffer[i] = new Colour(colour.red, colour.green, colour.blue);
@@ -256,6 +258,8 @@ public class CustomLEDPatterns {
         for (int i = quarter * 3 - x; i < 2 + quarter * 3 + x; i++) {
             buffer[i] = new Colour(colour.red, colour.green, colour.blue);
         }
+
+        outwardPointsCounter += 0.25;
 
         return buffer;
     }

@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Colour;
-import frc.lib.util.CustomLEDPatterns;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -45,7 +44,7 @@ public class Leds extends SubsystemBase {
                 Colour.RED.toGRB()
         ), timeout)),
 
-        DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(new Colour[]{
+        DEFAULT(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Colour[]{
                 Colour.SKY_BLUE.toGRB(),
                 Colour.NAVY_BLUE.toGRB(),
                 Colour.BLUE.toGRB(),
