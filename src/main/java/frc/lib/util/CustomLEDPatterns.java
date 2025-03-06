@@ -36,9 +36,9 @@ public class CustomLEDPatterns {
         for (int i = 0; i < colours.length; i++) {
             final Colour originalColour = colours[i];
 
-            int newRed = (int) (originalColour.getRed() * brightnessFactor);
-            int newGreen = (int) (originalColour.getGreen() * brightnessFactor);
-            int newBlue = (int) (originalColour.getBlue() * brightnessFactor);
+            int newRed = (int) (originalColour.red * brightnessFactor);
+            int newGreen = (int) (originalColour.green * brightnessFactor);
+            int newBlue = (int) (originalColour.blue * brightnessFactor);
 
             newRed = Math.min(255, Math.max(0, newRed));
             newGreen = Math.min(255, Math.max(0, newGreen));
@@ -250,11 +250,11 @@ public class CustomLEDPatterns {
         final int x = time == (int) time ? ((int) (time) % 11) : ((int) (time * 32 % 11));
 
         for (int i = quarter - 1 - x; i < quarter + 1 + x; i++) {
-            buffer[i] = new Colour(colour.getRed(), colour.getGreen(), colour.getBlue());
+            buffer[i] = new Colour(colour.red, colour.green, colour.blue);
         }
 
         for (int i = quarter * 3 - x; i < 2 + quarter * 3 + x; i++) {
-            buffer[i] = new Colour(colour.getRed(), colour.getGreen(), colour.getBlue());
+            buffer[i] = new Colour(colour.red, colour.green, colour.blue);
         }
 
         return buffer;
@@ -269,9 +269,9 @@ public class CustomLEDPatterns {
     }
 
     public static Colour interpolateColours(Colour startColour, Colour endColour, double colourWeight) {
-        final int red = (int) (endColour.getRed() * (1 - colourWeight) + startColour.getRed() * colourWeight);
-        final int green = (int) (endColour.getGreen() * (1 - colourWeight) + startColour.getGreen() * colourWeight);
-        final int blue = (int) (endColour.getBlue() * (1 - colourWeight) + startColour.getBlue() * colourWeight);
+        final int red = (int) (endColour.red * (1 - colourWeight) + startColour.red * colourWeight);
+        final int green = (int) (endColour.green * (1 - colourWeight) + startColour.green * colourWeight);
+        final int blue = (int) (endColour.blue * (1 - colourWeight) + startColour.blue * colourWeight);
 
         return new Colour(red, green, blue);
     }
