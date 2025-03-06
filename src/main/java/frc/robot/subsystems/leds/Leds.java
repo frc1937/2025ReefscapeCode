@@ -46,14 +46,16 @@ public class Leds extends SubsystemBase {
         ), timeout)),
 
         DEFAULT(timeout -> getCommandFromColours(() -> CustomLEDPatterns.generateScrollBuffer(new Colour[]{
-                Colour.GREEN.toGRB(),
-                Colour.BLACK.toGRB(),
-                Colour.WHITE.toGRB(),
-                Colour.RED.toGRB(),
-                Colour.GREEN.toGRB(),
-                Colour.BLACK.toGRB(),
-                Colour.WHITE.toGRB(),
-                Colour.RED.toGRB()}
+                Colour.SKY_BLUE,
+                Colour.NAVY_BLUE,
+                Colour.BLUE,
+                Colour.CORNFLOWER_BLUE,
+                Colour.BLUE,
+                Colour.LIGHT_BLUE,
+                Colour.ROYAL_BLUE,
+                Colour.BLUE,
+                Colour.DARK_BLUE,
+                Colour.WHITE}
         ), 0));
 
         private final Function<Double, Command> ledCommandFunction;

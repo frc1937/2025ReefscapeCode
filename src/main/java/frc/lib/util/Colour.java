@@ -29,9 +29,12 @@ public class Colour {
             CORNFLOWER_BLUE = new Colour(100, 149, 237),
             ROYAL_BLUE = new Colour(65, 105, 225),
             MEDIUM_BLUE = new Colour(0, 0, 205),
-            VIOLET = new Colour(238, 130, 238);
+            VIOLET = new Colour(238, 130, 238),
+            NAVY_BLUE = new Colour(0, 0, 128),
+            SKY_BLUE = new Colour(135, 206, 235),
+            AQUA = new Colour(0, 255, 255);
 
-    private final int red, green, blue;
+    public final int red, green, blue;
 
     public Colour(int red, int green, int blue) {
         this.red = red;
@@ -43,18 +46,6 @@ public class Colour {
         this.red = (int) (255 * colour.red);
         this.green = (int) (255 * colour.green);
         this.blue = (int) (255 * colour.blue);
-    }
-
-    public int getRed() {
-        return red;
-    }
-
-    public int getGreen() {
-        return green;
-    }
-
-    public int getBlue() {
-        return blue;
     }
 
     public Color getColor() {
