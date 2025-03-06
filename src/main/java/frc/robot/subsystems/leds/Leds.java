@@ -3,12 +3,10 @@ package frc.robot.subsystems.leds;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.util.CustomLEDPatterns;
+import frc.lib.util.Colour;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -19,29 +17,45 @@ import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
     public enum LEDMode {
-        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kBlue)
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateLoadingAnimationBuffer(
+                Colour.YELLOW.toGRB(),
+                Colour.GOLD.toGRB()
         ), timeout)),
 
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(0,200,0)
+                Colour.LIME.toGRB()
         ), timeout)),
 
         INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kCyan)
+                Colour.GRAY.toGRB()
         ), timeout)),
 
-        AUTO_START(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                new Color8Bit(Color.kOrangeRed)
+        AUTO_START(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Colour[]{
+                Colour.WHITE.toGRB(),
+                Colour.CYAN.toGRB()}
         ), timeout)),
 
         DEBUG_MODE(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
-                new Color8Bit(Color.kCyan),
-                new Color8Bit(Color.kWhite)
+                new Colour(57, 255, 20),
+                Colour.BLACK.toGRB()
         ), timeout)),
 
-        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(new Color8Bit(Color.kRed)), timeout)),
-        DEFAULT(timeout -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, 0));
+        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                Colour.RED.toGRB()
+        ), timeout)),
+
+        DEFAULT(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Colour[]{
+                Colour.SKY_BLUE.toGRB(),
+                Colour.NAVY_BLUE.toGRB(),
+                Colour.BLUE.toGRB(),
+                Colour.CORNFLOWER_BLUE.toGRB(),
+                Colour.BLUE.toGRB(),
+                Colour.LIGHT_BLUE.toGRB(),
+                Colour.ROYAL_BLUE.toGRB(),
+                Colour.BLUE.toGRB(),
+                Colour.DARK_BLUE.toGRB(),
+                Colour.WHITE.toGRB()}
+        ), 0));
 
         private final Function<Double, Command> ledCommandFunction;
 
@@ -77,21 +91,21 @@ public class Leds extends SubsystemBase {
     public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
         flashLEDStrip(
                 generatePositionIndicatorBuffer(
-                        new Color8Bit(Color.kRed),
-                        new Color8Bit(Color.kGreen),
+                        Colour.RED,
+                        Colour.GOLD,
                         robotPosition,
                         targetPosition
                 ));
     }
 
-    private static Command getCommandFromColours(Supplier<Color8Bit[]> colours, double timeout) {
+    private static Command getCommandFromColours(Supplier<Colour[]> colours, double timeout) {
         if (timeout == 0)
             return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).ignoringDisable(true);
 
         return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
     }
 
-    private static void flashLEDStrip(Color8Bit[] colours) {
-        ledstrip.setData(getBufferFromColors(buffer, colours));
+    private static void flashLEDStrip(Colour[] colours) {
+        ledstrip.setData(getBufferFromColours(buffer, colours));
     }
 }
