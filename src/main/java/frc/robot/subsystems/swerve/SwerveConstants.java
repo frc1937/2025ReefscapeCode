@@ -18,7 +18,8 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 import static frc.robot.utilities.PortsConstants.SwervePorts.GYRO_PORT;
 
 public class SwerveConstants {
-    public static final SwerveDriveKinematics SWERVE_KINEMATICS = new SwerveDriveKinematics(ROBOT_CONFIG.moduleLocations);
+    public static final SwerveDriveKinematics SWERVE_KINEMATICS
+            = new SwerveDriveKinematics(ROBOT_CONFIG.moduleLocations); //TODO: RETUNE! IT's from CENTER to CANCODER AXIS
     public static final double MAX_SPEED_MPS = 5;
 
     protected static final SysIdRoutine.Config SYSID_DRIVE_CONFIG = new SysIdRoutine.Config(
@@ -31,7 +32,7 @@ public class SwerveConstants {
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),
             MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
-            WHEEL_DIAMETER = 0.101;
+            WHEEL_DIAMETER = 0.102;
 
     public static final double
             DRIVE_NEUTRAL_DEADBAND = 0.15,
