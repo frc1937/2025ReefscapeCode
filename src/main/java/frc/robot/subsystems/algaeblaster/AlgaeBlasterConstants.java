@@ -16,7 +16,7 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_BLASTER_MOTOR_
 public class AlgaeBlasterConstants {
     public enum BlasterArmState {
         HORIZONTAL_IN(0),
-        VERTICAL(0.58),
+        VERTICAL(0.51),
         HORIZONTAL_OUT(0.98);
 
         private final double rotation;

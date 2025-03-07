@@ -46,7 +46,8 @@ public class CoralManipulationCommands {
                 .until(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
                 .alongWith(CORAL_INTAKE.prepareGamePiece()))
                 .alongWith(ALGAE_BLASTER.holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
-                .until(CORAL_INTAKE::hasCoral);
+                .until(CORAL_INTAKE::hasCoral)
+                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop() {
