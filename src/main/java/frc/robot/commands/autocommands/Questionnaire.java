@@ -14,10 +14,11 @@ import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import static frc.robot.RobotContainer.CORAL_INTAKE;
+import static frc.robot.RobotContainer.*;
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
 import static frc.robot.commands.CoralManipulationCommands.pathfindToFeederAndEat;
 import static frc.robot.commands.CoralManipulationCommands.scoreCoralFromHeight;
+import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.*;
 
 public class Questionnaire {
     private final LoggedDashboardChooser<String> PRESET_QUESTION;
@@ -81,20 +82,19 @@ public class Questionnaire {
 
         question.addDefaultOption("None", emptyCommand);
         question.addOption("Yes", blastAlgaeOffReef());
-        question.addOption("No", emptyCommand);
 
         emptyCommand.schedule();
 
         return question;
     }
 
-    private LoggedDashboardChooser<Command> createScoringQuestion(String cycleNumber) {
-        final LoggedDashboardChooser<Command> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
+    private LoggedDashboardChooser<ElevatorConstants.ElevatorHeight> createScoringQuestion(String cycleNumber) {
+        final LoggedDashboardChooser<ElevatorConstants.ElevatorHeight> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
 
-        question.addDefaultOption("None", Commands.none());
-        question.addOption("L1", scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L1));
-        question.addOption("L2", scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L2));
-        question.addOption("L3", scoreCoralFromHeight(ElevatorConstants.ElevatorHeight.L3));
+        question.addDefaultOption("None", L1);
+        question.addOption("L1", L1);
+        question.addOption("L2", L2);
+        question.addOption("L3", L3);
 
         return question;
     }
@@ -112,8 +112,9 @@ public class Questionnaire {
     private Command createCycleSequence(Cycle cycle) {
         final ReefFace selectedReefFace = cycle.reefFaceQuestion.get();
         final Branch selectedBranch = cycle.branchQuestion.get();
+        final ElevatorConstants.ElevatorHeight scoringHeight = cycle.scoringHeightQuestion.get();
 
-        final Command goToBranch = selectedBranch == null || selectedReefFace == null
+        final Command goToBranch = (selectedBranch == null || selectedReefFace == null)
                 ? Commands.none()
                 : PathfindingCommands.pathfindToBranchBezier(selectedBranch, selectedReefFace);
 
@@ -121,9 +122,22 @@ public class Questionnaire {
                 ? Commands.none()
                 : AlgaeManipulationCommands.blastAlgaeOffReefWithElevator(selectedReefFace);
 
+        final Command prepareAndReleaseCoral = scoreCoralFromHeight(scoringHeight);
+
+        if (algaeBlastingCommand.hasRequirement(ALGAE_BLASTER)) {
+            return goToBranch
+                    .alongWith(algaeBlastingCommand)
+                    .andThen(prepareAndReleaseCoral)
+                    .andThen((cycle.feederQuestion.get()));
+        }
+
+        final Command readyTheElevator = (scoringHeight == L2 || scoringHeight == L3)
+                ? ELEVATOR.setTargetHeight(L2)
+                : ELEVATOR.setTargetHeight(L1);
+
         return goToBranch
-                .alongWith(algaeBlastingCommand)
-                .andThen(cycle.scoringHeightQuestion.get())
+                .alongWith(readyTheElevator)
+                .andThen(prepareAndReleaseCoral)
                 .andThen((cycle.feederQuestion.get()));
     }
 
@@ -158,7 +172,7 @@ public class Questionnaire {
             LoggedDashboardChooser<ReefFace> reefFaceQuestion,
             LoggedDashboardChooser<Branch> branchQuestion,
             LoggedDashboardChooser<Command> algaeQuestion,
-            LoggedDashboardChooser<Command> scoringHeightQuestion,
+            LoggedDashboardChooser<ElevatorConstants.ElevatorHeight> scoringHeightQuestion,
             LoggedDashboardChooser<Command> feederQuestion) {
     }
 }
