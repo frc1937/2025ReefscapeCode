@@ -9,18 +9,29 @@ import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.utilities.FieldConstants;
 
 import static frc.robot.RobotContainer.*;
+import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranch;
+import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L3;
 
 public class CoralManipulationCommands {
-    public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3;
+    public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = L3;
     public static boolean SHOULD_BLAST_ALGAE = false;
     public static final Trigger shouldBlastAlgae = new Trigger(() -> SHOULD_BLAST_ALGAE);
 
     public static Command pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch branch) {
-        final DeferredCommand pathfindingCommand = PathfindingCommands.pathfindToBranch(branch);
+        final ParallelDeadlineGroup pathfindAndReadyElevator = new ParallelDeadlineGroup(
+                pathfindToBranch(branch)
+                .alongWith((ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))),
 
-        return pathfindingCommand
-                .alongWith(ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL))
-                .andThen(scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
+                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN))
+        );
+
+        return pathfindAndReadyElevator
+                .andThen(releaseCoralWithOptionalAlgae())
+                .andThen(
+                        (ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.GO_LOW))
+                );
+
     }
 
     public static Command pathfindToFeederAndEat() {
@@ -50,7 +61,7 @@ public class CoralManipulationCommands {
                 .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
-    public static Command scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop() {
+    public static Command releaseCoralWithOptionalAlgae() {
         final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
                 ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
                         .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector())
@@ -104,7 +115,7 @@ public class CoralManipulationCommands {
         );
     }
 
-    private static Command releaseCoral() {
+    public static Command releaseCoral() {
         return CORAL_INTAKE.releaseGamePiece()
                 .raceWith(ELEVATOR.maintainPosition());
     }

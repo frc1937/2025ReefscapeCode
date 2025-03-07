@@ -16,9 +16,10 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.SLAVE_MOTOR_PORT;
 public class ElevatorConstants {
     public enum ElevatorHeight {
         L1(0),
-        L2(1),
-        L3(2.75),
-        FEEDER(0);
+        L2(1.03),
+        L3(2.86),
+        FEEDER(0.13),
+        GO_LOW(0.2);
 
         private final double rotations;
 
@@ -61,7 +62,7 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
 
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 7;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 12;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 11.5;
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxJerk = 120;
 
         ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 52;
