@@ -18,6 +18,7 @@ import java.util.Optional;
 import static frc.lib.util.QuickSortHandler.sort;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.commands.pathfinding.PathfindingCommands.IS_ALIGNING_REEF;
+import static frc.robot.commands.pathfinding.PathfindingConstants.Branch.*;
 import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
 import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_KINEMATICS;
 
@@ -52,7 +53,9 @@ public class PoseEstimator implements AutoCloseable {
 
     public void periodic() {
         updateFromAprilTagCameras();
+
         field.setRobotPose(getCurrentPose());
+        field.getObject("branch_trajectory").setPoses(field.getRobotPose(), RIGHT_BRANCH.getBranchPose());
     }
 
     public void resetPose(Pose2d newPose) {

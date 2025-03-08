@@ -1,9 +1,7 @@
 package frc.robot.commands.pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import frc.lib.util.flippable.Flippable;
 import frc.robot.utilities.FieldConstants;
-import org.littletonrobotics.junction.Logger;
 
 public class PathfindingConstants {
     public enum Branch {
