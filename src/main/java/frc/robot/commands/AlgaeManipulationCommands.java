@@ -26,8 +26,9 @@ public class AlgaeManipulationCommands {
                 .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
-    private static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
-        if (face.ordinal() % 2 == 0) return ElevatorConstants.ElevatorHeight.L3;
+    public static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
+        if (face.ordinal() % 2 == 0)
+            return ElevatorConstants.ElevatorHeight.REMOVE_ALGAE_FROM_L3;
         return ElevatorConstants.ElevatorHeight.L2;
     }
 }

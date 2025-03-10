@@ -61,7 +61,7 @@ public class Elevator extends GenericSubsystem {
     }
 
     public boolean isAtTargetHeight(ElevatorHeight level) {
-        return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.1;
+        return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.12;
     }
 
     public boolean isAtTargetPosition() {
