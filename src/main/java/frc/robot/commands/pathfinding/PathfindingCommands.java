@@ -70,7 +70,7 @@ public class PathfindingCommands {
         }, Set.of(SWERVE));
     }
 
-    protected static ReefFace decideReefFace() {
+    public static ReefFace decideReefFace() {
         final Translation2d robotPose = POSE_ESTIMATOR.getCurrentPose().getTranslation();
         final Translation2d distanceToReef = REEF_CENTER.get().minus(robotPose);
 

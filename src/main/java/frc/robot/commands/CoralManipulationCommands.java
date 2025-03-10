@@ -6,10 +6,14 @@ import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
+import frc.robot.subsystems.leds.Leds;
 import frc.robot.utilities.FieldConstants;
 
 import static frc.robot.RobotContainer.*;
+import static frc.robot.commands.AlgaeManipulationCommands.getAlgaeHeightFromFace;
+import static frc.robot.commands.pathfinding.PathfindingCommands.decideReefFace;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranch;
+import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L3;
 
 public class CoralManipulationCommands {
@@ -53,31 +57,39 @@ public class CoralManipulationCommands {
     }
 
     public static Command eatFromFeeder() {
-        return (ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
+        return ((ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER)
+                .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false))
                 .until(() -> ELEVATOR.isAtTargetHeight(ElevatorConstants.ElevatorHeight.FEEDER))
                 .alongWith(CORAL_INTAKE.prepareGamePiece()))
                 .alongWith(ALGAE_BLASTER.holdAlgaeAtPose(AlgaeBlasterConstants.BlasterArmState.VERTICAL))
                 .until(CORAL_INTAKE::hasCoral)
-                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)))
+                .alongWith(LEDS.setLEDStatus(Leds.LEDMode.EATING, 3));
     }
 
     public static Command releaseCoralWithOptionalAlgae() {
-        final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
-                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
-                        .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector())
-                        .until(shouldBlastAlgae.negate()),
+        final ConditionalCommand optionallyBlastAlgae = new ConditionalCommand(
+                ELEVATOR.setTargetHeight(() -> getAlgaeHeightFromFace(decideReefFace()))
+                        .until(() -> ELEVATOR.isAtTargetHeight(getAlgaeHeightFromFace(decideReefFace())))
+                        .andThen(
+                                ALGAE_BLASTER.setAlgaeBlasterArmState(HORIZONTAL_OUT)
+                                        .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector())
+                                        .until(shouldBlastAlgae.negate())
+                        ),
                 Commands.none(),
-                shouldBlastAlgae);
+                shouldBlastAlgae
+        );
 
-        return ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
-                .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
-                .andThen(optionallySpitAlgae)
-                .andThen(releaseCoral());
+        return optionallyBlastAlgae
+                .andThen(
+                        ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                                .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
+                                .andThen(releaseCoral()));
     }
 
     public static Command scoreCoralFromCurrentLevelAndBlastAlgae() {
         final ConditionalCommand optionallySpitAlgae = new ConditionalCommand(
-                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT)
+                ALGAE_BLASTER.setAlgaeBlasterArmState(HORIZONTAL_OUT)
                         .alongWith(CORAL_INTAKE.rotateAlgaeBlasterEndEffector()),
                 Commands.none(),
                 shouldBlastAlgae);
