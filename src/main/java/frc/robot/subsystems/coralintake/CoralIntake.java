@@ -18,7 +18,7 @@ public class CoralIntake extends GenericSubsystem {
     }
 
     public Command releaseGamePiece() {
-        return setMotorVoltage(2).until(() -> !hasCoral()).andThen(setMotorVoltage(3))
+        return setMotorVoltage(2).until(() -> !hasCoral()).andThen(setMotorVoltage(3.3))
                 .withTimeout(0.9);
     }
 
