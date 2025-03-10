@@ -16,7 +16,6 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.CoralManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -30,6 +29,7 @@ import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_X;
 import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.commands.CoralManipulationCommands.*;
+import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.*;
 import static frc.robot.subsystems.swerve.SwerveCommands.rotateToTarget;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
@@ -113,16 +113,16 @@ public class ButtonControls {
         setupDriving();
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.RIGHT).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L1).andThen(
+                ELEVATOR.setTargetHeight(L1).andThen(
                         ELEVATOR.maintainPosition()
                 ));
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L2).andThen(
+                ELEVATOR.setTargetHeight(L2).andThen(
                         ELEVATOR.maintainPosition()
                 ));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(
-                ELEVATOR.setTargetHeight(ElevatorConstants.ElevatorHeight.L3).andThen(
+                ELEVATOR.setTargetHeight(L3).andThen(
                         ELEVATOR.maintainPosition()
                 ));
 
@@ -150,12 +150,10 @@ public class ButtonControls {
         rightBumper.and(leftBumper.negate()).whileTrue(pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(scoreCoralFromCurrentLevelAndBlastAlgaeForTeleop());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(releaseCoralWithOptionalAlgae());
 
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue((ELEVATOR.runElevatorDownwards()));
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(ELEVATOR.runElevatorUpwards());
-
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(ELEVATOR.runCurrentZeroing());
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-10));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(10));
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();
@@ -184,15 +182,18 @@ public class ButtonControls {
     }
 
     private static void setupOperatorKeyboardButtons() {
-        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L1));
-        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L2));
-        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CoralManipulationCommands.CURRENT_SCORING_LEVEL = ElevatorConstants.ElevatorHeight.L3));
+        OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L1).ignoringDisable(true));
+        OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L2).ignoringDisable(true));
+        OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L3).ignoringDisable(true));
+
+        OPERATOR_CONTROLLER.five().whileTrue(CORAL_INTAKE.setMotorVoltage(-2));
 
         OPERATOR_CONTROLLER.six().onTrue(
                         (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
 
-        OPERATOR_CONTROLLER.six().onFalse(
-                ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
+        OPERATOR_CONTROLLER.six()
+                .onFalse(
+                        ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
                         .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false))
         );
     }

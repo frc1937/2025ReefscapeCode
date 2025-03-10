@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Colour;
+import frc.lib.util.flippable.Flippable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -22,8 +23,14 @@ public class Leds extends SubsystemBase {
                 Colour.GOLD.toGRB()
         ), timeout)),
 
+        EATING(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
+                Colour.BLACK.toGRB(),
+                Colour.PURPLE.toGRB()),
+                timeout
+        )),
+
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                Colour.LIME.toGRB()
+                Colour.RED.toGRB()
         ), timeout)),
 
         INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
@@ -41,21 +48,11 @@ public class Leds extends SubsystemBase {
         ), timeout)),
 
         BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                Colour.RED.toGRB()
+                Colour.MAGENTA.toGRB()
         ), timeout)),
 
-        DEFAULT(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Colour[]{
-                Colour.SKY_BLUE.toGRB(),
-                Colour.NAVY_BLUE.toGRB(),
-                Colour.BLUE.toGRB(),
-                Colour.CORNFLOWER_BLUE.toGRB(),
-                Colour.BLUE.toGRB(),
-                Colour.LIGHT_BLUE.toGRB(),
-                Colour.ROYAL_BLUE.toGRB(),
-                Colour.BLUE.toGRB(),
-                Colour.DARK_BLUE.toGRB(),
-                Colour.WHITE.toGRB()}
-        ), 0));
+        DEFAULT(timeout ->
+                getCommandFromColours(() -> generateScrollBuffer(getAllianceThemedLeds()), 0));
 
         private final Function<Double, Command> ledCommandFunction;
 
@@ -107,5 +104,21 @@ public class Leds extends SubsystemBase {
 
     private static void flashLEDStrip(Colour[] colours) {
         ledstrip.setData(getBufferFromColours(buffer, colours));
+    }
+
+    private static Colour[] getAllianceThemedLeds() {
+        if (Flippable.isRedAlliance()) {
+            return new Colour[]{
+                    Colour.DARK_RED.toGRB(),
+                    Colour.RED.toGRB(),
+                    Colour.DARK_RED.toGRB(),
+                    Colour.WHITE.toGRB()
+            };
+        }
+        return new Colour[]{Colour.SKY_BLUE.toGRB(),
+                Colour.CORNFLOWER_BLUE.toGRB(),
+                Colour.BLUE.toGRB(),
+                Colour.LIGHT_BLUE.toGRB(),
+                Colour.WHITE.toGRB()};
     }
 }
