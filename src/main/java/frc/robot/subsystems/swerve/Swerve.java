@@ -15,6 +15,7 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -24,6 +25,7 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
+    private double previousTotalVelocity = 0;
 
     public boolean isAtPose(Pose2d target, double allowedDistanceFromTargetMeters, double allowedRotationalErrorDegrees) {
          return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
@@ -57,7 +59,15 @@ public class Swerve extends GenericSubsystem {
 
     @AutoLogOutput(key="Swerve/velocity")
     public ChassisSpeeds getRobotRelativeVelocity() {
-        return SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+        final ChassisSpeeds speeds = SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+
+        double currentTotalVelocity = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+
+        Logger.recordOutput("TOTAL_VELOCITY_VECTOR", currentTotalVelocity);
+        Logger.recordOutput("TOTAL_ACCELERATION_VECTOR", (currentTotalVelocity - previousTotalVelocity)/0.02);
+
+        previousTotalVelocity = currentTotalVelocity;
+        return speeds;
     }
 
     public ChassisSpeeds getFieldRelativeVelocity() {
