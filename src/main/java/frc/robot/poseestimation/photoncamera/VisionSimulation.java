@@ -41,7 +41,9 @@ public class VisionSimulation {
 
         visionSystemSim.addCamera(simulatedCamera, robotCenterToCamera);
 
-        simulatedCamera.enableDrawWireframe(true);
+        simulatedCamera.enableDrawWireframe(false);
+        simulatedCamera.enableProcessedStream(false);
+        simulatedCamera.enableRawStream(false);
     }
 
     /**
