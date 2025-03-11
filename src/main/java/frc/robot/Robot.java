@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.path.PathPlannerPath;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -23,6 +24,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void robotInit() {
         robotContainer = new RobotContainer();
+        SignalLogger.enableAutoLogging(false);
         HardwareManager.initialize(this);
     }
 

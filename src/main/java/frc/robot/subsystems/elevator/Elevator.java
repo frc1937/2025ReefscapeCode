@@ -26,7 +26,8 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> setMotorPosition(levelSupplier.get().getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
@@ -42,8 +43,12 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(ElevatorHeight level) {
         return new FunctionalCommand(
-                () -> {},
-                () -> setMotorPosition(level.getRotations()),
+                () -> {
+                },
+                () -> {
+                    if (level == null) return;
+                    setMotorPosition(level.getRotations());
+                },
                 interrupt -> stopMotors(),
                 () -> isAtTargetHeight(level),
                 this
@@ -52,7 +57,8 @@ public class Elevator extends GenericSubsystem {
 
     public Command maintainPosition() {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, KG),
                 interrupt -> stopMotors(),
                 () -> false,
@@ -61,6 +67,7 @@ public class Elevator extends GenericSubsystem {
     }
 
     public boolean isAtTargetHeight(ElevatorHeight level) {
+        if (level == null) return false;
         return Math.abs(MASTER_MOTOR.getSystemPosition() - level.getRotations()) < 0.12;
     }
 
@@ -84,7 +91,7 @@ public class Elevator extends GenericSubsystem {
                 () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1),
                 (interrupt) -> {
                     MASTER_MOTOR.stopMotor();
-                    MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS );
+                    MASTER_MOTOR.setMotorEncoderPosition(ELEVATOR_MAX_EXTENSION_ROTATIONS);
                 },
                 () -> {
                     if (MASTER_MOTOR.getCurrent() > 31.0) count[0]++;
@@ -98,7 +105,8 @@ public class Elevator extends GenericSubsystem {
 
     public Command runElevatorDownwards() {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, -1.5),
                 (interrupt) -> stop(),
                 () -> false,
@@ -108,7 +116,8 @@ public class Elevator extends GenericSubsystem {
 
     public Command runElevatorUpwards() {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                },
                 () -> MASTER_MOTOR.setOutput(MotorProperties.ControlMode.VOLTAGE, 1.5),
                 (interrupt) -> stop(),
                 () -> false,

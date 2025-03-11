@@ -27,6 +27,18 @@ public class PathfindingConstants {
             public Pose2d getBranchPose(FieldConstants.ReefFace face) {
                 return face.getRightBranch();
             }
+        },
+
+        CENTER_POSE {
+            @Override
+            public Pose2d getBranchPose() {
+                return PathfindingCommands.decideReefFace().getCenterPose();
+            }
+
+            @Override
+            public Pose2d getBranchPose(FieldConstants.ReefFace face) {
+                return face.getCenterPose();
+            }
         };
 
         /**

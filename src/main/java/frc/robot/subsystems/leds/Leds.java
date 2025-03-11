@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Colour;
-import frc.lib.util.flippable.Flippable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -25,12 +24,11 @@ public class Leds extends SubsystemBase {
 
         EATING(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
                 Colour.BLACK.toGRB(),
-                Colour.PURPLE.toGRB()),
-                timeout
-        )),
+                Colour.PURPLE.toGRB()
+        ), timeout)),
 
         INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
-                Colour.RED.toGRB()
+                Colour.ORANGE.toGRB()
         ), timeout)),
 
         INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
@@ -107,14 +105,12 @@ public class Leds extends SubsystemBase {
     }
 
     private static Colour[] getAllianceThemedLeds() {
-        if (Flippable.isRedAlliance()) {
-            return new Colour[]{
-                    Colour.DARK_RED.toGRB(),
-                    Colour.RED.toGRB(),
-                    Colour.DARK_RED.toGRB(),
-                    Colour.WHITE.toGRB()
-            };
-        }
+//        return new Colour[]{
+//                Colour.DARK_RED.toGRB(),
+//                Colour.RED.toGRB(),
+//                Colour.DARK_RED.toGRB(),
+//                Colour.WHITE.toGRB()
+//        };
         return new Colour[]{Colour.SKY_BLUE.toGRB(),
                 Colour.CORNFLOWER_BLUE.toGRB(),
                 Colour.BLUE.toGRB(),

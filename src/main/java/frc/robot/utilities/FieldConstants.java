@@ -18,11 +18,13 @@ public class FieldConstants {
         FACE_4(Rotation2d.fromDegrees(-60)),
         FACE_5(Rotation2d.fromDegrees(-120));
 
-        private final FlippablePose2d rightBranch, leftBranch;
+        private final FlippablePose2d rightBranch, leftBranch, centerPose;
 
         ReefFace(Rotation2d rotation) {
             final FlippablePose2d facePose = new FlippablePose2d(new Pose2d(new Translation2d(), rotation), true);
             final FlippablePose2d faceDirection =  new FlippablePose2d(new Pose2d(REEF_CENTER.get(), facePose.getRotation().get()), true);
+
+            this.centerPose = new FlippablePose2d(faceDirection.get().transformBy(CENTER_POSE_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
 
             this.leftBranch = new FlippablePose2d(faceDirection.get().transformBy(LEFT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
             this.rightBranch = new FlippablePose2d(faceDirection.get().transformBy(RIGHT_BRANCH_TRANSFORM).transformBy(ROBOT_REEF_TRANSFORM), true);
@@ -38,6 +40,10 @@ public class FieldConstants {
 
         public Pose2d getRightBranch() {
             return rightBranch.get();
+        }
+
+        public Pose2d getCenterPose() {
+            return centerPose.get();
         }
     }
 
@@ -74,6 +80,7 @@ public class FieldConstants {
 
     private static final Transform2d
             LEFT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.1643+0.1643+0.084), Rotation2d.kZero),
+            CENTER_POSE_TRANSFORM = new Transform2d(0.7808, -0.25345, Rotation2d.kZero),
             RIGHT_BRANCH_TRANSFORM = new Transform2d(0.7808, -(0.0943), Rotation2d.kZero);
 
     public static final double

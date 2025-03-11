@@ -16,6 +16,7 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -150,10 +151,20 @@ public class ButtonControls {
         rightBumper.and(leftBumper.negate()).whileTrue(pathfindToBranchAndScoreForTeleop(PathfindingConstants.Branch.RIGHT_BRANCH));
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(releaseCoralWithOptionalAlgae());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoral());
 
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-10));
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(10));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
+
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.RIGHT).whileTrue(ELEVATOR.runElevatorUpwards());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(yeetAlgaeNeverStops(REMOVE_ALGAE_FROM_L3));
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).onFalse(retractAlgaeArm());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(yeetAlgaeNeverStops(REMOVE_ALGAE_FROM_L2));
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).onFalse(retractAlgaeArm());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(PathfindingCommands.pathfindToBranch(PathfindingConstants.Branch.CENTER_POSE));
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();
@@ -188,14 +199,16 @@ public class ButtonControls {
 
         OPERATOR_CONTROLLER.five().whileTrue(CORAL_INTAKE.setMotorVoltage(-2));
 
-        OPERATOR_CONTROLLER.six().onTrue(
-                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
-
-        OPERATOR_CONTROLLER.six()
-                .onFalse(
-                        ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
-                        .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false))
-        );
+        OPERATOR_CONTROLLER.seven()
+                .whileTrue(CLIMB.runVoltage(10)); //TODO: I DONT REMEMBER WHICH ONE IS WHICH. MAYBE THIS SHOUDL BE NEGASTIVE?
+//        OPERATOR_CONTROLLER.six().onTrue(
+//                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
+//
+//        OPERATOR_CONTROLLER.six()
+//                .onFalse(
+//                        ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN)
+//                        .alongWith(new InstantCommand(() -> SHOULD_BLAST_ALGAE = false))
+//        );
     }
 
     private static void setupTeleopLEDs() {
@@ -243,7 +256,7 @@ public class ButtonControls {
     private static void setupDriving() {
         final DoubleSupplier translationSupplier = () -> DRIVE_SIGN.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_Y);
         final DoubleSupplier strafeSupplier = () -> DRIVE_SIGN.getAsDouble() * DRIVER_CONTROLLER.getRawAxis(LEFT_X);
-        final DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 4;
+        final DoubleSupplier rotationSupplier = () -> -DRIVER_CONTROLLER.getRawAxis(Controller.Axis.RIGHT_X) * 5;
 
         SWERVE.setDefaultCommand(
                 SwerveCommands.driveOpenLoop(

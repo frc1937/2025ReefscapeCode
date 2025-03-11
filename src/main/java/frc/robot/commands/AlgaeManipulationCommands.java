@@ -29,6 +29,6 @@ public class AlgaeManipulationCommands {
     public static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
         if (face.ordinal() % 2 == 0)
             return ElevatorConstants.ElevatorHeight.REMOVE_ALGAE_FROM_L3;
-        return ElevatorConstants.ElevatorHeight.L2;
+        return ElevatorConstants.ElevatorHeight.REMOVE_ALGAE_FROM_L2;
     }
 }

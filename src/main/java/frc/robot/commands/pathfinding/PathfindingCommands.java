@@ -37,6 +37,7 @@ public class PathfindingCommands {
             final Pose2d targetPose = branch.getBranchPose(face);
 
             return SwerveCommands.goToPoseBezier(targetPose)
+                    .until(() -> SWERVE.isAtPose(targetPose, 0.3, 1))
                     .andThen(SwerveCommands.driveWithTimeout(0.1,0,0,true,0.2))
                     .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
         }, Set.of(SWERVE));

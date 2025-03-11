@@ -18,7 +18,8 @@ public class ElevatorConstants {
         L1(0.1),
         L2(1.03),
         L3(2.86),
-        REMOVE_ALGAE_FROM_L3(1.95),
+        REMOVE_ALGAE_FROM_L3(1.92),
+        REMOVE_ALGAE_FROM_L2(0.1),
         FEEDER(0.13),
         GO_LOW(0.2);
 

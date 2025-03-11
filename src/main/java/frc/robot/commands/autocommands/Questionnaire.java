@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.lib.util.flippable.FlippablePose2d;
-import frc.robot.commands.AlgaeManipulationCommands;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -14,7 +13,8 @@ import frc.robot.utilities.FieldConstants.Feeder;
 import frc.robot.utilities.FieldConstants.ReefFace;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-import static frc.robot.RobotContainer.*;
+import static frc.robot.RobotContainer.CORAL_INTAKE;
+import static frc.robot.RobotContainer.ELEVATOR;
 import static frc.robot.commands.AlgaeManipulationCommands.blastAlgaeOffReef;
 import static frc.robot.commands.CoralManipulationCommands.pathfindToFeederAndEat;
 import static frc.robot.commands.CoralManipulationCommands.scoreCoralFromHeight;
@@ -56,11 +56,15 @@ public class Questionnaire {
     private LoggedDashboardChooser<ReefFace> createReefFaceQuestion(String cycleNumber) {
         final LoggedDashboardChooser<ReefFace> question = new LoggedDashboardChooser<>(cycleNumber + "Which Reef Face?");
 
-        question.addDefaultOption("None", null);
+        question.addDefaultOption("None", ReefFace.FACE_0);
 
         for (ReefFace face : ReefFace.values()) {
             question.addOption("Face " + face.ordinal(), face);
         }
+
+//        question.addOption("Face 0", ReefFace.FACE_0);
+//        question.addOption("Face 2", ReefFace.FACE_2);
+//        question.addOption("Face 4", ReefFace.FACE_4);
 
         return question;
     }
@@ -91,9 +95,8 @@ public class Questionnaire {
     private LoggedDashboardChooser<ElevatorConstants.ElevatorHeight> createScoringQuestion(String cycleNumber) {
         final LoggedDashboardChooser<ElevatorConstants.ElevatorHeight> question = new LoggedDashboardChooser<>(cycleNumber + "Which Scoring Level?");
 
-        question.addDefaultOption("None", L1);
+        question.addDefaultOption("L2", L2);
         question.addOption("L1", L1);
-        question.addOption("L2", L2);
         question.addOption("L3", L3);
 
         return question;
@@ -118,26 +121,12 @@ public class Questionnaire {
                 ? Commands.none()
                 : PathfindingCommands.pathfindToBranchBezier(selectedBranch, selectedReefFace);
 
-        final Command algaeBlastingCommand = cycle.algaeQuestion.get().isFinished()
-                ? Commands.none()
-                : AlgaeManipulationCommands.blastAlgaeOffReefWithElevator(selectedReefFace);
-
-        final Command prepareAndReleaseCoral = scoreCoralFromHeight(scoringHeight);
-
-        if (algaeBlastingCommand.hasRequirement(ALGAE_BLASTER)) {
-            return goToBranch
-                    .alongWith(algaeBlastingCommand)
-                    .andThen(prepareAndReleaseCoral)
-                    .andThen((cycle.feederQuestion.get()));
-        }
-
         final Command readyTheElevator = (scoringHeight == L2 || scoringHeight == L3)
                 ? ELEVATOR.setTargetHeight(L2)
                 : ELEVATOR.setTargetHeight(L1);
 
-        return goToBranch
-                .alongWith(readyTheElevator)
-                .andThen(prepareAndReleaseCoral)
+        return goToBranch.alongWith(readyTheElevator)
+                .andThen(scoreCoralFromHeight(scoringHeight))
                 .andThen((cycle.feederQuestion.get()));
     }
 
