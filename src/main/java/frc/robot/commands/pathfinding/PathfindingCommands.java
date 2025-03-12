@@ -38,6 +38,7 @@ public class PathfindingCommands {
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .until(() -> SWERVE.isAtPose(targetPose, 0.3, 1))
+                    .andThen(SwerveCommands.goToPosePID(targetPose))
                     .andThen(SwerveCommands.driveWithTimeout(0.1,0,0,true,0.2))
                     .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
         }, Set.of(SWERVE));

@@ -15,7 +15,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static frc.robot.GlobalConstants.*;
@@ -59,7 +58,7 @@ public enum HardwareManager {
      * @param robot Robot object
      */
     public static void initialize(LoggedRobot robot) {
-        String logPath = CURRENT_MODE == Mode.REAL ? "/home/lvuser/logs" : "logs";
+        String logPath = CURRENT_MODE == Mode.REAL ? "/media/sda1/logs" : "logs";
 
         final File logsDirectory = new File(logPath);
 

@@ -16,7 +16,7 @@ import static frc.robot.utilities.PortsConstants.AlgaePorts.ALGAE_BLASTER_MOTOR_
 public class AlgaeBlasterConstants {
     public enum BlasterArmState {
         HORIZONTAL_IN(0),
-        VERTICAL(0.43 ),
+        VERTICAL(0.7),
         HORIZONTAL_OUT(0.97);
 
         private final double rotation;
@@ -58,10 +58,10 @@ public class AlgaeBlasterConstants {
         ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.VOLTAGE);
         ARM_BLASTER_MOTOR.setupSignalUpdates(MotorSignal.CLOSED_LOOP_TARGET);
 
-        blasterMotorConfiguration.slot = new MotorProperties.Slot(9, 0, 0, 0, 0, 0.153, 0.201, Feedforward.Type.ARM);
+        blasterMotorConfiguration.slot = new MotorProperties.Slot(3.2, 0, 0.4, 0, 0, 0.1, 0, Feedforward.Type.ARM);
 
-        blasterMotorConfiguration.profileMaxVelocity = 2.8;
-        blasterMotorConfiguration.profileMaxAcceleration = 2.7;
+        blasterMotorConfiguration.profileMaxVelocity = 23;
+        blasterMotorConfiguration.profileMaxAcceleration = 75;
 
         blasterMotorConfiguration.closedLoopTolerance = 0.03;
 

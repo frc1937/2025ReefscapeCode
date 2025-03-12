@@ -47,7 +47,7 @@ public class PhotonCameraIO implements LoggableHardware {
     }
 
     public Pose2d getRobotPose() {
-        return inputs.estimatedRobotPose.toPose2d();
+        return inputs.bestRobotPose.toPose2d();
     }
 
     public StandardDeviations getStandardDeviations() {
@@ -90,6 +90,7 @@ public class PhotonCameraIO implements LoggableHardware {
         public double lastResultTimestamp = 0;
         public double averageDistanceFromTags = 0;
 
-        public Pose3d estimatedRobotPose = new Pose3d();
+        public Pose3d bestRobotPose = new Pose3d();
+        public Pose3d alternateRobotPose = new Pose3d();
     }
 }

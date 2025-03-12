@@ -156,6 +156,8 @@ public class GenericSparkFlex extends GenericSparkBase {
             case POSITION_TRAPEZOIDAL -> {
                 final TrapezoidProfile.State currentSetpoint = motionProfile.calculate(0.02, previousSetpoint, goalState);
 
+                Logger.recordOutput(getName() + "/setpoint", currentSetpoint.position);
+
                 acceleration = (currentSetpoint.velocity - previousSetpoint.velocity) / 0.02;
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), currentSetpoint.velocity, acceleration);
 

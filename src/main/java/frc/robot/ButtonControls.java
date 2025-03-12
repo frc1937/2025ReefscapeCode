@@ -16,7 +16,6 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.climb.ClimbConstants;
@@ -144,6 +143,9 @@ public class ButtonControls {
     private static void configureButtonsTeleop() {
         setupDriving();
 
+        ALGAE_BLASTER.setDefaultCommand(
+        ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+
         final Trigger leftBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER));
         final Trigger rightBumper = new Trigger(DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER));
 
@@ -163,8 +165,6 @@ public class ButtonControls {
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(yeetAlgaeNeverStops(REMOVE_ALGAE_FROM_L2));
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).onFalse(retractAlgaeArm());
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(PathfindingCommands.pathfindToBranch(PathfindingConstants.Branch.CENTER_POSE));
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();

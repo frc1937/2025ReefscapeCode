@@ -39,7 +39,7 @@ public class AprilTagsCamera extends PhotonCameraIO {
         inputs.hasResult = isValidResult(latestResult);
 
         if (inputs.hasResult) {
-            inputs.estimatedRobotPose = getPose(latestResult);
+            inputs.bestRobotPose = getPose(latestResult);
             inputs.lastResultTimestamp = latestResult.getTimestampSeconds();
 
             inputs.averageDistanceFromTags = getAverageDistanceFromTags(latestResult);
@@ -56,7 +56,8 @@ public class AprilTagsCamera extends PhotonCameraIO {
     private void updateWithNoResult(CameraInputsAutoLogged inputs) {
         inputs.hasResult = false;
         inputs.visibleTagIDs = new int[0];
-        inputs.estimatedRobotPose = new Pose3d();
+        inputs.bestRobotPose = new Pose3d();
+        inputs.alternateRobotPose = inputs.bestRobotPose;
     }
 
     private int[] getVisibleTagIDs(PhotonPipelineResult result) {
