@@ -15,9 +15,11 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.SLAVE_MOTOR_PORT;
 
 public class ElevatorConstants {
     public enum ElevatorHeight {
-        L1(0.1),
+        L1(0.7),
         L2(1.03),
+        L2_AND_A_HALF(1.98),
         L3(2.93),
+        L4(3.1),
         REMOVE_ALGAE_FROM_L3(1.92),
         REMOVE_ALGAE_FROM_L2(0.1),
         FEEDER(0.13),
@@ -31,6 +33,15 @@ public class ElevatorConstants {
 
         public double getRotations() {
             return rotations;
+        }
+
+        public ElevatorHeight getMiddlePoint() {
+            if (this == L1) return L1;
+            if (this == L2) return L2;
+            if (this == L3) return L2_AND_A_HALF;
+            if (this == L4) return L2_AND_A_HALF;
+
+            return L1;
         }
     }
 
@@ -63,8 +74,8 @@ public class ElevatorConstants {
 
         ELEVATOR_MOTORS_CONFIGURATION.idleMode = MotorProperties.IdleMode.BRAKE;
 
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 7;
-        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 50;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 8;
+        ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 75;
 
         ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 65;
 
@@ -73,8 +84,8 @@ public class ElevatorConstants {
 
         ELEVATOR_MOTORS_CONFIGURATION.slot = new MotorProperties.Slot(
                 //1.1196,0,0,
-                1.3,0,0,
-                1.366,0,0.094165, KG, Feedforward.Type.ELEVATOR);
+                2.1,0,0,
+                1.466,0,0.094165, KG, Feedforward.Type.ELEVATOR);
 
         ELEVATOR_MOTORS_CONFIGURATION.simulationSlot = new MotorProperties.Slot(17.5, 0, 0.6, 0, 0, 0, 0, Feedforward.Type.ELEVATOR);// S=1.313
         ELEVATOR_MOTORS_CONFIGURATION.simulationProperties = new SimulationProperties.Slot(

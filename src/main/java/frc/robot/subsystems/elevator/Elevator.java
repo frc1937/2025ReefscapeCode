@@ -26,8 +26,7 @@ public class Elevator extends GenericSubsystem {
      */
     public Command setTargetHeight(Supplier<ElevatorHeight> levelSupplier) {
         return new FunctionalCommand(
-                () -> {
-                },
+                () -> {},
                 () -> setMotorPosition(levelSupplier.get().getRotations()),
                 interrupt -> stopMotors(),
                 () -> false,
