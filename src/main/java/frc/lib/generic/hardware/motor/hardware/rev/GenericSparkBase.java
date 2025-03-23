@@ -44,6 +44,8 @@ public abstract class GenericSparkBase extends Motor {
 
     private MotorConfiguration currentConfiguration;
 
+    protected double target = 0;
+
     protected GenericSparkBase(String name, int deviceId) {
         super(name);
 
@@ -196,7 +198,7 @@ public abstract class GenericSparkBase extends Motor {
         inputs.voltage = getVoltagePrivate();
         inputs.current = spark.getOutputCurrent();
         inputs.temperature = spark.getMotorTemperature();
-        if (goalState != null) inputs.target = goalState.position;
+        inputs.target = target;
         inputs.systemPosition = getEffectivePosition();
         inputs.systemVelocity = getEffectiveVelocity();
         inputs.systemAcceleration = getEffectiveAcceleration();
@@ -223,9 +225,9 @@ public abstract class GenericSparkBase extends Motor {
     }
 
     private double getEffectiveAcceleration() {
-        final double acceleration = externalVelocitySupplier == null ? getSystemVelocityPrivate() - previousVelocity : externalVelocitySupplier.getAsDouble() - previousVelocity;
+        final double acceleration = (getEffectiveVelocity() - previousVelocity) / 0.02;
 
-        previousVelocity = externalVelocitySupplier == null ? getSystemVelocityPrivate() : externalVelocitySupplier.getAsDouble();
+        previousVelocity = getEffectiveVelocity();
 
         return acceleration;
     }
