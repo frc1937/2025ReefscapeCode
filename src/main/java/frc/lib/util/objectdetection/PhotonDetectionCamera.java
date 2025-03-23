@@ -1,4 +1,4 @@
-package frc.robot.poseestimation.objectdetection;
+package frc.lib.util.objectdetection;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
