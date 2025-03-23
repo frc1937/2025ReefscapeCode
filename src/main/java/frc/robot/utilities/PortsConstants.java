@@ -32,7 +32,8 @@ public class PortsConstants {
     }
 
     public static class AlgaePorts {
-        public static final int ALGAE_BLASTER_MOTOR_PORT = 16;
+        public static final int ALGAE_BLASTER_MOTOR_PORT = 5;
+        public static final int L4_BEAM_BREAK_DIO_PORT = 1;
     }
 
     public static class ElevatorPorts {
