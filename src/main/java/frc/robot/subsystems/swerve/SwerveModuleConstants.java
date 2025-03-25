@@ -37,7 +37,7 @@ public class SwerveModuleConstants {
     static final boolean DRIVE_MOTOR_INVERT = false;
 
     static final int ANGLE_CURRENT_LIMIT = 40;
-    static final int DRIVE_STATOR_CURRENT_LIMIT = 55;
+    static final int DRIVE_STATOR_CURRENT_LIMIT = 67;
 
     static final MotorProperties.Slot DRIVE_SLOT = new MotorProperties.Slot(
             /*0.55259*/0, 0.0, 0.0, //NOTE: IT WORKED WELL WITHOUT kP.

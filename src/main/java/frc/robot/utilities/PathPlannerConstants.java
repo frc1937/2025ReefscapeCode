@@ -27,11 +27,11 @@ public class PathPlannerConstants {
 
     public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
             ? new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, 6, 4)
-            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 3, Math.PI*1.3, Math.PI*1.3);
+            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 3.3, Math.PI*1.3, Math.PI*1.3);
 
-    private static final PPHolonomicDriveController PATHPLANNER_PID_CONSTANTS = IS_SIMULATION
+    public static final PPHolonomicDriveController PATHPLANNER_DRIVE_CONTROLLER = IS_SIMULATION
             ? new PPHolonomicDriveController(new PIDConstants(4.5, 0.0, 0), new PIDConstants(0.9, 0.0, 0))
-            : new PPHolonomicDriveController(new PIDConstants(2.74, 0.0, 0), new PIDConstants(1.5, 0.0, 0));
+            : new PPHolonomicDriveController(new PIDConstants(2.75, 0.0, 0), new PIDConstants(1.77, 0.0, 0));
 
     public static void initializePathPlanner() {
         Pathfinding.setPathfinder(new LocalADStarAK());
@@ -53,7 +53,7 @@ public class PathPlannerConstants {
                 POSE_ESTIMATOR::resetPose,
                 SWERVE::getRobotRelativeVelocity,
                 (ChassisSpeeds speeds) -> SWERVE.driveRobotRelative(speeds, true),
-                PATHPLANNER_PID_CONSTANTS,
+                PATHPLANNER_DRIVE_CONTROLLER,
                 ROBOT_CONFIG,
                 Flippable::isRedAlliance,
                 SWERVE

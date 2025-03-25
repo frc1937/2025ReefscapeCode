@@ -33,7 +33,8 @@ public class SwerveConstants {
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),
             MAX_ROTATION_RAD_PER_S = 3 * Math.PI,
-            WHEEL_DIAMETER = 0.102;//0.048811841456802955 * 2;
+            WHEEL_DIAMETER = 0.048923013788539564 * 2;
+//                    0.102;//0.048811841456802955 * 2;
 
     public static final double
             DRIVE_NEUTRAL_DEADBAND = 0.15,
@@ -52,14 +53,14 @@ public class SwerveConstants {
 
     protected static final PID PID_TRANSLATION_X_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(1.1,0,0);
+            : new PID(1.105,0,0);
     protected static final PID PID_TRANSLATION_Y_CONTROLLER = IS_SIMULATION
             ? new PID(1.2, 0, 0, 0.001)
-            : new PID(1.13,0.013,0);
+            : new PID(1.135,0.013,0);
 
     protected static final ProfiledPID SWERVE_ROTATION_CONTROLLER = IS_SIMULATION
             ? new ProfiledPID(0.2, 0, 0,0, new TrapezoidProfile.Constraints(360, 360))
-            : new ProfiledPID(0.21, 0, 0/*0.0005*/, new TrapezoidProfile.Constraints(360, 360));
+            : new ProfiledPID(0.2205, 0, 0/*0.0005*/, new TrapezoidProfile.Constraints(360, 360));
 
     protected static final Pigeon GYRO = PigeonFactory.createPigeon2("GYRO", GYRO_PORT);
 

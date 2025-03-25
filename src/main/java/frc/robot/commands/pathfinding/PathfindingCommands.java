@@ -1,6 +1,7 @@
 package frc.robot.commands.pathfinding;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
@@ -17,6 +18,19 @@ import static frc.robot.utilities.FieldConstants.ReefFace.*;
 public class PathfindingCommands {
     public static boolean IS_ALIGNING_REEF = false;
 
+    public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch, Transform2d offset) {
+        return new DeferredCommand(
+                () -> {
+                    IS_ALIGNING_REEF = true;
+
+                    return SwerveCommands.goToPosePID(branch.getBranchPose().transformBy(offset))
+                            .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
+                },
+
+                Set.of(SWERVE)
+        );
+    }
+
     public static DeferredCommand pathfindToBranch(PathfindingConstants.Branch branch) {
         return new DeferredCommand(
                 () -> {
@@ -30,16 +44,18 @@ public class PathfindingCommands {
         );
     }
 
-    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face) {
+    public static DeferredCommand pathfindToBranchBezier(PathfindingConstants.Branch branch, ReefFace face, Transform2d offset) {
         return new DeferredCommand(() -> {
             IS_ALIGNING_REEF = true;
 
-            final Pose2d targetPose = branch.getBranchPose(face);
+            final Pose2d targetPose = branch.getBranchPose(face).transformBy(offset);
 
             return SwerveCommands.goToPoseBezier(targetPose)
-                    .until(() -> SWERVE.isAtPose(targetPose, 0.3, 1))
-                    .andThen(SwerveCommands.goToPosePID(targetPose))
-                    .andThen(SwerveCommands.driveWithTimeout(0.1,0,0,true,0.2))
+                    .until(() -> SWERVE.isAtPose(targetPose, 0.3, 2))
+                    .andThen(SwerveCommands.goToPosePID(targetPose)
+                            .onlyIf(() -> !SWERVE.isAtPose(targetPose, 0.08, 1))
+                    )
+//                    .andThen(SwerveCommands.driveWithTimeout(0.1,0,0,true,0.2))
                     .andThen(new InstantCommand(() -> IS_ALIGNING_REEF = false));
         }, Set.of(SWERVE));
     }
@@ -49,7 +65,9 @@ public class PathfindingCommands {
             final Pose2d targetPose = feeder.getPose();
 
             return SwerveCommands.goToPoseBezier(targetPose)
-                    .andThen(SwerveCommands.driveWithTimeout(0,-0.1,0,true,0.2));
+                    .withTimeout(2.5)
+                    .andThen(SwerveCommands.goToPosePID(feeder.getPose()));
+//                    .andThen(SwerveCommands.driveWithTimeout(0,-0.1,0,true,0.2));
         }, Set.of(SWERVE));
     }
 

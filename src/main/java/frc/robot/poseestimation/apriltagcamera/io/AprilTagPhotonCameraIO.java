@@ -1,12 +1,9 @@
 package frc.robot.poseestimation.apriltagcamera.io;
 
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.util.Units;
 import frc.robot.poseestimation.apriltagcamera.AprilTagCameraIO;
 import frc.robot.poseestimation.apriltagcamera.AprilTagCameraInputsAutoLogged;
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -21,7 +18,7 @@ public class AprilTagPhotonCameraIO extends AprilTagCameraIO {
     private final Transform3d robotToCamera;
     final PhotonCamera photonCamera;
 
-    private final LinearFilter movingAverage = LinearFilter.movingAverage(50);
+//    private final LinearFilter movingAverage = LinearFilter.movingAverage(50);
 
     public AprilTagPhotonCameraIO(String cameraName, Transform3d robotToCamera) {
         photonCamera = new PhotonCamera(cameraName);
@@ -36,11 +33,11 @@ public class AprilTagPhotonCameraIO extends AprilTagCameraIO {
         if (inputs.hasResult) {
             updateHasResultInputs(inputs, latestResult);
 
-            if (inputs.bestCameraSolvePNPPose != null) {
-                movingAverage.calculate(Units.radiansToDegrees(inputs.bestCameraSolvePNPPose.getRotation().getZ()));
-                Logger.recordOutput(photonCamera.getName() + " z rotation yaw", movingAverage.lastValue());
-                Logger.recordOutput(photonCamera.getName() + " y rotation pitch", Units.radiansToDegrees(inputs.bestCameraSolvePNPPose.getRotation().getY()));
-            }
+//            if (inputs.bestCameraSolvePNPPose != null) {
+//                movingAverage.calculate(Units.radiansToDegrees(inputs.bestCameraSolvePNPPose.getRotation().getZ()));
+//                Logger.recordOutput(photonCamera.getName() + " z rotation yaw", movingAverage.lastValue());
+//                Logger.recordOutput(photonCamera.getName() + " y rotation pitch", Units.radiansToDegrees(inputs.bestCameraSolvePNPPose.getRotation().getY()));
+//            }
              return;
         }
 

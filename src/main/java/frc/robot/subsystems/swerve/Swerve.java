@@ -28,7 +28,10 @@ public class Swerve extends GenericSubsystem {
     private double previousTotalVelocity = 0;
 
     public boolean isAtPose(Pose2d target, double allowedDistanceFromTargetMeters, double allowedRotationalErrorDegrees) {
-         return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
+        Logger.recordOutput("Distance from target", POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()));
+        Logger.recordOutput("Distance from target ROT", Math.abs(POSE_ESTIMATOR.getCurrentPose().getRotation().minus(target.getRotation()).getDegrees()));
+
+        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
                 Math.abs(POSE_ESTIMATOR.getCurrentPose().getRotation().minus(target.getRotation()).getDegrees()) < allowedRotationalErrorDegrees;
     }
 
@@ -103,7 +106,7 @@ public class Swerve extends GenericSubsystem {
             gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
-        POSE_ESTIMATOR.updateFromOdometry(
+        POSE_ESTIMATOR.updatePoseEstimatorStates(
                 swerveWheelPositions,
                 gyroRotations,
                 OdometryThread.getInstance().getLatestTimestamps()
@@ -186,7 +189,7 @@ public class Swerve extends GenericSubsystem {
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
-    protected void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
+    public void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
         final ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
@@ -250,7 +253,7 @@ public class Swerve extends GenericSubsystem {
         return states;
     }
 
-    protected void stop() {
+    public void stop() {
         for (SwerveModule currentModule : MODULES)
             currentModule.stop();
     }

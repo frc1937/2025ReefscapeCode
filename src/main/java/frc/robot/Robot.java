@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
-import static frc.robot.poseestimation.photoncamera.VisionConstants.VISION_SIMULATION;
+import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.VISION_SIMULATION;
 
 public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
@@ -75,7 +75,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationPeriodic() {
         HardwareManager.updateSimulation();
-        VISION_SIMULATION.updateRobotPose(POSE_ESTIMATOR.getOdometryPose());
+        VISION_SIMULATION.update(POSE_ESTIMATOR.getOdometryPose());
 
         robotContainer.updateComponentPoses();
     }

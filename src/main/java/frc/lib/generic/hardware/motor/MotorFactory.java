@@ -16,8 +16,7 @@ public class MotorFactory {
     public static Motor createSpark(String name, int port, MotorProperties.SparkType type) {
         final Motor motor = createSimOrReplayMotor(name, port);
 
-        if (motor != null)
-            return motor;
+        if (motor != null) return motor;
 
         return type.getSpark(name, port);
     }

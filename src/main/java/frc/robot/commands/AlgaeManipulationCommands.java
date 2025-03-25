@@ -20,10 +20,10 @@ public class AlgaeManipulationCommands {
     }
 
     public static Command blastAlgaeOffReef() {
-        return CORAL_INTAKE.rotateAlgaeBlasterEndEffector()
-                .alongWith(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT))
+        return CORAL_INTAKE.removeAlgae()
+                .alongWith(ALGAE_BLASTER.setArmTargetState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT))
                 .withTimeout(1.5)
-                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+                .andThen(ALGAE_BLASTER.setArmTargetState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
     public static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {

@@ -17,9 +17,9 @@ public class ElevatorConstants {
     public enum ElevatorHeight {
         L1(0.7),
         L2(1.03),
-        L2_AND_A_HALF(1.98),
-        L3(2.93),
-        L4(3.1),
+        L2_AND_A_HALF(2.96),
+        L3(2.96),
+        L4(3.11),
         REMOVE_ALGAE_FROM_L3(1.92),
         REMOVE_ALGAE_FROM_L2(0.1),
         FEEDER(0.13),

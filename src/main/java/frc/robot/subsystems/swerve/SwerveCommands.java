@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.lib.util.flippable.FlippableRotation2d;
+import org.littletonrobotics.junction.Logger;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -46,12 +47,20 @@ public class SwerveCommands {
     public static Command goToPosePID(Pose2d targetPose) {
         return new FunctionalCommand(
                 () -> {
+                    Logger.recordOutput("Poses/Targets/TargetPIDPose", targetPose);
+
                     SWERVE.resetRotationController();
                     SWERVE.setGoalRotationController(targetPose.getRotation());
                     },
-                () -> SWERVE.driveToPosePID(targetPose),
-                interrupt -> SWERVE.stop(),
-                () -> SWERVE.isAtPose(targetPose, 0.049, 0.4),
+                () -> {
+                    SWERVE.driveToPosePID(targetPose);
+                },
+                interrupt -> {
+                    SWERVE.stop();
+                },
+                () ->
+                    SWERVE.isAtPose(targetPose, 0.044, 0.4)
+                ,
                 SWERVE
         );
     }
@@ -78,7 +87,9 @@ public class SwerveCommands {
 
     public static Command driveWithTimeout(double x, double y, double rotation, boolean robotCentric, double timeout) {
         return new FunctionalCommand(
-                () -> {},
+                () -> {
+                    SWERVE.driveOpenLoop(x,y,rotation,robotCentric);
+                },
                 () -> SWERVE.driveOpenLoop(x,y,rotation,robotCentric),
                 (interrupt) -> {},
                 () -> false,

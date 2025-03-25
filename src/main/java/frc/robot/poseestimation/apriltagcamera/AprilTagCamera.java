@@ -61,7 +61,9 @@ public class AprilTagCamera {
     }
 
     public boolean hasValidResult() {
-        return inputs.hasResult && inputs.poseAmbiguity < AprilTagCameraConstants.MAXIMUM_AMBIGUITY && inputs.distancesFromTags[0] < 1.9;
+        return inputs.hasResult &&
+                inputs.poseAmbiguity < AprilTagCameraConstants.MAXIMUM_AMBIGUITY
+                && inputs.distancesFromTags[0] < 4;
     }
 
     /**
@@ -113,7 +115,8 @@ public class AprilTagCamera {
 
         final Pose2d poseAtTime = POSE_ESTIMATOR.getEstimatedPoseAtTimestamp(inputs.latestResultTimestampSeconds);
 
-        if (poseAtTime == null) return null;
+        if (poseAtTime == null)
+            return null;
 
         final Pose2d alternatePose = cameraPoseToRobotPose(inputs.alternateCameraSolvePNPPose.toPose2d());
         final Rotation2d robotAngleAtResultTime = poseAtTime.getRotation();

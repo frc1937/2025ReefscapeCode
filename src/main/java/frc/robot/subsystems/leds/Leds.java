@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Colour;
+import frc.lib.util.CustomLEDPatterns;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -21,6 +22,8 @@ public class Leds extends SubsystemBase {
                 Colour.YELLOW.toGRB(),
                 Colour.GOLD.toGRB()
         ), timeout)),
+
+        AUTOMATION(timeout -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, timeout)),
 
         EATING(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
                 Colour.BLACK.toGRB(),

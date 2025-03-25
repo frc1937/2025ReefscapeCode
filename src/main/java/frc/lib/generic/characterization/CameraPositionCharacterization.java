@@ -13,7 +13,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.Supplier;
 
 public class CameraPositionCharacterization extends Command {
-    private static final LoggedNetworkNumber ROTATION_SPEED = new LoggedNetworkNumber("/SmartDashboard/CameraPositionCharacterization/RotationSpeed", 1);
+    private static final LoggedNetworkNumber ROTATION_SPEED = new LoggedNetworkNumber("/SmartDashboard/CameraPositionCharacterization/RotationSpeed", 0.3);
 
     private final Supplier<Pose2d> cameraPoseSupplier;
     private final Rotation2d cameraMountAngle;
