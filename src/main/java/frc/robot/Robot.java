@@ -14,12 +14,9 @@ import org.littletonrobotics.junction.Logger;
 import java.io.File;
 import java.io.IOException;
 
-import static frc.lib.math.Optimizations.getSkiddingRatio;
 import static frc.lib.math.Optimizations.isColliding;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.RobotContainer.ACCELEROMETER;
 import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.VISION_SIMULATION;
-import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_KINEMATICS;
 
 public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
@@ -48,7 +45,6 @@ public class Robot extends LoggedRobot {
         Logger.recordOutput("Robot/Accelerometer G", totalAccel);
         Logger.recordOutput("Robot/Is Colliding", isColliding());
         Logger.recordOutput("Robot/TotalDriveCurrent", SWERVE.getTotalCurrent());
-        Logger.recordOutput("Robot/Skiddin RATIO!", getSkiddingRatio(SWERVE_KINEMATICS, SWERVE.getModuleStates()));
     }
 
     @Override
