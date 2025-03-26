@@ -108,15 +108,15 @@ public class Leds extends SubsystemBase {
     }
 
     private static Colour[] getAllianceThemedLeds() {
-//        return new Colour[]{
-//                Colour.DARK_RED.toGRB(),
-//                Colour.RED.toGRB(),
-//                Colour.DARK_RED.toGRB(),
+        return new Colour[]{
+                Colour.DARK_RED.toGRB(),
+                Colour.RED.toGRB(),
+                Colour.DARK_RED.toGRB(),
+                Colour.ORANGE.toGRB()};
+//        return new Colour[]{Colour.SKY_BLUE.toGRB(),
+//                Colour.CORNFLOWER_BLUE.toGRB(),
+//                Colour.BLUE.toGRB(),
+//                Colour.LIGHT_BLUE.toGRB(),
 //                Colour.WHITE.toGRB()};
-        return new Colour[]{Colour.SKY_BLUE.toGRB(),
-                Colour.CORNFLOWER_BLUE.toGRB(),
-                Colour.BLUE.toGRB(),
-                Colour.LIGHT_BLUE.toGRB(),
-                Colour.WHITE.toGRB()};
     }
 }

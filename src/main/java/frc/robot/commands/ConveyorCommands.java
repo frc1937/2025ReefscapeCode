@@ -41,7 +41,7 @@ public class ConveyorCommands {
                 (ALGAE_BLASTER.algaeBlasterFullThrottle(INTAKE_L4, 0.5)
                         .withDeadline(prepareCoralSlowly.andThen(finallyRelease))
                         .andThen(
-                          CORAL_INTAKE.setMotorVoltage(-0.21)
+                          CORAL_INTAKE.setMotorVoltage(-0.2)
                                   .withDeadline(ALGAE_BLASTER.setArmTargetState(SCORE_L4_START)))
                 ),
                 ALGAE_BLASTER::hasCoralInL4Mechanism
@@ -79,7 +79,6 @@ public class ConveyorCommands {
                                 .until(()-> SWERVE.isAtPose(branch.getBranchPose(), 0.1, 1.5)))
                                 .andThen(releaseCoral)
                                 .andThen(ALGAE_BLASTER.setArmTargetState(SCORE_L4_START))
-                                .andThen(SwerveCommands.driveWithTimeout(-1,0,0, true, 0.1))
                         )
         );
     }

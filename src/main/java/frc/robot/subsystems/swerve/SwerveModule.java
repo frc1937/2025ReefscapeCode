@@ -40,6 +40,10 @@ public class SwerveModule {
         driveMotor.setOutput(MotorProperties.ControlMode.VOLTAGE, voltage);
     }
 
+    public double getCurrent() {
+        return driveMotor.getCurrent();
+    }
+
     protected double getDriveWheelPositionRadians() {
         return 2 * Math.PI * driveMotor.getSystemPosition();
     }

@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.pathfinding.PathfindingCommands;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -51,15 +52,13 @@ public class CoralManipulationCommands {
                         .andThen(ALGAE_BLASTER.algaeBlasterFullThrottle(DEFAULT_POSE, -0.1)
                                 .withTimeout(1))))),
 
-                ELEVATOR.setTargetHeight(L1).andThen( //BLAST FROM L2
-                        ELEVATOR.maintainPosition().withDeadline(
-                        (ALGAE_BLASTER.algaeBlasterFullThrottle(SCORE_L4_END, 0.1))
-                        .until(() -> SWERVE.isAtPose(CENTER_POSE.getBranchPose(), 0.20, 8))
-                                .andThen(
-                        ALGAE_BLASTER.algaeBlasterFullThrottle(INTAKE_L4, 0.1)
-                                )
-                        .until(() -> SWERVE.isAtPose(CENTER_POSE.getBranchPose(), 0.16, 7))))
-                ,
+                ELEVATOR.setTargetHeight(FEEDER).withDeadline( //BLAST FROM L2
+                        (((ALGAE_BLASTER.algaeBlasterFullThrottle(INTAKE_L4, 0.1))
+                         .until(() -> SWERVE.isAtPose(CENTER_POSE.getBranchPose(), 0.25, 8))
+                        ).andThen(
+                                 ALGAE_BLASTER.algaeBlasterFullThrottle(SCORE_L4_START, -0.1)
+                                                .withTimeout(1)))
+                ),
                 () -> decideReefFace().ordinal() % 2 == 0
                 );
 
@@ -107,10 +106,19 @@ public class CoralManipulationCommands {
                 );
     }
 
-    public static Command justReleaseACoral() {
-        return (ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
-                                .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
-                                .andThen(releaseCoral()));
+    public static Command justReleaseACoralTeleop() {
+        return new ConditionalCommand(
+                (ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
+                        .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
+                        .andThen(releaseCoral())),
+
+                ELEVATOR.setTargetHeight(L1)
+                        .until(() -> ELEVATOR.isAtTargetHeight(L1))
+                        .andThen(CORAL_INTAKE.setMotorVoltage(2.1)),
+
+                new Trigger(() -> CURRENT_SCORING_LEVEL.getRotations() != L1.getRotations())
+        );
+
     }
 
     public static Command scoreCoralFromHeight(ElevatorConstants.ElevatorHeight elevatorHeightThing) {

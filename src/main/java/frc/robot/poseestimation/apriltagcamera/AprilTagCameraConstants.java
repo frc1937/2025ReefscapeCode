@@ -50,7 +50,7 @@ public class AprilTagCameraConstants {
     private static final StandardDeviations
             REEF_TAG_CAMERA_STANDARD_DEVIATIONS
             = new StandardDeviations(
-            0.015,
+            0.012,
             0.01
     );
 

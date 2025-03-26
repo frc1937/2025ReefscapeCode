@@ -15,7 +15,7 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.SLAVE_MOTOR_PORT;
 
 public class ElevatorConstants {
     public enum ElevatorHeight {
-        L1(0.7),
+        L1(0.3),
         L2(1.03),
         L2_AND_A_HALF(2.96),
         L3(2.96),
@@ -77,7 +77,7 @@ public class ElevatorConstants {
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxVelocity = 8;
         ELEVATOR_MOTORS_CONFIGURATION.profileMaxAcceleration = 75;
 
-        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 65;
+        ELEVATOR_MOTORS_CONFIGURATION.supplyCurrentLimit = 63;
 
         ELEVATOR_MOTORS_CONFIGURATION.inverted = true;
         ELEVATOR_MOTORS_CONFIGURATION.gearRatio = GEAR_RATIO;

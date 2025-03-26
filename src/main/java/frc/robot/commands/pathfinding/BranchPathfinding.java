@@ -28,8 +28,7 @@ import static frc.robot.commands.ConveyorCommands.moveFromIntakeToL4;
 import static frc.robot.commands.ConveyorCommands.scoreToL4;
 import static frc.robot.commands.CoralManipulationCommands.CURRENT_SCORING_LEVEL;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranch;
-import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN;
-import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.SCORE_L4_START;
+import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L4;
 import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
@@ -54,7 +53,8 @@ public class BranchPathfinding {
                         .until(() -> ALGAE_BLASTER.hasCoralInL4Mechanism() && ALGAE_BLASTER.isAtState(SCORE_L4_START) &&
                                 SWERVE.isAtPose(branch.getBranchPose().transformBy(L4DistanceFromReef), 0.2,
                                         3))
-                        .andThen(pathfindToBranch(branch).withDeadline(scoreToL4(branch)));
+                        .andThen(pathfindToBranch(branch).withDeadline(scoreToL4(branch)))
+                        .andThen(ALGAE_BLASTER.algaeBlasterFullThrottle(DEFAULT_POSE, -0.1));
 
 
         final Command L1L2L3Sequence =

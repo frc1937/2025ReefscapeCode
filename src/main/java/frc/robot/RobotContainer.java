@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,6 +19,8 @@ import frc.robot.utilities.PathPlannerConstants;
 import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.*;
 
 public class RobotContainer {
+    public static final BuiltInAccelerometer ACCELEROMETER = new BuiltInAccelerometer();
+
     public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
             FRONT_LEFT_CAMERA,
             FRONT_RIGHT_CAMERA,

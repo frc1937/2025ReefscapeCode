@@ -36,8 +36,8 @@ public class SwerveModuleConstants {
     static final boolean ANGLE_MOTOR_INVERT = true;
     static final boolean DRIVE_MOTOR_INVERT = false;
 
-    static final int ANGLE_CURRENT_LIMIT = 40;
-    static final int DRIVE_STATOR_CURRENT_LIMIT = 67;
+    static final int ANGLE_CURRENT_LIMIT = 30;
+    static final int DRIVE_STATOR_CURRENT_LIMIT = 60;
 
     static final MotorProperties.Slot DRIVE_SLOT = new MotorProperties.Slot(
             /*0.55259*/0, 0.0, 0.0, //NOTE: IT WORKED WELL WITHOUT kP.
@@ -116,6 +116,7 @@ public class SwerveModuleConstants {
         driveMotor.setupSignalUpdates(VOLTAGE);
         driveMotor.setupSignalUpdates(VELOCITY);
         driveMotor.setupSignalUpdates(ACCELERATION);
+        driveMotor.setupSignalUpdates(CURRENT);
     }
 
     private static void configureSteerMotor(Motor steerMotor, Encoder encoder) {

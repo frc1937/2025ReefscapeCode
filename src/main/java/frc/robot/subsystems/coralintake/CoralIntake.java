@@ -42,7 +42,7 @@ public class CoralIntake extends GenericSubsystem {
 
     public Command releaseToL4Mechanism() {
         return (((setMotorVoltage(2).until(this::hasCoral))
-                .andThen(setMotorVoltage(1.33)).until(ALGAE_BLASTER::hasCoralInL4Mechanism)));
+                .andThen(setMotorVoltage(1.42)).until(ALGAE_BLASTER::hasCoralInL4Mechanism)));
     }
 
     public Command scoreToL4() {

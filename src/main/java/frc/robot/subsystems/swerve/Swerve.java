@@ -106,6 +106,10 @@ public class Swerve extends GenericSubsystem {
             gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
+        if (Optimizations.isColliding()) {
+            return;
+        }
+
         POSE_ESTIMATOR.updatePoseEstimatorStates(
                 swerveWheelPositions,
                 gyroRotations,
@@ -233,7 +237,7 @@ public class Swerve extends GenericSubsystem {
     }
 
     @AutoLogOutput(key = "Swerve/CurrentStates")
-    private SwerveModuleState[] getModuleStates() {
+    public SwerveModuleState[] getModuleStates() {
         final SwerveModuleState[] states = new SwerveModuleState[MODULES.length];
 
         for (int i = 0; i < MODULES.length; i++)
@@ -272,5 +276,15 @@ public class Swerve extends GenericSubsystem {
         lastTimestamp = currentTimestamp;
 
         return ChassisSpeeds.discretize(chassisSpeeds, difference);
+    }
+
+    public double getTotalCurrent() {
+        double total = 0;
+
+        for (SwerveModule module : MODULES) {
+            total += module.getCurrent();
+        }
+
+        return total;
     }
 }

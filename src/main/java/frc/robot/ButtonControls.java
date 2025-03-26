@@ -220,7 +220,7 @@ public class ButtonControls {
         );
 
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
-        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoral());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoralTeleop());
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
@@ -266,7 +266,7 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.five().whileTrue(CORAL_INTAKE.setMotorVoltage(-2));
 
         OPERATOR_CONTROLLER.seven()
-                .whileTrue(CLIMB.runVoltage(10));
+                .whileTrue(CLIMB.runVoltage(12));
 //        OPERATOR_CONTROLLER.six().onTrue(
 //                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
 //

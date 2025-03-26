@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.pathfinding.BranchPathfinding;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -20,6 +19,7 @@ import static frc.robot.commands.ConveyorCommands.scoreToL4;
 import static frc.robot.commands.CoralManipulationCommands.pathfindToFeederAndEat;
 import static frc.robot.commands.CoralManipulationCommands.scoreCoralFromHeight;
 import static frc.robot.commands.pathfinding.BranchPathfinding.L4DistanceFromReef;
+import static frc.robot.commands.pathfinding.BranchPathfinding.pathAndScoreWithOverride;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranchBezier;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.SCORE_L4_START;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L2;
@@ -152,14 +152,14 @@ public class Questionnaire {
         }
 
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "Middle L4x1 LEFT") {
-            return BranchPathfinding.pathAndScoreWithOverride(Branch.LEFT_BRANCH,
+            return new WaitCommand(2.5).andThen(pathAndScoreWithOverride(Branch.LEFT_BRANCH,
                     () -> 0, () -> 0, () -> 0,
-                    new Trigger(() -> false));
+                    new Trigger(() -> false)));
         }
 
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "Middle L4x1 RIGHT") {
-            return BranchPathfinding.pathAndScoreWithOverride(Branch.RIGHT_BRANCH, () -> 0, () -> 0, () -> 0,
-                    new Trigger(() -> false));
+            return new WaitCommand(2.5).andThen(pathAndScoreWithOverride(Branch.RIGHT_BRANCH, () -> 0, () -> 0, () -> 0,
+                    new Trigger(() -> false)));
         }
 
         return Commands.sequence(

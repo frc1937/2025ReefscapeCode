@@ -9,13 +9,17 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.generic.hardware.HardwareManager;
 import org.json.simple.parser.ParseException;
 import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
 
 import java.io.File;
 import java.io.IOException;
 
-import static frc.robot.RobotContainer.LEDS;
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
+import static frc.lib.math.Optimizations.getSkiddingRatio;
+import static frc.lib.math.Optimizations.isColliding;
+import static frc.robot.RobotContainer.*;
+import static frc.robot.RobotContainer.ACCELEROMETER;
 import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.VISION_SIMULATION;
+import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_KINEMATICS;
 
 public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
@@ -34,6 +38,17 @@ public class Robot extends LoggedRobot {
         commandScheduler.run();
 
         POSE_ESTIMATOR.periodic();
+
+        final float xAccel = (float) ACCELEROMETER.getX();
+        final float yAccel = (float) ACCELEROMETER.getY();
+        final double totalAccel = Math.hypot(xAccel, yAccel) * 9.8015;
+
+        Logger.recordOutput("Robot/Accelerometer X", xAccel);
+        Logger.recordOutput("Robot/Accelerometer Y", yAccel);
+        Logger.recordOutput("Robot/Accelerometer G", totalAccel);
+        Logger.recordOutput("Robot/Is Colliding", isColliding());
+        Logger.recordOutput("Robot/TotalDriveCurrent", SWERVE.getTotalCurrent());
+        Logger.recordOutput("Robot/Skiddin RATIO!", getSkiddingRatio(SWERVE_KINEMATICS, SWERVE.getModuleStates()));
     }
 
     @Override
