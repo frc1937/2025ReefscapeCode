@@ -35,6 +35,31 @@ import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 public class BranchPathfinding {
     public static Transform2d L4DistanceFromReef = new Transform2d(-0.53,0, Rotation2d.kZero);
 
+    public static Command pathAndScoreWithOverrideAutonomous(PathfindingConstants.Branch branch,
+                                                   DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier,
+                                                   Trigger shouldOverride) {
+
+        final Command L4Sequence =
+                (SwerveCommands.driveOpenLoop(xSupplier,ySupplier,rotationSupplier, ()-> false)
+                        .onlyWhile(shouldOverride)
+                        .andThen(getPathToBranch(branch, L4DistanceFromReef, 0.1))
+                ).alongWith((moveFromIntakeToL4()
+                                        .andThen(
+                                                CORAL_INTAKE.compensateForWobblyArm(true)
+                                                        .withDeadline(ALGAE_BLASTER.setArmTargetState(SCORE_L4_START)))),
+                                (ELEVATOR.setTargetHeight(L4.getMiddlePoint())
+                                        .until(() -> ELEVATOR.isAtTargetHeight(L4.getMiddlePoint())))
+                        )
+                        .until(() -> ALGAE_BLASTER.hasCoralInL4Mechanism() && ALGAE_BLASTER.isAtState(SCORE_L4_START) &&
+                                SWERVE.isAtPose(branch.getBranchPose().transformBy(L4DistanceFromReef), 0.2,
+                                        3))
+                        .andThen(pathfindToBranch(branch).withDeadline(scoreToL4(branch)))
+                        .andThen(ALGAE_BLASTER.algaeBlasterFullThrottle(DEFAULT_POSE, -0.1));
+
+
+        return L4Sequence;
+    }
+
     public static Command pathAndScoreWithOverride(PathfindingConstants.Branch branch,
                                                    DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier,
                                                    Trigger shouldOverride) {
@@ -66,7 +91,7 @@ public class BranchPathfinding {
                                 CORAL_INTAKE.prepareThenTakeBack(),
                                 ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL.getMiddlePoint())
                         )
-                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.03, 0.5))
+                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.06, 0.5))
                         .andThen(
                              (ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                              .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))

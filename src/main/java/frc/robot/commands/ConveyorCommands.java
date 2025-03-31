@@ -62,7 +62,7 @@ public class ConveyorCommands {
 
         final Command prepareAlgaeBlaster =
                 ALGAE_BLASTER.setArmStateContinuous(SCORE_L4_START)
-                        .alongWith(CORAL_INTAKE.setMotorVoltage(0.2)
+                        .alongWith(CORAL_INTAKE.setMotorVoltage(0.22)
                                 .until(() -> ALGAE_BLASTER.isAtState(SCORE_L4_START)));
 
         final Command releaseCoral =

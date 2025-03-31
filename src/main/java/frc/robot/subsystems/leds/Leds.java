@@ -52,6 +52,9 @@ public class Leds extends SubsystemBase {
                 Colour.MAGENTA.toGRB()
         ), timeout)),
 
+        OUTTAKE(timeout -> getCommandFromColours(
+                () -> generateFlashingBuffer(Colour.DARK_GREEN.toGRB(), Colour.GREEN.toGRB()), timeout)),
+
         DEFAULT(timeout ->
                 getCommandFromColours(() -> generateScrollBuffer(getAllianceThemedLeds()), 0));
 
@@ -108,15 +111,15 @@ public class Leds extends SubsystemBase {
     }
 
     private static Colour[] getAllianceThemedLeds() {
-        return new Colour[]{
-                Colour.DARK_RED.toGRB(),
-                Colour.RED.toGRB(),
-                Colour.DARK_RED.toGRB(),
-                Colour.ORANGE.toGRB()};
-//        return new Colour[]{Colour.SKY_BLUE.toGRB(),
-//                Colour.CORNFLOWER_BLUE.toGRB(),
-//                Colour.BLUE.toGRB(),
-//                Colour.LIGHT_BLUE.toGRB(),
-//                Colour.WHITE.toGRB()};
+//        return new Colour[]{
+//                Colour.DARK_RED.toGRB(),
+//                Colour.RED.toGRB(),
+//                Colour.DARK_RED.toGRB(),
+//                Colour.ORANGE.toGRB()};
+        return new Colour[]{Colour.SKY_BLUE.toGRB(),
+                Colour.CORNFLOWER_BLUE.toGRB(),
+                Colour.BLUE.toGRB(),
+                Colour.LIGHT_BLUE.toGRB(),
+                Colour.SILVER.toGRB()};
     }
 }

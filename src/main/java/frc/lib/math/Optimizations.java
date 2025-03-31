@@ -43,9 +43,7 @@ public class Optimizations {
     public static boolean isColliding() {
         final float xAccel = (float) ACCELEROMETER.getX();
         final float yAccel = (float) ACCELEROMETER.getY();
-        return (float) (Math.sqrt(xAccel * xAccel
-                + yAccel * yAccel)
-                * 9.8015) > 36;
+        return Math.hypot(xAccel, yAccel) * 9.8015 > 36;
     }
 
     /**

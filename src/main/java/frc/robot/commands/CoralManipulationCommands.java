@@ -24,7 +24,7 @@ import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.*;
 import static frc.robot.subsystems.swerve.SwerveCommands.driveWithTimeout;
 
 public class CoralManipulationCommands {
-    public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = L4;
+    public static ElevatorConstants.ElevatorHeight CURRENT_SCORING_LEVEL = L1;
 
     public static Command pathfindToFeederAndEat() {
         return PathfindingCommands.pathfindToFeeder()
@@ -53,18 +53,18 @@ public class CoralManipulationCommands {
                                 .withTimeout(1))))),
 
                 ELEVATOR.setTargetHeight(FEEDER).withDeadline( //BLAST FROM L2
-                        (((ALGAE_BLASTER.algaeBlasterFullThrottle(INTAKE_L4, 0.1))
-                         .until(() -> SWERVE.isAtPose(CENTER_POSE.getBranchPose(), 0.25, 8))
+                        (((ALGAE_BLASTER.algaeBlasterFullThrottle(INTAKE_L4, 0.01))
+                         .until(() -> SWERVE.isAtPose(CENTER_POSE.getBranchPose(), 0.32, 8))
                         ).andThen(
-                                 ALGAE_BLASTER.algaeBlasterFullThrottle(SCORE_L4_START, -0.1)
-                                                .withTimeout(1)))
+                                 ALGAE_BLASTER.algaeBlasterFullThrottle(SCORE_L4_START, -0.01)
+                                                .withTimeout(0.4)))
                 ),
                 () -> decideReefFace().ordinal() % 2 == 0
                 );
 
         return ((driveToStartPoseAlgae.andThen(driveToAlgae))
                 .alongWith(kick))
-                .andThen(driveWithTimeout(-0.2, 0, 0, true, 1));
+                .andThen(driveWithTimeout(-0.2, 0, 0, true, 1.3));
     }
     /**
      * Pathfinds to the specified feeder while constantly eating. Stops when the coral intake has coral
@@ -114,7 +114,7 @@ public class CoralManipulationCommands {
 
                 ELEVATOR.setTargetHeight(L1)
                         .until(() -> ELEVATOR.isAtTargetHeight(L1))
-                        .andThen(CORAL_INTAKE.setMotorVoltage(2.1)),
+                        .andThen(CORAL_INTAKE.setMotorVoltage(3.4)),
 
                 new Trigger(() -> CURRENT_SCORING_LEVEL.getRotations() != L1.getRotations())
         );

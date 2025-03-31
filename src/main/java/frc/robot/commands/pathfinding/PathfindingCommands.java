@@ -66,7 +66,7 @@ public class PathfindingCommands {
 
             return SwerveCommands.goToPoseBezier(targetPose)
                     .withTimeout(2.5)
-                    .andThen(SwerveCommands.goToPosePID(feeder.getPose()));
+                    .andThen(SwerveCommands.goToPosePID(feeder.getPose())).withTimeout(3);
 //                    .andThen(SwerveCommands.driveWithTimeout(0,-0.1,0,true,0.2));
         }, Set.of(SWERVE));
     }

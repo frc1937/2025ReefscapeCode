@@ -18,8 +18,7 @@ import static frc.robot.commands.ConveyorCommands.moveFromIntakeToL4;
 import static frc.robot.commands.ConveyorCommands.scoreToL4;
 import static frc.robot.commands.CoralManipulationCommands.pathfindToFeederAndEat;
 import static frc.robot.commands.CoralManipulationCommands.scoreCoralFromHeight;
-import static frc.robot.commands.pathfinding.BranchPathfinding.L4DistanceFromReef;
-import static frc.robot.commands.pathfinding.BranchPathfinding.pathAndScoreWithOverride;
+import static frc.robot.commands.pathfinding.BranchPathfinding.*;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranchBezier;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.SCORE_L4_START;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L2;
@@ -126,7 +125,7 @@ public class Questionnaire {
 
         final Command moveBlasterToScorePosition =
                 (ALGAE_BLASTER.setArmStateContinuous(SCORE_L4_START)
-                        .alongWith(CORAL_INTAKE.setMotorVoltage(0.3)))
+                        .alongWith(CORAL_INTAKE.setMotorVoltage(0.27)))
                 .until(() -> ALGAE_BLASTER.isAtState(SCORE_L4_START) && ALGAE_BLASTER.hasCoralInL4Mechanism());
 
         return (((goInFrontOfBranch
@@ -152,13 +151,13 @@ public class Questionnaire {
         }
 
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "Middle L4x1 LEFT") {
-            return new WaitCommand(2.5).andThen(pathAndScoreWithOverride(Branch.LEFT_BRANCH,
+            return new WaitCommand(2.5).andThen(pathAndScoreWithOverrideAutonomous(Branch.LEFT_BRANCH,
                     () -> 0, () -> 0, () -> 0,
                     new Trigger(() -> false)));
         }
 
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "Middle L4x1 RIGHT") {
-            return new WaitCommand(2.5).andThen(pathAndScoreWithOverride(Branch.RIGHT_BRANCH, () -> 0, () -> 0, () -> 0,
+            return new WaitCommand(2.5).andThen(pathAndScoreWithOverrideAutonomous(Branch.RIGHT_BRANCH, () -> 0, () -> 0, () -> 0,
                     new Trigger(() -> false)));
         }
 
