@@ -20,14 +20,15 @@ public class AlgaeManipulationCommands {
     }
 
     public static Command blastAlgaeOffReef() {
-        return CORAL_INTAKE.rotateAlgaeBlasterEndEffector()
-                .alongWith(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT))
+        return CORAL_INTAKE.removeAlgae()
+                .alongWith(ALGAE_BLASTER.setArmTargetState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_OUT))
                 .withTimeout(1.5)
-                .andThen(ALGAE_BLASTER.setAlgaeBlasterArmState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
+                .andThen(ALGAE_BLASTER.setArmTargetState(AlgaeBlasterConstants.BlasterArmState.HORIZONTAL_IN));
     }
 
-    private static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
-        if (face.ordinal() % 2 == 0) return ElevatorConstants.ElevatorHeight.L3;
-        return ElevatorConstants.ElevatorHeight.L2;
+    public static ElevatorConstants.ElevatorHeight getAlgaeHeightFromFace(FieldConstants.ReefFace face) {
+        if (face.ordinal() % 2 == 0)
+            return ElevatorConstants.ElevatorHeight.REMOVE_ALGAE_FROM_L3;
+        return ElevatorConstants.ElevatorHeight.REMOVE_ALGAE_FROM_L2;
     }
 }

@@ -15,6 +15,7 @@ import frc.lib.generic.OdometryThread;
 import frc.lib.math.Optimizations;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
@@ -24,9 +25,13 @@ import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
 
 public class Swerve extends GenericSubsystem {
     private double lastTimestamp = Timer.getFPGATimestamp();
+    private double previousTotalVelocity = 0;
 
     public boolean isAtPose(Pose2d target, double allowedDistanceFromTargetMeters, double allowedRotationalErrorDegrees) {
-         return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
+        Logger.recordOutput("Distance from target", POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()));
+        Logger.recordOutput("Distance from target ROT", Math.abs(POSE_ESTIMATOR.getCurrentPose().getRotation().minus(target.getRotation()).getDegrees()));
+
+        return POSE_ESTIMATOR.getCurrentPose().getTranslation().getDistance(target.getTranslation()) < allowedDistanceFromTargetMeters &&
                 Math.abs(POSE_ESTIMATOR.getCurrentPose().getRotation().minus(target.getRotation()).getDegrees()) < allowedRotationalErrorDegrees;
     }
 
@@ -57,7 +62,15 @@ public class Swerve extends GenericSubsystem {
 
     @AutoLogOutput(key="Swerve/velocity")
     public ChassisSpeeds getRobotRelativeVelocity() {
-        return SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+        final ChassisSpeeds speeds = SWERVE_KINEMATICS.toChassisSpeeds(getModuleStates());
+
+        double currentTotalVelocity = Math.hypot(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+
+        Logger.recordOutput("TOTAL_VELOCITY_VECTOR", currentTotalVelocity);
+        Logger.recordOutput("TOTAL_ACCELERATION_VECTOR", (currentTotalVelocity - previousTotalVelocity)/0.02);
+
+        previousTotalVelocity = currentTotalVelocity;
+        return speeds;
     }
 
     public ChassisSpeeds getFieldRelativeVelocity() {
@@ -93,7 +106,11 @@ public class Swerve extends GenericSubsystem {
             gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
-        POSE_ESTIMATOR.updateFromOdometry(
+        if (Optimizations.isColliding()) {
+            return;
+        }
+
+        POSE_ESTIMATOR.updatePoseEstimatorStates(
                 swerveWheelPositions,
                 gyroRotations,
                 OdometryThread.getInstance().getLatestTimestamps()
@@ -176,7 +193,7 @@ public class Swerve extends GenericSubsystem {
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
 
-    protected void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
+    public void driveRobotRelative(double xPower, double yPower, double thetaPower, boolean shouldUseClosedLoop) {
         final ChassisSpeeds speeds = powerSpeedsToChassisSpeeds(new ChassisSpeeds(xPower, yPower, thetaPower));
         driveRobotRelative(speeds, shouldUseClosedLoop);
     }
@@ -220,7 +237,7 @@ public class Swerve extends GenericSubsystem {
     }
 
     @AutoLogOutput(key = "Swerve/CurrentStates")
-    private SwerveModuleState[] getModuleStates() {
+    public SwerveModuleState[] getModuleStates() {
         final SwerveModuleState[] states = new SwerveModuleState[MODULES.length];
 
         for (int i = 0; i < MODULES.length; i++)
@@ -240,7 +257,7 @@ public class Swerve extends GenericSubsystem {
         return states;
     }
 
-    protected void stop() {
+    public void stop() {
         for (SwerveModule currentModule : MODULES)
             currentModule.stop();
     }
@@ -259,5 +276,15 @@ public class Swerve extends GenericSubsystem {
         lastTimestamp = currentTimestamp;
 
         return ChassisSpeeds.discretize(chassisSpeeds, difference);
+    }
+
+    public double getTotalCurrent() {
+        double total = 0;
+
+        for (SwerveModule module : MODULES) {
+            total += module.getCurrent();
+        }
+
+        return total;
     }
 }

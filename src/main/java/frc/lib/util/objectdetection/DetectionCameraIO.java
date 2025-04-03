@@ -1,4 +1,4 @@
-package frc.robot.poseestimation.objectdetection;
+package frc.lib.util.objectdetection;
 
 import frc.lib.generic.advantagekit.LoggableHardware;
 import frc.lib.generic.hardware.HardwareManager;

@@ -11,7 +11,7 @@
             "title": "Field",
             "x": 256.0,
             "y": 0.0,
-            "width": 1024.0,
+            "width": 960.0,
             "height": 512.0,
             "type": "Field",
             "properties": {
@@ -63,9 +63,9 @@
           },
           {
             "title": "Voltage",
-            "x": 1280.0,
+            "x": 1216.0,
             "y": 0.0,
-            "width": 448.0,
+            "width": 320.0,
             "height": 192.0,
             "type": "Voltage View",
             "properties": {
@@ -81,9 +81,9 @@
           },
           {
             "title": "MatchTime",
-            "x": 1280.0,
+            "x": 1216.0,
             "y": 192.0,
-            "width": 576.0,
+            "width": 320.0,
             "height": 320.0,
             "type": "Match Time",
             "properties": {
@@ -107,7 +107,7 @@
             "x": 0.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 448.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -185,7 +185,7 @@
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 448.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -263,7 +263,7 @@
             "x": 512.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 448.0,
+            "height": 384.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -340,9 +340,9 @@
         "containers": [
           {
             "title": "Which Auto Preset?",
-            "x": 768.0,
-            "y": 0.0,
-            "width": 192.0,
+            "x": 256.0,
+            "y": 384.0,
+            "width": 256.0,
             "height": 128.0,
             "type": "ComboBox Chooser",
             "properties": {
@@ -353,10 +353,10 @@
           },
           {
             "title": "Field",
-            "x": 960.0,
+            "x": 768.0,
             "y": 0.0,
-            "width": 832.0,
-            "height": 448.0,
+            "width": 768.0,
+            "height": 384.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Field",

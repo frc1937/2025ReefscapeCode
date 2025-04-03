@@ -1,11 +1,12 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.util.flippable.Flippable;
-import frc.robot.commands.autocommands.Questionnaire;
+import frc.robot.commands.Questionnaire;
 import frc.robot.poseestimation.poseestimator.PoseEstimator;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
 import frc.robot.subsystems.climb.Climb;
@@ -15,9 +16,11 @@ import frc.robot.subsystems.leds.Leds;
 import frc.robot.subsystems.swerve.Swerve;
 import frc.robot.utilities.PathPlannerConstants;
 
-import static frc.robot.poseestimation.poseestimator.PoseEstimatorConstants.*;
+import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.*;
 
 public class RobotContainer {
+    public static final BuiltInAccelerometer ACCELEROMETER = new BuiltInAccelerometer();
+
     public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
             FRONT_LEFT_CAMERA,
             FRONT_RIGHT_CAMERA,

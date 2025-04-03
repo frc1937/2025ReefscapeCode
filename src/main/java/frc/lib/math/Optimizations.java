@@ -1,6 +1,5 @@
 package frc.lib.math;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -9,6 +8,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.subsystems.swerve.SwerveConstants;
 
 import java.util.Arrays;
+
+import static frc.robot.RobotContainer.ACCELEROMETER;
 
 public class Optimizations {
     /**
@@ -37,6 +38,12 @@ public class Optimizations {
         final double minSpeed = Arrays.stream(translationalSpeeds).min().orElse(Double.POSITIVE_INFINITY);
 
         return maxSpeed / minSpeed;
+    }
+
+    public static boolean isColliding() {
+        final float xAccel = (float) ACCELEROMETER.getX();
+        final float yAccel = (float) ACCELEROMETER.getY();
+        return Math.hypot(xAccel, yAccel) * 9.8015 > 36;
     }
 
     /**

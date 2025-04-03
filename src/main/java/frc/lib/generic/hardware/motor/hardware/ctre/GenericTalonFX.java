@@ -35,6 +35,7 @@ public class GenericTalonFX extends Motor {
     private final StatusSignal<Voltage> voltageSignal;
     private final StatusSignal<Current> currentSignal;
     private final StatusSignal<Temperature> temperatureSignal;
+    private final StatusSignal<Double> closedLoopTargetSignal;
 
     private final TalonFXConfiguration talonConfig = new TalonFXConfiguration();
     private final TalonFXConfigurator talonConfigurator;
@@ -51,8 +52,6 @@ public class GenericTalonFX extends Motor {
 
     private boolean shouldUseProfile = false;
 
-    private double target;
-
     public GenericTalonFX(String name, int deviceId, String canbusName) {
         super(name);
 
@@ -66,6 +65,7 @@ public class GenericTalonFX extends Motor {
         voltageSignal = talonFX.getMotorVoltage().clone();
         currentSignal = talonFX.getStatorCurrent().clone();
         temperatureSignal = talonFX.getDeviceTemp().clone();
+        closedLoopTargetSignal = talonFX.getClosedLoopReference();
     }
 
     public GenericTalonFX(String name, int deviceId) {
@@ -74,8 +74,6 @@ public class GenericTalonFX extends Motor {
 
     @Override
     public void setOutput(MotorProperties.ControlMode mode, double output) {
-        target = output;
-
         switch (mode) {
             case VOLTAGE -> talonFX.setControl(voltageRequest.withOutput(output));
 
@@ -102,8 +100,6 @@ public class GenericTalonFX extends Motor {
     public void setOutput(MotorProperties.ControlMode mode, double output, double feedforward) {
         if (mode != MotorProperties.ControlMode.POSITION && mode != MotorProperties.ControlMode.VELOCITY)
             setOutput(mode, output);
-
-        target = output;
 
         switch (mode) {
             case POSITION -> {
@@ -273,6 +269,7 @@ public class GenericTalonFX extends Motor {
                 case VOLTAGE -> setupNonThreadedSignal(voltageSignal);
                 case CURRENT -> setupNonThreadedSignal(currentSignal);
                 case TEMPERATURE -> setupNonThreadedSignal(temperatureSignal);
+                case CLOSED_LOOP_TARGET -> setupNonThreadedSignal(closedLoopTargetSignal);
             }
 
             return;
@@ -287,6 +284,7 @@ public class GenericTalonFX extends Motor {
             case VOLTAGE -> setupThreadedSignal("voltage", voltageSignal);
             case CURRENT -> setupThreadedSignal("current", currentSignal);
             case TEMPERATURE -> setupThreadedSignal("temperature", temperatureSignal);
+            case CLOSED_LOOP_TARGET -> setupThreadedSignal("target",closedLoopTargetSignal);
         }
     }
 
@@ -304,7 +302,7 @@ public class GenericTalonFX extends Motor {
         inputs.voltage = voltageSignal.getValueAsDouble();
         inputs.current = currentSignal.getValueAsDouble();
         inputs.temperature = temperatureSignal.getValueAsDouble();
-        inputs.target = target;
+        inputs.target = closedLoopTargetSignal.getValueAsDouble();
         inputs.systemPosition = positionSignal.getValueAsDouble();
         inputs.systemVelocity = velocitySignal.getValueAsDouble();
         inputs.systemAcceleration = accelerationSignal.getValueAsDouble();

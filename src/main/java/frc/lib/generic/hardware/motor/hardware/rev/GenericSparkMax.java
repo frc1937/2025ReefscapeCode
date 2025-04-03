@@ -134,6 +134,8 @@ public class GenericSparkMax extends GenericSparkBase {
             case POSITION_TRAPEZOIDAL -> {
                 final TrapezoidProfile.State currentSetpoint = motionProfile.calculate(0.02, previousSetpoint, goalState);
 
+                target = currentSetpoint.position;
+
                 acceleration = (currentSetpoint.velocity - previousSetpoint.velocity) / 0.02;
 
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), currentSetpoint.velocity, acceleration);
@@ -146,6 +148,8 @@ public class GenericSparkMax extends GenericSparkBase {
             case VELOCITY_TRAPEZOIDAL -> {
                 final TrapezoidProfile.State currentSetpoint = motionProfile.calculate(0.02, previousSetpoint, goalState);
 
+                target = currentSetpoint.position;
+
                 feedforwardOutput = feedforward.calculate(currentSetpoint.position, currentSetpoint.velocity);
                 feedbackOutput = this.feedback.calculate(getEffectiveVelocity(), currentSetpoint.position);
 
@@ -154,13 +158,21 @@ public class GenericSparkMax extends GenericSparkBase {
             }
 
             case VELOCITY_PID_FF -> {
+                target = goalState.position;
+
                 feedforwardOutput = feedforward.calculate(goalState.position, goalState.velocity);
                 feedbackOutput = this.feedback.calculate(getEffectiveVelocity(), goalState.position);
             }
 
-            case POSITION_PID -> feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
+            case POSITION_PID -> {
+                target = goalState.position;
+
+                feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
+            }
 
             case POSITION_PID_WITH_KG -> {
+                target = goalState.position;
+
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), 0, 0);
                 feedbackOutput = this.feedback.calculate(getEffectivePosition(), goalState.position);
             }
@@ -170,6 +182,8 @@ public class GenericSparkMax extends GenericSparkBase {
 
                 scurveInputs = result.input_parameter;
                 scurveOutput = result.output_parameter;
+
+                target = scurveOutput.new_position;
 
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), scurveOutput.new_velocity, scurveOutput.new_acceleration);
                 feedbackOutput = feedback.calculate(getEffectivePosition(), scurveOutput.new_position);

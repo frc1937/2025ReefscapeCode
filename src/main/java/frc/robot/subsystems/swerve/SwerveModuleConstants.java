@@ -36,14 +36,14 @@ public class SwerveModuleConstants {
     static final boolean ANGLE_MOTOR_INVERT = true;
     static final boolean DRIVE_MOTOR_INVERT = false;
 
-    static final int ANGLE_CURRENT_LIMIT = 40;
-    static final int DRIVE_STATOR_CURRENT_LIMIT = 55;
+    static final int ANGLE_CURRENT_LIMIT = 30;
+    static final int DRIVE_STATOR_CURRENT_LIMIT = 60;
 
     static final MotorProperties.Slot DRIVE_SLOT = new MotorProperties.Slot(
-            0.55259, 0.0, 0.0,
-            0.77849,
+            /*0.55259*/0, 0.0, 0.0, //NOTE: IT WORKED WELL WITHOUT kP.
+            0.82849,
             0.08223,
-            0.036002);
+            0.056002);
 
     protected static final Motor
             FL_STEER_MOTOR = MotorFactory.createSpark("FL_STEER_MOTOR", FL_STEER_MOTOR_PORT, MotorProperties.SparkType.MAX),
@@ -115,6 +115,8 @@ public class SwerveModuleConstants {
         driveMotor.setupSignalUpdates(CLOSED_LOOP_TARGET);
         driveMotor.setupSignalUpdates(VOLTAGE);
         driveMotor.setupSignalUpdates(VELOCITY);
+        driveMotor.setupSignalUpdates(ACCELERATION);
+        driveMotor.setupSignalUpdates(CURRENT);
     }
 
     private static void configureSteerMotor(Motor steerMotor, Encoder encoder) {

@@ -141,20 +141,28 @@ public class GenericSparkFlex extends GenericSparkBase {
         double feedforwardOutput, acceleration;
 
         switch (motionType) {
-            case POSITION_PID, POSITION_PID_WITH_KG -> sparkController.setReference(goalState.position,
+            case POSITION_PID, POSITION_PID_WITH_KG -> {
+                target = goalState.position;
+
+                sparkController.setReference(goalState.position,
                     SparkBase.ControlType.kPosition, ClosedLoopSlot.kSlot0,
                     feedforward.calculate(getEffectivePosition(), 0, 0),
-                    SparkClosedLoopController.ArbFFUnits.kVoltage); //todo: TEST, we merged these two.
+                    SparkClosedLoopController.ArbFFUnits.kVoltage);
+            }
 
-            case VELOCITY_PID_FF ->
+            case VELOCITY_PID_FF -> {
+                target = goalState.position;
+
                 sparkController.setReference(goalState.position, //todo: TEST, removed *60 cuz setThingy
                         SparkBase.ControlType.kVelocity, ClosedLoopSlot.kSlot0,
                         feedforward.calculate(goalState.position, goalState.velocity),
                         SparkClosedLoopController.ArbFFUnits.kVoltage);
-
+            }
 
             case POSITION_TRAPEZOIDAL -> {
                 final TrapezoidProfile.State currentSetpoint = motionProfile.calculate(0.02, previousSetpoint, goalState);
+
+                target = currentSetpoint.position;
 
                 acceleration = (currentSetpoint.velocity - previousSetpoint.velocity) / 0.02;
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), currentSetpoint.velocity, acceleration);
@@ -170,6 +178,8 @@ public class GenericSparkFlex extends GenericSparkBase {
 
             case VELOCITY_TRAPEZOIDAL -> {
                 final TrapezoidProfile.State currentSetpoint = motionProfile.calculate(0.02, previousSetpoint, goalState);
+
+                target = goalState.position * 60;
 
                 feedforwardOutput = feedforward.calculate(0, currentSetpoint.position, currentSetpoint.velocity);
 
@@ -189,6 +199,8 @@ public class GenericSparkFlex extends GenericSparkBase {
                 scurveOutput = result.output_parameter;
 
                 feedforwardOutput = feedforward.calculate(getEffectivePosition(), scurveOutput.new_velocity, scurveOutput.new_acceleration);
+
+                target = scurveOutput.new_position;
 
                 sparkController.setReference(scurveOutput.new_position,
                         com.revrobotics.spark.SparkBase.ControlType.kPosition,
