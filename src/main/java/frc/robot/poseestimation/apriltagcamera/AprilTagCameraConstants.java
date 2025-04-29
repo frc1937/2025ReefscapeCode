@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.lib.util.objectdetection.DetectionCameraFactory;
+import frc.lib.util.objectdetection.DetectionCameraIO;
 import frc.robot.poseestimation.poseestimator.StandardDeviations;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
@@ -80,5 +82,7 @@ public class AprilTagCameraConstants {
             REAR_LEFT_CAMERA = new AprilTagCamera("REAR_LEFT", ROBOT_TO_REAR_LEFT_CAMERA, REEF_TAG_CAMERA_STANDARD_DEVIATIONS),
             REAR_RIGHT_CAMERA = new AprilTagCamera("REAR_RIGHT", ROBOT_TO_REAR_RIGHT_CAMERA, REEF_TAG_CAMERA_STANDARD_DEVIATIONS);
 
+    public static final DetectionCameraIO MIDDLE_CORAL_CAMERA
+            = DetectionCameraFactory.createDetectionCamera("FRONT_RIGHT", new Transform3d());
 
 }

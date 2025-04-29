@@ -231,6 +231,8 @@ public class ButtonControls {
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(ConveyorCommands.moveFromIntakeToL4());
 
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(SwerveCommands.driveToCoral());
+
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();
     }
