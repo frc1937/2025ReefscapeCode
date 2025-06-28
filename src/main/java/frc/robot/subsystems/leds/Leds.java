@@ -73,8 +73,8 @@ public class Leds extends SubsystemBase {
     private static final AddressableLED ledstrip = new AddressableLED(LEDSTRIP_PORT_PWM);
     private static final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_COUNT);
 
-    public static LEDMode currentMode;
-    public static LEDMode previousMode;
+    private static LEDMode currentMode;
+    private static LEDMode previousMode;
 
     public Leds() {
         ledstrip.setLength(LEDS_COUNT);
