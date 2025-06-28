@@ -110,7 +110,7 @@ public class Swerve extends GenericSubsystem {
             return;
         }
 
-        POSE_ESTIMATOR.updatePoseEstimatorStates(
+        POSE_ESTIMATOR.updateFromOdometry(
                 swerveWheelPositions,
                 gyroRotations,
                 OdometryThread.getInstance().getLatestTimestamps()

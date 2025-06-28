@@ -1,7 +1,6 @@
 package frc.robot.subsystems.swerve;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -17,7 +16,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import static frc.robot.RobotContainer.SWERVE;
-import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.MIDDLE_CORAL_CAMERA;
 import static frc.robot.subsystems.swerve.SwerveConstants.SWERVE_ROTATION_CONTROLLER;
 import static frc.robot.subsystems.swerve.SwerveModuleConstants.MODULES;
 import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
@@ -28,27 +26,27 @@ public class SwerveCommands {
     public static Command stopDriving() {
         return new InstantCommand(SWERVE::stop);
     }
-
-    //Giyusim command
-    public static Command driveToCoral() {
-        return Commands.run(
-                () -> {
-                    if (!MIDDLE_CORAL_CAMERA.hasResult()) {
-                        SWERVE.driveRobotRelative(0, 0, 0, false);
-                        return;
-                    }
-
-                    double rotationPower = MathUtil.clamp(
-                            objectRotationPID.calculate(MIDDLE_CORAL_CAMERA.getYawToClosestTarget(), 0),
-                            -5,
-                            5
-                    );
-
-                    SWERVE.driveRobotRelative(0, 0, rotationPower, false);
-                },
-                SWERVE
-        ).andThen(stopDriving());
-    }
+//
+//    //Giyusim command
+//    public static Command driveToCoral() {
+//        return Commands.run(
+//                () -> {
+//                    if (!MIDDLE_CORAL_CAMERA.hasResult()) {
+//                        SWERVE.driveRobotRelative(0, 0, 0, false);
+//                        return;
+//                    }
+//
+//                    double rotationPower = MathUtil.clamp(
+//                            objectRotationPID.calculate(MIDDLE_CORAL_CAMERA.getYawToClosestTarget(), 0),
+//                            -5,
+//                            5
+//                    );
+//
+//                    SWERVE.driveRobotRelative(0, 0, rotationPower, false);
+//                },
+//                SWERVE
+//        ).andThen(stopDriving());
+//    }
 
     public static Command lockSwerve() {
         return Commands.run(

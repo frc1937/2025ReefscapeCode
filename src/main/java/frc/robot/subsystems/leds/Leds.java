@@ -101,9 +101,11 @@ public class Leds extends SubsystemBase {
 
     private static Command getCommandFromColours(Supplier<Colour[]> colours, double timeout) {
         if (timeout == 0)
-            return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).ignoringDisable(true);
+            return Commands.run(() -> flashLEDStrip(colours.get()), LEDS)
+                    .ignoringDisable(true);
 
-        return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout).ignoringDisable(true);
+        return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout)
+                .ignoringDisable(true);
     }
 
     private static void flashLEDStrip(Colour[] colours) {
