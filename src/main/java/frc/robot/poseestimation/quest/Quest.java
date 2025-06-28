@@ -24,7 +24,7 @@ public class Quest {
         return inputs.robotPose;
     }
 
-    public double getBatteryPercent() {
+    public double getBatteryPercent() { //TODO: Add alert if battery is low
         return inputs.batteryPercent;
     }
 

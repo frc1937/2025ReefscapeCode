@@ -14,9 +14,7 @@ import java.util.List;
 
 public class PoseEstimatorConstants {
     public static final Matrix<N3, N1> QUEST_STD_DEVS = VecBuilder.fill(0.02, 0.02, 0.035);
-
-    public static final double ODOMETRY_STD_LINEAR = 0.003;
-    public static final double ODOMETRY_STD_ANGULAR = 0.0002;
+    public static final Matrix<N3, N1> ODOMETRY_STD_DEVS = VecBuilder.fill(0.003, 0.003, 0.0002);
 
     public static final double VISION_STD_LINEAR = 0.014;
     public static final double VISION_STD_ANGULAR = 0.01;
@@ -37,6 +35,7 @@ public class PoseEstimatorConstants {
 
     private static HashMap<Integer, Pose3d> fieldLayoutToTagIdToPoseMap() {
         final HashMap<Integer, Pose3d> tagIdToPose = new HashMap<>();
+
         for (AprilTag aprilTag : APRIL_TAG_FIELD_LAYOUT.getTags()) {
             if (!TAGS_TO_IGNORE.contains(aprilTag.ID))
                 tagIdToPose.put(aprilTag.ID, aprilTag.pose);

@@ -34,7 +34,7 @@ public class PoseEstimator {
             Rotation2d.kZero,
             positions,
             Pose2d.kZero,
-            VecBuilder.fill(ODOMETRY_STD_LINEAR, ODOMETRY_STD_LINEAR, ODOMETRY_STD_ANGULAR),
+            ODOMETRY_STD_DEVS,
             VecBuilder.fill(VISION_STD_LINEAR, VISION_STD_LINEAR, VISION_STD_ANGULAR)
     );
 

@@ -21,7 +21,6 @@ public class Camera {
         prefix = "Camera/" + name;
     }
 
-    //MUST BE CALLED PERIODICALLY
     public void refreshInputs() {
         cameraIO.updateInputs(inputs);
         Logger.processInputs(prefix, inputs);
