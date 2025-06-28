@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.poseestimation.camera.Camera;
+import frc.robot.poseestimation.camera.EstimateData;
 import frc.robot.poseestimation.quest.Quest;
 import frc.robot.subsystems.swerve.SwerveConstants;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -64,6 +65,8 @@ public class PoseEstimator {
     public void periodic() {
         updateFromVision();
         updateFromQuest();
+
+        field.setRobotPose(getCurrentPose());
     }
 
     public void updateFromQuest() {
@@ -84,13 +87,17 @@ public class PoseEstimator {
         for (Camera camera : cameras) {
             camera.refreshInputs();
 
-            if (!camera.hasResult() || camera.getEstimatedPose() == null) continue;
+            if (!camera.cameraHasResults() || camera.getEstimates() == null) continue;
 
-            poseEstimator.addVisionMeasurement(
-                    camera.getEstimatedPose(),
-                    camera.getTimestamp(),
-                    camera.getStandardDeviations()
-            );
+            for (EstimateData estimate : camera.getEstimates()) {
+                if (!estimate.isValid()) continue;
+
+                poseEstimator.addVisionMeasurement(
+                        estimate.pose().toPose2d(),
+                        estimate.timestamp(),
+                        estimate.getStandardDeviations()
+                );
+            }
         }
     }
 

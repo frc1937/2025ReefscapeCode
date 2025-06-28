@@ -1,6 +1,5 @@
 package frc.robot.poseestimation.camera;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.GlobalConstants;
 import org.littletonrobotics.junction.AutoLog;
@@ -23,11 +22,7 @@ public class CameraIO {
 
     @AutoLog
     public static class CameraIOInputs {
+        public EstimateData[] estimations;
         public boolean hasResult;
-
-        public double timestamp;
-        public double estimatedDistanceFromTag;
-
-        public Pose3d estimatedPose;
     }
 }

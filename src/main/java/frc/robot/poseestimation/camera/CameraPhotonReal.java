@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.PhotonCamera;
 
+import java.util.ArrayList;
+
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.poseestimation.PoseEstimatorConstants.MAX_AMBIGUITY;
 import static frc.robot.poseestimation.PoseEstimatorConstants.TAG_ID_TO_POSE;
@@ -24,9 +26,11 @@ public class CameraPhotonReal extends CameraIO {
 
         if (results == null) {
             inputs.hasResult = false;
-            inputs.estimatedPose = null;
+            inputs.estimations = null;
             return;
         }
+
+        var estimations = new ArrayList<EstimateData>();
 
         for (var result : results) {
             var bestTarget = result.getBestTarget();
@@ -38,15 +42,15 @@ public class CameraPhotonReal extends CameraIO {
             var bestCameraTransform = bestTarget.bestCameraToTarget;
             var alternateCameraTransform = bestTarget.altCameraToTarget;
 
-            double yaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
+            double currentYaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
 
             double bestYawError = Math.abs(MathUtil.inputModulus(
-                    bestCameraTransform.getRotation().getZ() - yaw,
+                    bestCameraTransform.getRotation().getZ() - currentYaw,
                     -180.0,
                     180.0));
 
             double alternateYawError = Math.abs(MathUtil.inputModulus(
-                    alternateCameraTransform.getRotation().getZ() - yaw,
+                    alternateCameraTransform.getRotation().getZ() - currentYaw,
                     -180.0,
                     180.0));
 
@@ -56,11 +60,19 @@ public class CameraPhotonReal extends CameraIO {
 
             inputs.hasResult = true;
 
-            inputs.estimatedPose = tagPose.transformBy(bestTransform.inverse()).transformBy(cameraToRobot);
-            inputs.timestamp = result.getTimestampSeconds();
+            final var estimatedPose = tagPose.transformBy(bestTransform.inverse()).transformBy(cameraToRobot);
 
-            inputs.estimatedDistanceFromTag = inputs.estimatedPose.getTranslation().getDistance(tagPose.getTranslation());
+            estimations.add(new EstimateData(
+                    estimatedPose,
+                    result.getTimestampSeconds(),
+                    estimatedPose.getTranslation().getDistance(tagPose.getTranslation())));
         }
+
+        if (estimations.isEmpty()) {
+            inputs.hasResult = false;
+            return;
+        }
+
+        inputs.estimations = estimations.toArray(new EstimateData[0]);
     }
-    //TODO: Better way to handlew multiple inptz; Currently they jsut override!
 }
