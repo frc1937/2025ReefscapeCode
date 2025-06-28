@@ -13,6 +13,7 @@ public class CameraIO {
 
         if (CURRENT_MODE == GlobalConstants.Mode.SIMULATION) {
 //            return new CameraPhotonSimulation(name, cameraToRobot);
+            return new CameraIO();
         }
 
         return new CameraPhotonReal(name, cameraToRobot);

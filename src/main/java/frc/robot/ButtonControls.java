@@ -16,6 +16,8 @@ import frc.lib.generic.hardware.controllers.Controller;
 import frc.lib.generic.hardware.controllers.KeyboardController;
 import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
+import frc.robot.commands.ConveyorCommands;
+import frc.robot.commands.pathfinding.PathfindingConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -27,7 +29,8 @@ import java.util.function.DoubleSupplier;
 import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_X;
 import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.commands.CoralManipulationCommands.CURRENT_SCORING_LEVEL;
+import static frc.robot.commands.CoralManipulationCommands.*;
+import static frc.robot.commands.pathfinding.BranchPathfinding.pathAndScoreWithOverride;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.*;
 import static frc.robot.subsystems.swerve.SwerveCommands.rotateToTarget;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
@@ -157,56 +160,49 @@ public class ButtonControls {
     }
 
     private static void configureButtonsTeleop() {
-//        setupDriving();
-//
-//        ALGAE_BLASTER.setDefaultCommand(
-//                ALGAE_BLASTER.setArmStateContinuous(AlgaeBlasterConstants.BlasterArmState.DEFAULT_POSE)
-//        );
-//
-//        final Trigger isJoystickStill = new Trigger(() ->
-//                   Math.abs(Y_SUPPLIER.getAsDouble()) <= 0.04
-//                && Math.abs(X_SUPPLIER.getAsDouble()) <= 0.04);
-//
-//        final Trigger leftBumper = DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER);
-//        final Trigger rightBranch = DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER);
-//
-//        leftBumper.toggleOnTrue(
-//                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
-//                        .withDeadline(
-//                            pathAndScoreWithOverride(PathfindingConstants.Branch.LEFT_BRANCH,
-//                            X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,
-//                            isJoystickStill.negate()))
-//        );
-//
-//        rightBranch.toggleOnTrue(
-//                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
-//                        .withDeadline(
-//                            pathAndScoreWithOverride(PathfindingConstants.Branch.RIGHT_BRANCH,
-//                            X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,
-//                            isJoystickStill.negate()))
-//        );
-//
-//        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
-//        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoralTeleop());
-//
-//        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
-//        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
-//
-//        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(ConveyorCommands.scoreToL4(PathfindingConstants.Branch.LEFT_BRANCH));
-//
-//        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(yeetAlgaeWithAlignment());
-//
-//        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(ConveyorCommands.moveFromIntakeToL4());
-//
-//        setupOperatorKeyboardButtons();
-//        setupTeleopLEDs();
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A)
-                .whileTrue(CORAL_INTAKE.prepareGamePiece()
-                        .alongWith(LEDS.setLEDStatus(Leds.LEDMode.DEBUG_MODE, 3))
-                );
+        setupDriving();
 
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B)
-                .whileTrue(LEDS.setLEDStatus(Leds.LEDMode.END_OF_MATCH,10));
+        ALGAE_BLASTER.setDefaultCommand(
+                ALGAE_BLASTER.setArmStateContinuous(AlgaeBlasterConstants.BlasterArmState.DEFAULT_POSE)
+        );
+
+        final Trigger isJoystickStill = new Trigger(() ->
+                   Math.abs(Y_SUPPLIER.getAsDouble()) <= 0.04
+                && Math.abs(X_SUPPLIER.getAsDouble()) <= 0.04);
+
+        final Trigger leftBumper = DRIVER_CONTROLLER.getButton(Controller.Inputs.LEFT_BUMPER);
+        final Trigger rightBranch = DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER);
+
+        leftBumper.toggleOnTrue(
+                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
+                        .withDeadline(
+                            pathAndScoreWithOverride(PathfindingConstants.Branch.LEFT_BRANCH,
+                            X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,
+                            isJoystickStill.negate()))
+        );
+
+        rightBranch.toggleOnTrue(
+                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
+                        .withDeadline(
+                            pathAndScoreWithOverride(PathfindingConstants.Branch.RIGHT_BRANCH,
+                            X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,
+                            isJoystickStill.negate()))
+        );
+
+        DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
+        DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoralTeleop());
+
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(ConveyorCommands.scoreToL4(PathfindingConstants.Branch.LEFT_BRANCH));
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(yeetAlgaeWithAlignment());
+
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(ConveyorCommands.moveFromIntakeToL4());
+
+        setupOperatorKeyboardButtons();
+        setupTeleopLEDs();
     }
 
     private static void configureButtonsCharacterizeWheelRadius() {
