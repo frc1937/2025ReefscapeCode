@@ -98,17 +98,6 @@ public class CustomLEDPatterns {
         return scrollBuffer(interpolatedBuffer.clone());
     }
 
-    private static Colour[] scrollBuffer(Colour[] colours) {
-        if (scrollingCounter % (double) 2 == 0) {
-            for (int i = 0; i < LEDS_COUNT; i++) {
-                buffer[i] = colours[(i + scrollingFirstPixel) % LEDS_COUNT];
-            }
-            scrollingFirstPixel = (scrollingFirstPixel + 1) % LEDS_COUNT;
-        }
-        scrollingCounter++;
-        return buffer.clone();
-    }
-
     /**
      * Set the buffer to flash between a set of colours. This needs to be called periodically for the
      * flashing effect to work.
@@ -166,6 +155,17 @@ public class CustomLEDPatterns {
     public static Colour[] generateBreathingBuffer(Colour firstColour, Colour secondColour) {
         breathingCounter += 0.02;
         return generateSingleColourBuffer(interpolateColours(firstColour, secondColour, cosInterpolate(breathingCounter)));
+    }
+
+    private static Colour[] scrollBuffer(Colour[] colours) {
+        if (scrollingCounter % (double) 2 == 0) {
+            for (int i = 0; i < LEDS_COUNT; i++) {
+                buffer[i] = colours[(i + scrollingFirstPixel) % LEDS_COUNT];
+            }
+            scrollingFirstPixel = (scrollingFirstPixel + 1) % LEDS_COUNT;
+        }
+        scrollingCounter++;
+        return buffer.clone();
     }
 
     private static Colour interpolateColours(Colour startColour, Colour endColour, double colourWeight) {
