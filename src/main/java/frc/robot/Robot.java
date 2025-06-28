@@ -85,7 +85,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationPeriodic() {
         HardwareManager.updateSimulation();
-//        VISION_SIMULATION.update(POSE_ESTIMATOR.getOdometryPose());
 
         robotContainer.updateComponentPoses();
     }
