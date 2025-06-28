@@ -1,94 +1,26 @@
 package frc.lib.util;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
 import java.util.Arrays;
 
 public class CustomLEDPatterns {
     public static final int LEDS_COUNT = 69;
-    private static final double MAX_GREEN_RANGE_METERS = 2;
-
     private static Colour[] buffer = new Colour[LEDS_COUNT];
+
     private static final Colour[]
-            scrollingBuffer = buffer.clone(),
+            interpolatedBuffer = buffer.clone(),
             rainbowBuffer = buffer.clone();
 
     private static double
+            scrollingCounter,
             flashingCounter,
-            loadingCounter,
             breathingCounter,
             outwardPointsCounter;
 
     private static int
             previousColour = 0,
-            rainbowFirstPixel,
             scrollingFirstPixel;
-
-    private static boolean
-            wasScrollInitialized = false,
-            wasRainbowInitialized = false;
-
-    public static Colour[] reduceBrightness(Colour[] colours, int brightnessPercentage) {
-        final double brightnessFactor = brightnessPercentage / 100.0;
-
-        final Colour[] adjustedColours = new Colour[colours.length];
-
-        for (int i = 0; i < colours.length; i++) {
-            final Colour originalColour = colours[i];
-
-            int newRed = (int) (originalColour.red * brightnessFactor);
-            int newGreen = (int) (originalColour.green * brightnessFactor);
-            int newBlue = (int) (originalColour.blue * brightnessFactor);
-
-            newRed = Math.min(255, Math.max(0, newRed));
-            newGreen = Math.min(255, Math.max(0, newGreen));
-            newBlue = Math.min(255, Math.max(0, newBlue));
-
-            adjustedColours[i] = new Colour(newRed, newGreen, newBlue);
-        }
-
-        return adjustedColours;
-    }
-
-    /**
-     * Generates a buffer that indicates how far in each direction (left, right, forwards, backwards)
-     * the robot is from the correct position. This should be called periodically to update the indicator.
-     * If a certain direction of the position is correct , it turns off that direction's LEDs.
-     *
-     * @param startColour     The colour when the robot is at the furthest position.
-     * @param endColour       The colour when the robot is at the closest position.
-     * @param robotPosition  The current robot position.
-     * @param targetPosition The target position.
-     * @return The filled buffer with corrective LED colours.
-     */
-    public static Colour[] generatePositionIndicatorBuffer(Colour startColour, Colour endColour, Translation2d robotPosition, Translation2d targetPosition) {
-        buffer = generateSingleColourBuffer(Colour.BLACK);
-
-        final double deltaX = robotPosition.getX() - targetPosition.getX();
-        final double deltaY = robotPosition.getY() - targetPosition.getY();
-
-        final double normalizedY = Math.min(Math.abs(deltaY) / MAX_GREEN_RANGE_METERS, 1.0);
-        final double normalizedX = Math.min(Math.abs(deltaX) / MAX_GREEN_RANGE_METERS, 1.0);
-
-        final Colour leftColour = deltaX > 0 ? interpolateColours(startColour, endColour, normalizedX) : Colour.BLACK;
-        final Colour rightColour = deltaX < 0 ? interpolateColours(startColour, endColour, normalizedX) : Colour.BLACK;
-        final Colour frontColour = deltaY < 0 ? interpolateColours(startColour, endColour, normalizedY) : Colour.BLACK;
-        final Colour backColour = deltaY > 0 ? interpolateColours(startColour, endColour, normalizedY) : Colour.BLACK;
-
-        buffer[23] = leftColour;
-        buffer[0] = leftColour;
-        buffer[22] = rightColour;
-        buffer[45] = rightColour;
-        buffer[10] = frontColour;
-        buffer[11] = frontColour;
-        buffer[12] = frontColour;
-        buffer[33] = backColour;
-        buffer[34] = backColour;
-        buffer[35] = backColour;
-
-        return buffer;
-    }
 
     /**
      * Generates a buffer with a single colour.
@@ -117,65 +49,64 @@ public class CustomLEDPatterns {
     }
 
     /**
-     * Fill the buffer with RAINBOW colours. This needs to be called periodically for the rainbow effect
+     * Fill the buffer with RAINBOW colours and makes it scroll. This needs to be called periodically for the scrolling effect
      * to be dynamic.
      *
      * @return The filled buffer.
      */
     public static Colour[] generateRainbowBuffer() {
-        if (!wasRainbowInitialized) {
-            final Colour[] colours = new Colour[]{Colour.RED, Colour.ORANGE, Colour.YELLOW, Colour.GREEN, Colour.BLUE, Colour.INDIGO, Colour.VIOLET};
+        final Colour[] colours = new Colour[]{Colour.RED, Colour.ORANGE, Colour.YELLOW, Colour.GREEN, Colour.BLUE, Colour.INDIGO, Colour.VIOLET};
 
-            for (int i = 0; i < LEDS_COUNT; i++) {
-                final double position = (double) i / LEDS_COUNT * colours.length;
+        for (int i = 0; i < LEDS_COUNT; i++) {
+            final double position = (double) i / LEDS_COUNT * colours.length;
 
-                final int startColourIndex = (int) Math.floor(position);
-                final int endColourIndex = (startColourIndex + 1) % colours.length;
+            final int startColourIndex = (int) Math.floor(position);
+            final int endColourIndex = (startColourIndex + 1) % colours.length;
 
-                final double ratio = position - startColourIndex;
+            final double ratio = position - startColourIndex;
 
-                rainbowBuffer[i] = interpolateColours(colours[endColourIndex], colours[startColourIndex], ratio);
-            }
-
-            buffer = rainbowBuffer.clone();
-            wasRainbowInitialized = true;
-        } else {
-            for (int i = 0; i < LEDS_COUNT; i++) {
-                buffer[i] = rainbowBuffer[(i + rainbowFirstPixel) % LEDS_COUNT];
-            }
-
-            rainbowFirstPixel = (rainbowFirstPixel + 1) % LEDS_COUNT;
+            rainbowBuffer[i] = interpolateColours(colours[endColourIndex], colours[startColourIndex], ratio);
         }
 
-        return buffer;
+
+        return scrollBuffer(rainbowBuffer.clone());
     }
 
-    public static Colour[] generateScrollBuffer(Colour[] colours) {
-        if (!wasScrollInitialized) {
-            final int totalColours = colours.length;
+    /**
+     * Fill the buffer with a smooth gradient between the given colours and makes it scroll. This needs to be called periodically for the scrolling effect
+     * to be dynamic.
+     *
+     * @param colours The colours to interpolate between.
+     * @return The filled buffer.
+     */
+    public static Colour[] generateInterpolatedBuffer(Colour... colours) {
+        if (colours.length == 0) return buffer;
 
-            for (int i = 0; i < LEDS_COUNT; i++) {
-                final double position = (double) i / LEDS_COUNT * totalColours;
+        final int totalColours = colours.length;
 
-                final int startColourIndex = (int) Math.floor(position);
-                final int endColourIndex = (startColourIndex + 1) % totalColours;
+        for (int i = 0; i < LEDS_COUNT; i++) {
+            final double position = (double) i / LEDS_COUNT * totalColours;
 
-                final double ratio = position - startColourIndex;
+            final int startColourIndex = (int) Math.floor(position);
+            final int endColourIndex = (startColourIndex + 1) % totalColours;
 
-                scrollingBuffer[i] = interpolateColours(colours[endColourIndex], colours[startColourIndex], ratio);
-            }
+            final double ratio = position - startColourIndex;
 
-            buffer = scrollingBuffer.clone();
-            wasScrollInitialized = true;
-        } else {
-            for (int i = 0; i < LEDS_COUNT; i++) {
-                buffer[i] = scrollingBuffer[(i + scrollingFirstPixel) % LEDS_COUNT];
-            }
-
-            scrollingFirstPixel = (scrollingFirstPixel + 1) % LEDS_COUNT;
+            interpolatedBuffer[i] = interpolateColours(colours[endColourIndex], colours[startColourIndex], ratio);
         }
 
-        return buffer;
+        return scrollBuffer(interpolatedBuffer.clone());
+    }
+
+    private static Colour[] scrollBuffer(Colour[] colours) {
+        if (scrollingCounter % (double) 2 == 0) {
+            for (int i = 0; i < LEDS_COUNT; i++) {
+                buffer[i] = colours[(i + scrollingFirstPixel) % LEDS_COUNT];
+            }
+            scrollingFirstPixel = (scrollingFirstPixel + 1) % LEDS_COUNT;
+        }
+        scrollingCounter++;
+        return buffer.clone();
     }
 
     /**
@@ -196,45 +127,6 @@ public class CustomLEDPatterns {
         flashingCounter++;
 
         return buffer;
-    }
-
-    /**
-     * Generates a loading animation that moves outwards from the center of the LED strip.
-     * This should be called periodically to update the animation.
-     *
-     * @param colour1 The colour for the first direction.
-     * @param colour2 The colour for the second direction.
-     * @return The filled buffer.
-     */
-    public static Colour[] generateLoadingAnimationBuffer(Colour colour1, Colour colour2) {
-        buffer = generateSingleColourBuffer(Colour.BLACK);
-
-        final int midPoint = LEDS_COUNT / 2;
-        final int progress = (int) (loadingCounter % (LEDS_COUNT / 2.0));
-
-        for (int i = midPoint - progress; i <= midPoint; i++) {
-            if (i >= 0) buffer[i] = colour1;
-        }
-
-        for (int i = midPoint + progress; i >= midPoint; i--) {
-            if (i < LEDS_COUNT) buffer[i] = colour2;
-        }
-
-        loadingCounter += 0.5;
-
-        return buffer;
-    }
-
-    /**
-     * Slowly switches between two colours, creating a breathing effect.
-     *
-     * @param firstColour  The first colour.
-     * @param secondColour The second colour.
-     * @return The filled buffer.
-     */
-    public static Colour[] generateBreathingBuffer(Colour firstColour, Colour secondColour) {
-        breathingCounter += 0.02;
-        return generateSingleColourBuffer(interpolateColours(firstColour, secondColour, cosInterpolate(breathingCounter)));
     }
 
     /**
@@ -264,15 +156,19 @@ public class CustomLEDPatterns {
         return buffer;
     }
 
-    private static int wrapIndex(int i) {
-        while (i >= LEDS_COUNT) i -= LEDS_COUNT;
-
-        while (i < 0) i += LEDS_COUNT;
-
-        return i;
+    /**
+     * Slowly switches between two colours, creating a breathing effect.
+     *
+     * @param firstColour  The first colour.
+     * @param secondColour The second colour.
+     * @return The filled buffer.
+     */
+    public static Colour[] generateBreathingBuffer(Colour firstColour, Colour secondColour) {
+        breathingCounter += 0.02;
+        return generateSingleColourBuffer(interpolateColours(firstColour, secondColour, cosInterpolate(breathingCounter)));
     }
 
-    public static Colour interpolateColours(Colour startColour, Colour endColour, double colourWeight) {
+    private static Colour interpolateColours(Colour startColour, Colour endColour, double colourWeight) {
         final int red = (int) (endColour.red * (1 - colourWeight) + startColour.red * colourWeight);
         final int green = (int) (endColour.green * (1 - colourWeight) + startColour.green * colourWeight);
         final int blue = (int) (endColour.blue * (1 - colourWeight) + startColour.blue * colourWeight);
