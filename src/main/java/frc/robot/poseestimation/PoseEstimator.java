@@ -103,7 +103,6 @@ public class PoseEstimator {
 
     public void updateFromOdometry(SwerveModulePosition[][] swerveWheelPositions, Rotation2d[] gyroRotations, double[] timestamp) {
         if (swerveWheelPositions == null) return;
-        //If is colliding or is skidding, don't update
 
         for (int i = 0; i < swerveWheelPositions.length; i++) {
             if (swerveWheelPositions[i] == null) continue;

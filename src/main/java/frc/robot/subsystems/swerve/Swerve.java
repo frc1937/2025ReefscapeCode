@@ -17,6 +17,8 @@ import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+import static frc.lib.math.Optimizations.getSkiddingRatio;
+import static frc.lib.math.Optimizations.isColliding;
 import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.RobotContainer.SWERVE;
 import static frc.robot.subsystems.swerve.SwerveConstants.*;
@@ -106,9 +108,8 @@ public class Swerve extends GenericSubsystem {
             gyroRotations[i] = Rotation2d.fromRotations(odometryUpdatesYawRotations[i]);
         }
 
-        if (Optimizations.isColliding()) {
+        if (isColliding() || getSkiddingRatio(SWERVE_KINEMATICS, SWERVE.getModuleStates()) > MAX_SKIDDING_RATIO)
             return;
-        }
 
         POSE_ESTIMATOR.updateFromOdometry(
                 swerveWheelPositions,

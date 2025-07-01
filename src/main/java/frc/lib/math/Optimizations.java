@@ -7,8 +7,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.subsystems.swerve.SwerveConstants;
 
-import java.util.Arrays;
-
 import static frc.robot.RobotContainer.ACCELEROMETER;
 
 public class Optimizations {
@@ -16,28 +14,40 @@ public class Optimizations {
      * Gets the skidding ratio from the latest module state, that can be used to determine how much the chassis is skidding
      * the skidding ratio is defined as the ratio between the maximum and minimum magnitude of the "translational" part of the speed of the modules
      *
-     * @param swerveDriveKinematics the kinematics
-     * @param swerveStatesMeasured  the swerve states measured from the modules
+     * @param kinematics     the kinematics
+     * @param measuredStates the swerve measuredStates measured from the modules
      * @return the skidding ratio, maximum/minimum, ranges from [1,INFINITY)
      */
-    public static double getSkiddingRatio(final SwerveDriveKinematics swerveDriveKinematics, final SwerveModuleState[] swerveStatesMeasured) {
-        final double angularVelocity = swerveDriveKinematics.toChassisSpeeds(swerveStatesMeasured).omegaRadiansPerSecond;
-        final SwerveModuleState[] rotationalStates = swerveDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, angularVelocity));
+    public static double getSkiddingRatio(SwerveDriveKinematics kinematics, SwerveModuleState[] measuredStates) {
+        final double epsilon = 1e-3;
 
-        final double[] translationalSpeeds = new double[swerveStatesMeasured.length];
+        double minimum = Double.POSITIVE_INFINITY;
+        double maximum = 0;
 
-        for (int i = 0; i < swerveStatesMeasured.length; i++) {
-            final Translation2d measuredVelocity = convertToVelocityVector(swerveStatesMeasured[i]),
-                    rotationalVelocity = convertToVelocityVector(rotationalStates[i]),
-                    translationalVelocity = measuredVelocity.minus(rotationalVelocity);
+        final double omegaSpeed = kinematics.toChassisSpeeds(measuredStates).omegaRadiansPerSecond;
 
-            translationalSpeeds[i] = translationalVelocity.getNorm();
+        final SwerveModuleState[] rotationOnly = kinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, omegaSpeed));
+
+        for (int i = 0; i < measuredStates.length; i++) {
+            final SwerveModuleState actual = measuredStates[i];
+            final SwerveModuleState expected = rotationOnly[i];
+
+            double dx = actual.speedMetersPerSecond * Math.cos(actual.angle.getRadians())
+                    - expected.speedMetersPerSecond * Math.cos(expected.angle.getRadians());
+
+            double dy = actual.speedMetersPerSecond * Math.sin(actual.angle.getRadians())
+                    - expected.speedMetersPerSecond * Math.sin(expected.angle.getRadians());
+
+            double v = Math.hypot(dx, dy);
+
+            if (v < epsilon) v = 0;
+            if (v > maximum) maximum = v;
+            if (v < minimum) minimum = v;
         }
 
-        final double maxSpeed = Arrays.stream(translationalSpeeds).max().orElse(0);
-        final double minSpeed = Arrays.stream(translationalSpeeds).min().orElse(Double.POSITIVE_INFINITY);
+        if (maximum == 0) return 1.0;
 
-        return maxSpeed / minSpeed;
+        return minimum == 0 ? Double.POSITIVE_INFINITY : maximum / minimum;
     }
 
     public static boolean isColliding() {
