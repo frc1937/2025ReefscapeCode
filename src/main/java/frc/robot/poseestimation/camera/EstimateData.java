@@ -22,7 +22,7 @@ public record EstimateData(Pose3d pose, double timestamp, double distanceFromTag
     }
 
     public Matrix<N3, N1> getStandardDeviations() {
-        final double standardDeviationFactor = Math.pow(distanceFromTag, 2.0);
+        final double standardDeviationFactor = distanceFromTag * distanceFromTag;
 
         final double linearStandardDeviation = VISION_STD_LINEAR * standardDeviationFactor;
         final double angularStandardDeviation = VISION_STD_ANGULAR * standardDeviationFactor;
