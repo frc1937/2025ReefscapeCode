@@ -56,8 +56,6 @@ public class RobotContainer {
     }
 
     private void setupLEDs() {
-        LEDS.setDefaultCommand(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0));
-
         final int LOW_BATTERY_THRESHOLD = 150;
         final int[] lowBatteryCounter = {0};
 
