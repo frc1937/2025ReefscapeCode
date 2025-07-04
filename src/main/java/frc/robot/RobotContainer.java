@@ -42,7 +42,7 @@ public class RobotContainer {
         Flippable.init();
         PathPlannerConstants.initializePathPlanner();
 
-        setupLEDs();
+        setupLEDsForBattery();
 
         ButtonControls.initializeButtons(ButtonControls.ButtonLayout.TELEOP);
     }
@@ -55,9 +55,7 @@ public class RobotContainer {
         return QUESTIONNAIRE.getSelected();
     }
 
-    private void setupLEDs() {
-        LEDS.setDefaultCommand(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0));
-
+    private void setupLEDsForBattery() {
         final int LOW_BATTERY_THRESHOLD = 150;
         final int[] lowBatteryCounter = {0};
 
