@@ -22,10 +22,10 @@ public class RobotContainer {
     public static final BuiltInAccelerometer ACCELEROMETER = new BuiltInAccelerometer();
 
     public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
-            FRONT_LEFT_CAMERA,
-            FRONT_RIGHT_CAMERA,
-            REAR_LEFT_CAMERA,
-            REAR_RIGHT_CAMERA
+            FRONT_LEFT_CAMERA
+//            FRONT_RIGHT_CAMERA,
+//            REAR_LEFT_CAMERA,
+//            REAR_RIGHT_CAMERA
     );
 
     public static final Swerve SWERVE = new Swerve();
@@ -42,7 +42,7 @@ public class RobotContainer {
         Flippable.init();
         PathPlannerConstants.initializePathPlanner();
 
-        setupLEDs();
+        setupLEDsForBattery();
 
         ButtonControls.initializeButtons(ButtonControls.ButtonLayout.TELEOP);
     }
@@ -55,9 +55,7 @@ public class RobotContainer {
         return QUESTIONNAIRE.getSelected();
     }
 
-    private void setupLEDs() {
-        LEDS.setDefaultCommand(LEDS.setLEDStatus(Leds.LEDMode.DEFAULT, 0));
-
+    private void setupLEDsForBattery() {
         final int LOW_BATTERY_THRESHOLD = 150;
         final int[] lowBatteryCounter = {0};
 
