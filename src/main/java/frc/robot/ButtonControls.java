@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.lib.generic.GenericSubsystem;
-import frc.lib.generic.characterization.CameraPositionCharacterization;
 import frc.lib.generic.characterization.StaticFrictionCharacterization;
 import frc.lib.generic.characterization.WheelRadiusCharacterization;
 import frc.lib.generic.hardware.controllers.Controller;
@@ -19,7 +18,6 @@ import frc.lib.generic.hardware.motor.MotorProperties;
 import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.ConveyorCommands;
 import frc.robot.commands.pathfinding.PathfindingConstants;
-import frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants;
 import frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants;
 import frc.robot.subsystems.climb.ClimbConstants;
 import frc.robot.subsystems.elevator.ElevatorConstants;
@@ -144,34 +142,6 @@ public class ButtonControls {
     private static void configureButtonsDevelopment() {
         setupDriving();
 
-        final CameraPositionCharacterization frontLeft = new CameraPositionCharacterization(
-                AprilTagCameraConstants.FRONT_LEFT_CAMERA::getEstimatedRobotPose,
-                AprilTagCameraConstants.ROBOT_TO_FRONT_LEFT_CAMERA.getRotation().toRotation2d(),
-                (speed) -> SWERVE.driveRobotRelative(0, 0, speed, false),
-                SWERVE
-        );
-
-        final CameraPositionCharacterization frontRight = new CameraPositionCharacterization(
-                AprilTagCameraConstants.FRONT_RIGHT_CAMERA::getEstimatedRobotPose,
-                AprilTagCameraConstants.ROBOT_TO_FRONT_RIGHT_CAMERA.getRotation().toRotation2d(),
-                (speed) -> SWERVE.driveRobotRelative(0, 0, speed, false),
-                SWERVE
-        );
-
-        final CameraPositionCharacterization rearLeft = new CameraPositionCharacterization(
-                AprilTagCameraConstants.REAR_LEFT_CAMERA::getEstimatedRobotPose,
-                AprilTagCameraConstants.ROBOT_TO_REAR_LEFT_CAMERA.getRotation().toRotation2d(),
-                (speed) -> SWERVE.driveRobotRelative(0, 0, speed, false),
-                SWERVE
-        );
-
-        final CameraPositionCharacterization rearRight = new CameraPositionCharacterization(
-                AprilTagCameraConstants.REAR_RIGHT_CAMERA::getEstimatedRobotPose,
-                AprilTagCameraConstants.ROBOT_TO_REAR_RIGHT_CAMERA.getRotation().toRotation2d(),
-                (speed) -> SWERVE.driveRobotRelative(0, 0, speed, false),
-                SWERVE
-        );
-
         final Command wheelRadiusCharacterization = new WheelRadiusCharacterization(
                 SWERVE,
                 ROBOT_CONFIG.moduleLocations,
@@ -230,8 +200,6 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(yeetAlgaeWithAlignment());
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(ConveyorCommands.moveFromIntakeToL4());
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(SwerveCommands.driveToCoral());
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();

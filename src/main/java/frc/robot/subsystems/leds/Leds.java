@@ -102,6 +102,7 @@ public class Leds extends SubsystemBase {
         ledstrip.setData(getBufferFromColours(buffer, currentMode.getColours().get()));
     }
 
+
     public void setToDefault() {
         currentMode = LEDMode.DEFAULT;
     }

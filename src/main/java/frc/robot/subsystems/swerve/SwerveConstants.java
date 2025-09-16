@@ -29,6 +29,8 @@ public class SwerveConstants {
             Second.of(5)
     );
 
+    protected static final double MAX_SKIDDING_RATIO = 1.5;
+
     protected static final double
             STEER_GEAR_RATIO = (150.0 / 7.0),
             DRIVE_GEAR_RATIO = (6.75),

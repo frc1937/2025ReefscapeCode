@@ -9,7 +9,6 @@ import org.littletonrobotics.junction.Logger;
 
 import static frc.lib.math.Optimizations.isColliding;
 import static frc.robot.RobotContainer.*;
-import static frc.robot.poseestimation.apriltagcamera.AprilTagCameraConstants.VISION_SIMULATION;
 
 public class Robot extends LoggedRobot {
     private final CommandScheduler commandScheduler = CommandScheduler.getInstance();
@@ -61,7 +60,6 @@ public class Robot extends LoggedRobot {
     @Override
     public void simulationPeriodic() {
         HardwareManager.updateSimulation();
-        VISION_SIMULATION.update(POSE_ESTIMATOR.getOdometryPose());
 
         robotContainer.updateComponentPoses();
     }
