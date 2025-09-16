@@ -236,12 +236,44 @@ public class Motor implements LoggableHardware {
     public void setFollower(Motor motor, boolean invert) { }
 
     /**
-     Signals are lazily loaded - only these explicitly called will be updated.
-     Thus, you must call this method. when using a signal.
-     Can only be used with CTRE products
+     * Registers and automatically updates telemetry signals for logging.
+     * <p>
+     * This method is used to automate the process of tracking important robot signals
+     * such as sensor readings or motor outputs. It ensures these values are
+     * consistently updated and logged without needing manual updates in each robot loop.
+     * </p>
+     *
+     * <p>
+     * Benefits include:
+     * <ul>
+     *   <li><b>Debugging:</b> Easily diagnose issues with a record of sensor and system values.</li>
+     *   <li><b>Performance Tuning:</b> Analyze robot behavior during matches or tests for optimization.</li>
+     * </ul>
+     * </p>
+     *
+     * @param signal The signal to log.
+     * @param useFasterThread Whether to use a faster thread.
      */
     public void setupSignalUpdates(MotorSignal signal, boolean useFasterThread) { }
 
+    /**
+     * Registers and automatically updates telemetry signals for logging.
+     * <p>
+     * This method is used to automate the process of tracking important robot signals
+     * such as sensor readings or motor outputs. It ensures these values are
+     * consistently updated and logged without needing manual updates in each robot loop.
+     * </p>
+     *
+     * <p>
+     * Benefits include:
+     * <ul>
+     *   <li><b>Debugging:</b> Easily diagnose issues with a record of sensor and system values.</li>
+     *   <li><b>Performance Tuning:</b> Analyze robot behavior during matches or tests for optimization.</li>
+     * </ul>
+     * </p>
+     *
+     * @param signal The signal to log.
+     */
     public void setupSignalUpdates(MotorSignal signal) { setupSignalUpdates(signal, false); }
 
     public boolean configure(MotorConfiguration configuration) {
