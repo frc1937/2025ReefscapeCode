@@ -48,6 +48,8 @@ public class Robot extends LoggedRobot {
 
     @Override
     public void disabledPeriodic() {
+        QUEST.setPose(POSE_ESTIMATOR.getCurrentPose());
+
         if (!new File(Filesystem.getDeployDirectory(), "pathplanner/paths/" + robotContainer.getAutoName() + ".path").exists())
             return;
 

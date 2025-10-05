@@ -1,7 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -11,6 +10,7 @@ import frc.lib.util.flippable.Flippable;
 import frc.robot.commands.Questionnaire;
 import frc.robot.poseestimation.PoseEstimator;
 import frc.robot.poseestimation.camera.Camera;
+import frc.robot.poseestimation.quest.Quest;
 import frc.robot.subsystems.algaeblaster.AlgaeBlaster;
 import frc.robot.subsystems.climb.Climb;
 import frc.robot.subsystems.coralintake.CoralIntake;
@@ -24,18 +24,17 @@ import static edu.wpi.first.math.util.Units.degreesToRadians;
 public class RobotContainer {
     public static final BuiltInAccelerometer ACCELEROMETER = new BuiltInAccelerometer();
 
-    public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
-            new Camera[] {
-                   new Camera("FRONT_LEFT_CAMERA", new Transform3d(
-                           0.24, 0.29,0.21,
-                           new Rotation3d(0, degreesToRadians(-25.212676878873813), degreesToRadians(330)))),
+    public static final Quest QUEST = new Quest(
+            new Transform2d(new Translation2d(-0.035, 0.22), Rotation2d.fromDegrees(0)));
 
-                    new Camera("FRONT_RIGHT_CAMERA", new Transform3d(
-                            0.24,-0.29,0.21,
-                            new Rotation3d(0, degreesToRadians(-25.212676878873813), degreesToRadians(30.3))))
+    public static final PoseEstimator POSE_ESTIMATOR = new PoseEstimator(
+            new Camera[]{
+                    new Camera("FRONT_LEFT_CAMERA", new Transform3d(
+                            0.24, 0.29, 0.21,
+                            new Rotation3d(0, degreesToRadians(-25.212676878873813), degreesToRadians(330))).inverse()),
             },
 
-            null
+            QUEST
 
     );
 

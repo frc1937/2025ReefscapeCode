@@ -50,6 +50,7 @@ public class PoseEstimator {
     }
 
     public void resetPose(Pose2d pose) {
+        quest.setPose(pose);
         poseEstimator.resetPose(pose);
     }
 

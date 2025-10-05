@@ -7,7 +7,7 @@ import org.photonvision.PhotonCamera;
 
 import java.util.ArrayList;
 
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
+import static frc.robot.RobotContainer.QUEST;
 import static frc.robot.poseestimation.PoseEstimatorConstants.MAX_AMBIGUITY;
 import static frc.robot.poseestimation.PoseEstimatorConstants.TAG_ID_TO_POSE;
 
@@ -33,6 +33,8 @@ public class CameraPhotonReal extends CameraIO {
         var estimations = new ArrayList<EstimateData>();
 
         for (var result : results) {
+            if (!result.hasTargets()) continue;
+
             var bestTarget = result.getBestTarget();
 
             if (bestTarget == null || bestTarget.poseAmbiguity > MAX_AMBIGUITY) continue;
@@ -42,7 +44,7 @@ public class CameraPhotonReal extends CameraIO {
             var bestCameraTransform = bestTarget.bestCameraToTarget;
             var alternateCameraTransform = bestTarget.altCameraToTarget;
 
-            double currentYaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
+            double currentYaw = QUEST.getEstimatedPose().getRotation().getDegrees();
 
             double bestYawError = Math.abs(MathUtil.inputModulus(
                     bestCameraTransform.getRotation().getZ() - currentYaw,
@@ -56,10 +58,9 @@ public class CameraPhotonReal extends CameraIO {
 
             var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
 
-            final Pose3d tagPose = TAG_ID_TO_POSE.get(fiducialId);
-
             inputs.hasResult = true;
 
+            final Pose3d tagPose = TAG_ID_TO_POSE.get(fiducialId);
             final var estimatedPose = tagPose.transformBy(bestTransform.inverse()).transformBy(cameraToRobot);
 
             estimations.add(new EstimateData(
