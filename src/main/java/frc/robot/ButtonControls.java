@@ -162,9 +162,7 @@ public class ButtonControls {
     private static void configureButtonsTeleop() {
         setupDriving();
 
-        ALGAE_BLASTER.setDefaultCommand(
-                ALGAE_BLASTER.setArmStateContinuous(AlgaeBlasterConstants.BlasterArmState.DEFAULT_POSE)
-        );
+        ALGAE_BLASTER.setDefaultCommand(ALGAE_BLASTER.setArmStateContinuous(AlgaeBlasterConstants.BlasterArmState.DEFAULT_POSE));
 
         final Trigger isJoystickStill = new Trigger(() ->
                    Math.abs(Y_SUPPLIER.getAsDouble()) <= 0.04
@@ -194,6 +192,9 @@ public class ButtonControls {
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
+
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(new InstantCommand(
+                () -> QUEST.setPose(POSE_ESTIMATOR.getCurrentPose())));
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(ConveyorCommands.scoreToL4(PathfindingConstants.Branch.LEFT_BRANCH));
 
@@ -231,12 +232,13 @@ public class ButtonControls {
         OPERATOR_CONTROLLER.one().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L1).ignoringDisable(true));
         OPERATOR_CONTROLLER.two().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L2).ignoringDisable(true));
         OPERATOR_CONTROLLER.three().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L3).ignoringDisable(true));
-        OPERATOR_CONTROLLER.four().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L4).ignoringDisable(true)); //todo: test
+        OPERATOR_CONTROLLER.four().onTrue(new InstantCommand(() -> CURRENT_SCORING_LEVEL = L4).ignoringDisable(true));
 
         OPERATOR_CONTROLLER.five().whileTrue(CORAL_INTAKE.setMotorVoltage(-2));
 
         OPERATOR_CONTROLLER.seven()
                 .whileTrue(CLIMB.runVoltage(12));
+
 //        OPERATOR_CONTROLLER.six().onTrue(
 //                        (new InstantCommand(() -> SHOULD_BLAST_ALGAE = true)));
 //

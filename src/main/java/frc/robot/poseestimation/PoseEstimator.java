@@ -64,8 +64,8 @@ public class PoseEstimator {
     }
 
     public void periodic() {
-        updateFromVision();
         updateFromQuest();
+        updateFromVision();
 
         field.setRobotPose(getCurrentPose());
     }
@@ -98,6 +98,9 @@ public class PoseEstimator {
                         estimate.timestamp(),
                         estimate.getStandardDeviations()
                 );
+
+                if (estimate.isHighQuality())
+                    quest.setPose(getCurrentPose());
             }
         }
     }

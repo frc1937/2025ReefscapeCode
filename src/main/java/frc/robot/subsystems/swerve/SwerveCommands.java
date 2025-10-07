@@ -76,15 +76,12 @@ public class SwerveCommands {
                     SWERVE.resetRotationController();
                     SWERVE.setGoalRotationController(targetPose.getRotation());
                 },
-                () -> {
-                    SWERVE.driveToPosePID(targetPose);
-                },
-                interrupt -> {
-                    SWERVE.stop();
-                },
-                () ->
-                        SWERVE.isAtPose(targetPose, 0.044, 0.4)
-                ,
+
+                () -> SWERVE.driveToPosePID(targetPose),
+
+                interrupt -> SWERVE.stop(),
+                () -> SWERVE.isAtPose(targetPose, 0.08, 0.85),
+
                 SWERVE
         );
     }

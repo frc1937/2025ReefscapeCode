@@ -86,12 +86,12 @@ public class BranchPathfinding {
                 ((SwerveCommands.driveOpenLoop(xSupplier,ySupplier,rotationSupplier, ()-> false).onlyWhile(shouldOverride)
                 .andThen((getPathToBranch(branch)
                         .andThen(SwerveCommands.goToPosePID(branch.getBranchPose()))
-                        .onlyIf(() -> !SWERVE.isAtPose(branch.getBranchPose(), 0.01, 0.5)))))
+                        .onlyIf(() -> !SWERVE.isAtPose(branch.getBranchPose(), 0.01, 0.8)))))
                         .alongWith(
                                 CORAL_INTAKE.prepareThenTakeBack(),
                                 ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL.getMiddlePoint())
                         )
-                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.06, 0.5))
+                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.06, 0.8))
                         .andThen(
                              (ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                              .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
@@ -132,7 +132,7 @@ public class BranchPathfinding {
     }
 
     public static Command getPathToBranch(PathfindingConstants.Branch branch) {
-        return getPathToBranch(branch, 0.1);
+        return getPathToBranch(branch, 0.05);
     }
 
     public static Command getPathToBranch(PathfindingConstants.Branch branch, double endVelocity) {

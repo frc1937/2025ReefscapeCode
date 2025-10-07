@@ -1,13 +1,11 @@
 package frc.robot.poseestimation.camera;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.PhotonCamera;
 
 import java.util.ArrayList;
 
-import static frc.robot.RobotContainer.QUEST;
 import static frc.robot.poseestimation.PoseEstimatorConstants.MAX_AMBIGUITY;
 import static frc.robot.poseestimation.PoseEstimatorConstants.TAG_ID_TO_POSE;
 
@@ -42,22 +40,22 @@ public class CameraPhotonReal extends CameraIO {
             int fiducialId = bestTarget.fiducialId;
 
             var bestCameraTransform = bestTarget.bestCameraToTarget;
-            var alternateCameraTransform = bestTarget.altCameraToTarget;
-
-            double currentYaw = QUEST.getEstimatedPose().getRotation().getDegrees();
-
-            double bestYawError = Math.abs(MathUtil.inputModulus(
-                    bestCameraTransform.getRotation().getZ() - currentYaw,
-                    -180.0,
-                    180.0));
-
-            double alternateYawError = Math.abs(MathUtil.inputModulus(
-                    alternateCameraTransform.getRotation().getZ() - currentYaw,
-                    -180.0,
-                    180.0));
-
-            var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
-
+//            var alternateCameraTransform = bestTarget.altCameraToTarget;
+//
+//            double currentYaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
+//
+//            double bestYawError = Math.abs(MathUtil.inputModulus(
+//                    bestCameraTransform.getRotation().getZ() - currentYaw,
+//                    -180.0,
+//                    180.0));
+//
+//            double alternateYawError = Math.abs(MathUtil.inputModulus(
+//                    alternateCameraTransform.getRotation().getZ() - currentYaw,
+//                    -180.0,
+//                    180.0));
+//
+//            var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
+            var bestTransform = bestCameraTransform;
             inputs.hasResult = true;
 
             final Pose3d tagPose = TAG_ID_TO_POSE.get(fiducialId);
