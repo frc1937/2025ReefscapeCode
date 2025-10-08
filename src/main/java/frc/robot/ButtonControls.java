@@ -198,7 +198,7 @@ public class ButtonControls {
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoralTeleop());
 
-        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-12));
+        DRIVER_CONTROLLER.getDPad(Controller.DPad.DOWN).whileTrue(CLIMB.runVoltage(-10));
         DRIVER_CONTROLLER.getDPad(Controller.DPad.UP).whileTrue(CLIMB.runVoltage(12));
 
         DRIVER_CONTROLLER.getDPad(Controller.DPad.LEFT).whileTrue(new InstantCommand(
