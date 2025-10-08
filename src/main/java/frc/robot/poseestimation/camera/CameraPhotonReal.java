@@ -55,14 +55,13 @@ public class CameraPhotonReal extends CameraIO {
 //                    180.0));
 //
 //            var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
-            var bestTransform = bestCameraTransform;
 
             final Pose3d tagPose = TAG_ID_TO_POSE.get(fiducialId);
 
-            if (tagPose == null || bestTransform == null) return;
+            if (tagPose == null || bestCameraTransform == null) return;
             inputs.hasResult = true;
 
-            final var estimatedPose = tagPose.transformBy(bestTransform.inverse()).transformBy(cameraToRobot);
+            final var estimatedPose = tagPose.transformBy(bestCameraTransform.inverse()).transformBy(cameraToRobot);
 
             estimations.add(new EstimateData(
                     estimatedPose,

@@ -32,25 +32,26 @@ public record EstimateData(Pose3d pose, double timestamp, double distanceFromTag
     }
 
     public boolean isValid() {
-        final boolean isOutsideField = Math.abs(pose.getZ()) > MAX_Z_ERROR
+//        final boolean isOutsideField =
+            return  Math.abs(pose.getZ()) > MAX_Z_ERROR
                 || pose.getX() < 0.0
                 || pose.getX() > FIELD_LENGTH
                 || pose.getY() < 0.0
                 || pose.getY() > FIELD_WIDTH;
 
-        if (isOutsideField) return false;
-
-        final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
-
-        final double yawError = Math.abs(MathUtil.inputModulus(
-                pose.getRotation().toRotation2d().minus(currentPose.getRotation()).getDegrees(),
-                -180.0,
-                180.0));
-
-        if (yawError > 60.0)
-            return false;
-
-        return true;
+//        if (isOutsideField) return false;
+//
+//        final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
+//
+//        final double yawError = Math.abs(MathUtil.inputModulus(
+//                pose.getRotation().toRotation2d().minus(currentPose.getRotation()).getDegrees(),
+//                -180.0,
+//                180.0));
+//
+//        if (yawError > 60.0)
+//            return false;
+//
+//        return true;
     }
 
     public Matrix<N3, N1> getStandardDeviations() {

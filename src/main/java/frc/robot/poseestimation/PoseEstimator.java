@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.poseestimation.camera.Camera;
@@ -18,6 +19,7 @@ import org.littletonrobotics.junction.Logger;
 
 import java.util.Map;
 
+import static frc.robot.RobotContainer.QUEST;
 import static frc.robot.poseestimation.PoseEstimatorConstants.*;
 
 public class PoseEstimator {
@@ -43,15 +45,15 @@ public class PoseEstimator {
     private final Camera[] cameras;
 
     public PoseEstimator(Camera[] cameras, Quest quest) {
-        this.quest = quest;
         this.cameras = cameras;
+        this.quest = quest;
 
         initialize();
     }
 
     public void resetPose(Pose2d pose) {
-        quest.setPose(pose);
         poseEstimator.resetPose(pose);
+        QUEST.setPose(pose);
     }
 
     public Rotation2d getCurrentAngle() {
@@ -64,14 +66,14 @@ public class PoseEstimator {
     }
 
     public void periodic() {
-        updateFromQuest();
         updateFromVision();
+        updateFromQuest();
 
         field.setRobotPose(getCurrentPose());
     }
 
     public void updateFromQuest() {
-        if (quest == null) return;
+        if (quest == null || !quest.isConnected()) return;
 
         quest.refreshInputs();
 
@@ -99,8 +101,9 @@ public class PoseEstimator {
                         estimate.getStandardDeviations()
                 );
 
-                if (estimate.isHighQuality())
-                    quest.setPose(getCurrentPose());
+                if (quest.isConnected() && (estimate.isHighQuality() || DriverStation.isDisabled())) {
+                    quest.setPose(estimate.pose().toPose2d());
+                }
             }
         }
     }

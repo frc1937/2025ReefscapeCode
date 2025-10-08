@@ -22,6 +22,10 @@ public class Quest {
         questIO.setQuestFieldPose(pose2d);
     }
 
+    public boolean isConnected() {
+        return inputs.connected;
+    }
+
     public double getTimestamp() {
         return inputs.timestamp;
     }
