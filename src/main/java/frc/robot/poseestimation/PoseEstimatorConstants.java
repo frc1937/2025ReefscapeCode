@@ -23,7 +23,7 @@ public class PoseEstimatorConstants {
     public static double MAX_AMBIGUITY = 0.4;
 
     private static final List<Integer> TAGS_TO_IGNORE = List.of(
-            13, 12, 16, 15, 14, 4, 5, 3, 2,1
+            1,2,3,4,5, 12, 13, 14, 15 ,16
     );
 
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = createAprilTagFieldLayout();
@@ -37,7 +37,7 @@ public class PoseEstimatorConstants {
         final HashMap<Integer, Pose3d> tagIdToPose = new HashMap<>();
 
         for (AprilTag aprilTag : APRIL_TAG_FIELD_LAYOUT.getTags()) {
-            if (!TAGS_TO_IGNORE.contains(aprilTag.ID))
+//            if (!TAGS_TO_IGNORE.contains(aprilTag.ID))
                 tagIdToPose.put(aprilTag.ID, aprilTag.pose);
         }
 
