@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class PoseEstimatorConstants {
-    public static final Matrix<N3, N1> QUEST_STD_DEVS = VecBuilder.fill(0.02, 0.02, 0.035);
+    public static final Matrix<N3, N1> QUEST_STD_DEVS = VecBuilder.fill(0.025, 0.025, 0.038);
     public static final Matrix<N3, N1> ODOMETRY_STD_DEVS = VecBuilder.fill(0.03, 0.03, 0.0002);
 
     public static final double VISION_STD_LINEAR = 0.018;

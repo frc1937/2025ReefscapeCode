@@ -21,7 +21,7 @@ public record EstimateData(Pose3d pose, double timestamp, double distanceFromTag
 
         final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
 
-        boolean isDstSmall = currentPose.getTranslation().getDistance(pose.toPose2d().getTranslation()) < 0.5;
+        boolean isDstSmall = currentPose.getTranslation().getDistance(pose.toPose2d().getTranslation()) < 0.9;
 
         boolean isRotSmall = Math.abs(MathUtil.inputModulus(
                 pose.getRotation().toRotation2d().minus(currentPose.getRotation()).getDegrees(),
