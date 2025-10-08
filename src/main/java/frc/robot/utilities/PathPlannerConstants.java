@@ -27,7 +27,7 @@ public class PathPlannerConstants {
 
     public static final PathConstraints PATHPLANNER_CONSTRAINTS = IS_SIMULATION
             ? new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, 6, 4)
-            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 3.3, Math.PI*1.3, Math.PI*1.3);
+            : new PathConstraints(SwerveConstants.MAX_SPEED_MPS, 2, Math.PI*1.3, Math.PI*1.3);
 
     public static final PPHolonomicDriveController PATHPLANNER_DRIVE_CONTROLLER = IS_SIMULATION
             ? new PPHolonomicDriveController(new PIDConstants(4.5, 0.0, 0), new PIDConstants(0.9, 0.0, 0))

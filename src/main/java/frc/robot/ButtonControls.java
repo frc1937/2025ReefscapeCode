@@ -31,6 +31,7 @@ import static frc.lib.generic.hardware.controllers.Controller.Axis.LEFT_Y;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.commands.CoralManipulationCommands.*;
 import static frc.robot.commands.pathfinding.BranchPathfinding.pathAndScoreWithOverride;
+import static frc.robot.commands.pathfinding.BranchPathfinding.pathToFeeder;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.*;
 import static frc.robot.subsystems.swerve.SwerveCommands.rotateToTarget;
 import static frc.robot.utilities.PathPlannerConstants.ROBOT_CONFIG;
@@ -187,6 +188,13 @@ public class ButtonControls {
                             isJoystickStill.negate()))
         );
 
+        DRIVER_CONTROLLER.getButton(Controller.Inputs.B).whileTrue(
+                LEDS.setLEDStatus(Leds.LEDMode.END_OF_MATCH, 100).asProxy()
+                .withDeadline(
+                        pathToFeeder(X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER, isJoystickStill.negate())
+                )
+        );
+
         DRIVER_CONTROLLER.getStick(Controller.Stick.LEFT_STICK).whileTrue(eatFromFeeder());
         DRIVER_CONTROLLER.getStick(Controller.Stick.RIGHT_STICK).whileTrue(justReleaseACoralTeleop());
 
@@ -197,10 +205,7 @@ public class ButtonControls {
                 () -> QUEST.setPose(POSE_ESTIMATOR.getCurrentPose())));
 
         DRIVER_CONTROLLER.getButton(Controller.Inputs.Y).whileTrue(ConveyorCommands.scoreToL4(PathfindingConstants.Branch.LEFT_BRANCH));
-
         DRIVER_CONTROLLER.getButton(Controller.Inputs.X).whileTrue(yeetAlgaeWithAlignment());
-
-        DRIVER_CONTROLLER.getButton(Controller.Inputs.A).whileTrue(ConveyorCommands.moveFromIntakeToL4());
 
         setupOperatorKeyboardButtons();
         setupTeleopLEDs();

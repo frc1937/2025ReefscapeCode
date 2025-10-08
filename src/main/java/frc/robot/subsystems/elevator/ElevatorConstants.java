@@ -15,7 +15,7 @@ import static frc.robot.utilities.PortsConstants.ElevatorPorts.SLAVE_MOTOR_PORT;
 
 public class ElevatorConstants {
     public enum ElevatorHeight {
-        L1(1.3),
+        L1(0.4),
         L2(1.03),
         L2_AND_A_HALF(2.96),
         L3(2.96),

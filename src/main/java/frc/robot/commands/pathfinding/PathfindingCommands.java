@@ -105,7 +105,7 @@ public class PathfindingCommands {
         return FACE_4.getAllianceCorrectedFace();
     }
 
-    private static Pose2d decideFeederPose() {
+    public static Pose2d decideFeederPose() {
         Pose2d originalPose = Feeder.BLUES_LEFT_REDS_RIGHT_FEEDER.getPose();
 
         if (POSE_ESTIMATOR.getCurrentPose().getY() - FIELD_WIDTH / 2 < 0)
