@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.pathfinding.BranchPathfinding;
 import frc.robot.commands.pathfinding.PathfindingConstants.Branch;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 import frc.robot.subsystems.swerve.SwerveCommands;
@@ -18,8 +19,10 @@ import static frc.robot.commands.ConveyorCommands.moveFromIntakeToL4;
 import static frc.robot.commands.ConveyorCommands.scoreToL4;
 import static frc.robot.commands.CoralManipulationCommands.pathfindToFeederAndEat;
 import static frc.robot.commands.CoralManipulationCommands.scoreCoralFromHeight;
-import static frc.robot.commands.pathfinding.BranchPathfinding.*;
+import static frc.robot.commands.pathfinding.BranchPathfinding.L4DistanceFromReef;
+import static frc.robot.commands.pathfinding.BranchPathfinding.pathAndScoreWithOverrideAutonomous;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranchBezier;
+import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.SCORE_L4_END;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.SCORE_L4_START;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L2;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L4;
@@ -54,6 +57,8 @@ public class Questionnaire {
 
         question.addDefaultOption("Selectable Path", "Selectable Path");
         question.addOption("TryL1", "TryL1");
+        question.addOption("ALIGN", "ALIGN");
+        question.addDefaultOption("DeadBeef","DeadBeef");
         question.addOption("Middle L4x1 LEFT", "Middle L4x1 LEFT");
         question.addOption("Middle L4x1 RIGHT", "Middle L4x1 RIGHT");
 
@@ -141,6 +146,29 @@ public class Questionnaire {
     }
 
     public Command getCommand() {
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "ALIGN") {
+            return BranchPathfinding.getPathToBranch(Branch.RIGHT_BRANCH).withTimeout(6)
+                    .andThen(ELEVATOR.setTargetHeight(L4))
+                    .andThen(ELEVATOR.maintainPosition()
+                            .alongWith(
+                                    ALGAE_BLASTER.setMotorVoltage(1).until(() -> ALGAE_BLASTER.isAtState(SCORE_L4_END))
+                                            .andThen(CORAL_INTAKE.scoreToL4())
+                            ));
+        }
+
+        if (PRESET_QUESTION.getSendableChooser().getSelected() == "DeadBeef") {
+            return SwerveCommands.driveOpenLoop(() -> 0.4, () -> 0, () -> 0, () -> true)
+                    .withTimeout(5)
+                    .andThen(SwerveCommands.driveOpenLoop(() -> 0.1, () -> 0, () -> 0, () -> true))
+                    .raceWith(new WaitCommand(0.5))
+                    .andThen(ELEVATOR.setTargetHeight(L4))
+                    .andThen(ELEVATOR.maintainPosition()
+                            .alongWith(
+                                    ALGAE_BLASTER.setMotorVoltage(0.5).until(() -> ALGAE_BLASTER.isAtState(SCORE_L4_END))
+                                            .andThen(CORAL_INTAKE.scoreToL4())
+                            ));
+        }
+
         if (PRESET_QUESTION.getSendableChooser().getSelected() == "TryL1") {
             return SwerveCommands.driveOpenLoop(() -> 0.2, () -> 0, () -> 0, () -> true)
                     .withTimeout(8)

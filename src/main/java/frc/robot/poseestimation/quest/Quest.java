@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import org.littletonrobotics.junction.Logger;
 
-public class Quest {
+public class Quest { //todo hardware manager
     private final QuestIO questIO;
     private final QuestIOInputsAutoLogged inputs;
 

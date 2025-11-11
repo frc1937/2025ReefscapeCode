@@ -66,18 +66,18 @@ public class PoseEstimator {
     }
 
     public void periodic() {
-        updateFromVision();
         updateFromQuest();
+        updateFromVision();
 
         field.setRobotPose(getCurrentPose());
     }
 
     public void updateFromQuest() {
-        if (quest == null || !quest.isConnected()) return;
+        if (quest == null) return;
 
         quest.refreshInputs();
 
-        if (!quest.isResultValid()) return;
+        if (!quest.isConnected() || !quest.isResultValid()) return;
 
         poseEstimator.addVisionMeasurement(
                 quest.getEstimatedPose(),
