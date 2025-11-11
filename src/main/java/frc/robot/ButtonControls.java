@@ -173,7 +173,7 @@ public class ButtonControls {
         final Trigger rightBranch = DRIVER_CONTROLLER.getButton(Controller.Inputs.RIGHT_BUMPER);
 
         leftBumper.toggleOnTrue(
-                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
+                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100)
                         .withDeadline(
                             pathAndScoreWithOverride(PathfindingConstants.Branch.LEFT_BRANCH,
                             X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,
@@ -181,7 +181,7 @@ public class ButtonControls {
         );
 
         rightBranch.toggleOnTrue(
-                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100).asProxy()
+                LEDS.setLEDStatus(Leds.LEDMode.AUTOMATION, 100)
                         .withDeadline(
                             pathAndScoreWithOverride(PathfindingConstants.Branch.RIGHT_BRANCH,
                             X_SUPPLIER, Y_SUPPLIER, ROTATION_SUPPLIER,

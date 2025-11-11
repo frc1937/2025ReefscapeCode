@@ -10,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
  */
 public class ProfiledPID {
     private PID m_controller;
+
     private double m_minimumInput;
     private double m_maximumInput;
 
@@ -74,12 +75,30 @@ public class ProfiledPID {
     }
 
     /**
+     * Gets the proportional coefficient.
+     *
+     * @return proportional coefficient
+     */
+    public double getP() {
+        return m_controller.getP();
+    }
+
+    /**
      * Sets the proportional coefficient of the PID controller gain.
      *
      * @param Kp The proportional coefficient. Must be &gt;= 0.
      */
     public void setP(double Kp) {
         m_controller.setP(Kp);
+    }
+
+    /**
+     * Gets the integral coefficient.
+     *
+     * @return integral coefficient
+     */
+    public double getI() {
+        return m_controller.getI();
     }
 
     /**
@@ -92,12 +111,30 @@ public class ProfiledPID {
     }
 
     /**
+     * Gets the differential coefficient.
+     *
+     * @return differential coefficient
+     */
+    public double getD() {
+        return m_controller.getD();
+    }
+
+    /**
      * Sets the differential coefficient of the PID controller gain.
      *
      * @param Kd The differential coefficient. Must be &gt;= 0.
      */
     public void setD(double Kd) {
         m_controller.setD(Kd);
+    }
+
+    /**
+     * Get the IZone range.
+     *
+     * @return Maximum magnitude of error to allow integral control.
+     */
+    public double getIZone() {
+        return m_controller.getIZone();
     }
 
     /**
@@ -112,42 +149,6 @@ public class ProfiledPID {
      */
     public void setIZone(double iZone) {
         m_controller.setIZone(iZone);
-    }
-
-    /**
-     * Gets the proportional coefficient.
-     *
-     * @return proportional coefficient
-     */
-    public double getP() {
-        return m_controller.getP();
-    }
-
-    /**
-     * Gets the integral coefficient.
-     *
-     * @return integral coefficient
-     */
-    public double getI() {
-        return m_controller.getI();
-    }
-
-    /**
-     * Gets the differential coefficient.
-     *
-     * @return differential coefficient
-     */
-    public double getD() {
-        return m_controller.getD();
-    }
-
-    /**
-     * Get the IZone range.
-     *
-     * @return Maximum magnitude of error to allow integral control.
-     */
-    public double getIZone() {
-        return m_controller.getIZone();
     }
 
     /**
@@ -169,6 +170,15 @@ public class ProfiledPID {
     }
 
     /**
+     * Gets the goal for the ProfiledPIDController.
+     *
+     * @return The goal.
+     */
+    public TrapezoidProfile.State getGoal() {
+        return m_goal;
+    }
+
+    /**
      * Sets the goal for the ProfiledPIDController.
      *
      * @param goal The desired goal state.
@@ -187,15 +197,6 @@ public class ProfiledPID {
     }
 
     /**
-     * Gets the goal for the ProfiledPIDController.
-     *
-     * @return The goal.
-     */
-    public TrapezoidProfile.State getGoal() {
-        return m_goal;
-    }
-
-    /**
      * Returns true if the error is within the tolerance of the error.
      *
      * <p>This will return false until at least one input value has been computed.
@@ -207,6 +208,15 @@ public class ProfiledPID {
     }
 
     /**
+     * Get the velocity and acceleration constraints for this controller.
+     *
+     * @return Velocity and acceleration constraints.
+     */
+    public TrapezoidProfile.Constraints getConstraints() {
+        return m_constraints;
+    }
+
+    /**
      * Set velocity and acceleration constraints for goal.
      *
      * @param constraints Velocity and acceleration constraints for goal.
@@ -214,15 +224,6 @@ public class ProfiledPID {
     public void setConstraints(TrapezoidProfile.Constraints constraints) {
         m_constraints = constraints;
         m_profile = new TrapezoidProfile(m_constraints);
-    }
-
-    /**
-     * Get the velocity and acceleration constraints for this controller.
-     *
-     * @return Velocity and acceleration constraints.
-     */
-    public TrapezoidProfile.Constraints getConstraints() {
-        return m_constraints;
     }
 
     /**
@@ -305,17 +306,12 @@ public class ProfiledPID {
      */
     public double calculate(double measurement) {
         if (m_controller.isContinuousInputEnabled()) {
-            // Get error which is the smallest distance between goal and measurement
             double errorBound = (m_maximumInput - m_minimumInput) / 2.0;
             double goalMinDistance =
                     MathUtil.inputModulus(m_goal.position - measurement, -errorBound, errorBound);
             double setpointMinDistance =
                     MathUtil.inputModulus(m_setpoint.position - measurement, -errorBound, errorBound);
 
-            // Recompute the profile goal with the smallest error, thus giving the shortest path. The goal
-            // may be outside the input range after this operation, but that's OK because the controller
-            // will still go there and report an error of zero. In other words, the setpoint only needs to
-            // be offset from the measurement by the input range modulus; they don't need to be equal.
             m_goal.position = goalMinDistance + measurement;
             m_setpoint.position = setpointMinDistance + measurement;
         }

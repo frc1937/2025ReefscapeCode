@@ -3,43 +3,26 @@ package frc.lib.generic;
 import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.MathUtil;
 
-public class PID  {
-    // Factor for "proportional" control
-    private double kP;
-
-    // Factor for "integral" control
-    private double kI;
-
-    // Factor for "derivative" control
-    private double kD;
-
+public class PID {
     private final double kS;
-
-    // The error range where "integral" control applies
+    private double kP;
+    private double kI;
+    private double kD;
     private double iZone = Double.POSITIVE_INFINITY;
 
     private double maximumIntegral = 1.0;
-
     private double minimumIntegral = -1.0;
 
     private double maximumInput;
-
     private double minimumInput;
 
-    // Do the endpoints wrap around? e.g. Absolute encoder
     private boolean continuous;
 
-    // The error at the time of the most recent call to calculate()
     private double positionError;
     private double velocityError;
-
-    // The error at the time of the second-most-recent call to calculate() (used to compute velocity)
     private double prevError;
-
-    // The sum of the errors for use in the integral calc
     private double totalError;
 
-    // The error that is considered at setpoint.
     private double m_positionTolerance = 0.05;
     private double m_velocityTolerance = Double.POSITIVE_INFINITY;
 
@@ -90,12 +73,30 @@ public class PID  {
     }
 
     /**
+     * Get the Proportional coefficient.
+     *
+     * @return proportional coefficient
+     */
+    public double getP() {
+        return kP;
+    }
+
+    /**
      * Sets the Proportional coefficient of the PID controller gain.
      *
      * @param kp The proportional coefficient. Must be &gt;= 0.
      */
     public void setP(double kp) {
         kP = kp;
+    }
+
+    /**
+     * Get the Integral coefficient.
+     *
+     * @return integral coefficient
+     */
+    public double getI() {
+        return kI;
     }
 
     /**
@@ -108,12 +109,30 @@ public class PID  {
     }
 
     /**
+     * Get the Differential coefficient.
+     *
+     * @return differential coefficient
+     */
+    public double getD() {
+        return kD;
+    }
+
+    /**
      * Sets the Differential coefficient of the PID controller gain.
      *
      * @param kd The differential coefficient. Must be &gt;= 0.
      */
     public void setD(double kd) {
         kD = kd;
+    }
+
+    /**
+     * Get the IZone range.
+     *
+     * @return Maximum magnitude of error to allow integral control.
+     */
+    public double getIZone() {
+        return iZone;
     }
 
     /**
@@ -131,42 +150,6 @@ public class PID  {
             throw new IllegalArgumentException("IZone must be a non-negative number!");
         }
         this.iZone = iZone;
-    }
-
-    /**
-     * Get the Proportional coefficient.
-     *
-     * @return proportional coefficient
-     */
-    public double getP() {
-        return kP;
-    }
-
-    /**
-     * Get the Integral coefficient.
-     *
-     * @return integral coefficient
-     */
-    public double getI() {
-        return kI;
-    }
-
-    /**
-     * Get the Differential coefficient.
-     *
-     * @return differential coefficient
-     */
-    public double getD() {
-        return kD;
-    }
-
-    /**
-     * Get the IZone range.
-     *
-     * @return Maximum magnitude of error to allow integral control.
-     */
-    public double getIZone() {
-        return iZone;
     }
 
     /**
@@ -188,6 +171,15 @@ public class PID  {
     }
 
     /**
+     * Returns the current setpoint of the PIDController.
+     *
+     * @return The current setpoint.
+     */
+    public double getSetpoint() {
+        return m_setpoint;
+    }
+
+    /**
      * Sets the setpoint for the PIDController.
      *
      * @param setpoint The desired setpoint.
@@ -204,15 +196,6 @@ public class PID  {
         }
 
         velocityError = (positionError - prevError) / 0.02;
-    }
-
-    /**
-     * Returns the current setpoint of the PIDController.
-     *
-     * @return The current setpoint.
-     */
-    public double getSetpoint() {
-        return m_setpoint;
     }
 
     /**
@@ -343,7 +326,6 @@ public class PID  {
 
         velocityError = (positionError - prevError) / 0.02;
 
-        // If the absolute value of the position error is greater than IZone, reset the total error
         if (Math.abs(positionError) > iZone) {
             totalError = 0;
         } else if (kI != 0) {

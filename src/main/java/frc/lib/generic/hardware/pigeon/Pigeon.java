@@ -41,11 +41,45 @@ public class Pigeon implements LoggableHardware {
     public void setGyroYaw(double yawRotations) {}
 
     /**
-     * Signals are lazily loaded - only these explicity called will be updated. Thus you must call this method. when using a signal.
+     * Registers and automatically updates telemetry signals for logging.
+     * <p>
+     * This method is used to automate the process of tracking important robot signals
+     * such as sensor readings or motor outputs. It ensures these values are
+     * consistently updated and logged without needing manual updates in each robot loop.
+     * </p>
+     *
+     * <p>
+     * Benefits include:
+     * <ul>
+     *   <li><b>Debugging:</b> Easily diagnose issues with a record of sensor and system values.</li>
+     *   <li><b>Performance Tuning:</b> Analyze robot behavior during matches or tests for optimization.</li>
+     * </ul>
+     * </p>
+     *
+     * @param signal The signal to log.
+     * @param useFasterThread Whether to use a faster thread.
      */
-    public void setupSignalUpdates(PigeonSignal signal, boolean useFasterThread) { }
+    public void setupSignalUpdates(PigeonSignal signal, boolean useFasterThread) {}
 
-    public void setupSignalUpdates(PigeonSignal signal) { setupSignalUpdates(signal, false); }
+    /**
+     * Registers and automatically updates telemetry signals for logging.
+     * <p>
+     * This method is used to automate the process of tracking important robot signals
+     * such as sensor readings or motor outputs. It ensures these values are
+     * consistently updated and logged without needing manual updates in each robot loop.
+     * </p>
+     *
+     * <p>
+     * Benefits include:
+     * <ul>
+     *   <li><b>Debugging:</b> Easily diagnose issues with a record of sensor and system values.</li>
+     *   <li><b>Performance Tuning:</b> Analyze robot behavior during matches or tests for optimization.</li>
+     * </ul>
+     * </p>
+     *
+     * @param signal The signal to log.
+     */
+    public void setupSignalUpdates(PigeonSignal signal) {setupSignalUpdates(signal, false);}
 
     public boolean[] getSignalsToLog() {
         return new boolean[PIGEON_INPUTS_LENGTH];
