@@ -1,5 +1,6 @@
 package frc.robot.subsystems.leds;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -7,74 +8,69 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.Colour;
 import frc.lib.util.CustomLEDPatterns;
-import frc.lib.util.flippable.Flippable;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static frc.lib.util.CustomLEDPatterns.*;
-import static frc.lib.util.CustomLEDPatterns.generateInterpolatedBuffer;
+import static frc.robot.RobotContainer.LEDS;
 import static frc.robot.utilities.PortsConstants.LEDSTRIP_PORT_PWM;
 
 public class Leds extends SubsystemBase {
     public enum LEDMode {
-        END_OF_MATCH(() -> generateOutwardsPointsBuffer(
-                Colour.GOLD
-        )),
+        END_OF_MATCH(timeout -> getCommandFromColours(() -> generateLoadingAnimationBuffer(
+                Colour.YELLOW.toGRB(),
+                Colour.GOLD.toGRB()
+        ), timeout)),
 
-        AUTOMATION(CustomLEDPatterns::generateRainbowBuffer),
+        AUTOMATION(timeout -> getCommandFromColours(CustomLEDPatterns::generateRainbowBuffer, timeout)),
 
-        EATING(() -> generateBreathingBuffer(
-                Colour.BLACK,
-                Colour.PURPLE
-        )),
+        EATING(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
+                Colour.BLACK.toGRB(),
+                Colour.PURPLE.toGRB()
+        ), timeout)),
 
-        INTAKE_LOADED(() -> generateOutwardsPointsBuffer(
-                Colour.ORANGE
-        )),
+        INTAKE_LOADED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                Colour.ORANGE.toGRB()
+        ), timeout)),
 
-        INTAKE_EMPTIED(() -> generateOutwardsPointsBuffer(
-                Colour.GRAY
-        )),
+        INTAKE_EMPTIED(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                Colour.GRAY.toGRB()
+        ), timeout)),
 
-        AUTO_START(() -> generateInterpolatedBuffer(
-                Colour.WHITE,
-                Colour.CYAN
-        )),
+        AUTO_START(timeout -> getCommandFromColours(() -> generateScrollBuffer(new Colour[]{
+                Colour.WHITE.toGRB(),
+                Colour.CYAN.toGRB()}
+        ), timeout)),
 
-        DEBUG_MODE(() -> generateBreathingBuffer(
+        DEBUG_MODE(timeout -> getCommandFromColours(() -> generateBreathingBuffer(
                 new Colour(57, 255, 20),
-                Colour.BLACK
-        )),
+                Colour.BLACK.toGRB()
+        ), timeout)),
 
-        BATTERY_LOW(() -> generateOutwardsPointsBuffer(
-                Colour.MAGENTA
-        )),
+        BATTERY_LOW(timeout -> getCommandFromColours(() -> generateOutwardsPointsBuffer(
+                Colour.MAGENTA.toGRB()
+        ), timeout)),
 
-        OUTTAKE(() -> generateFlashingBuffer(
-                Colour.DARK_GREEN,
-                Colour.GREEN)
-        ),
+        OUTTAKE(timeout -> getCommandFromColours(
+                () -> generateFlashingBuffer(Colour.DARK_GREEN.toGRB(), Colour.GREEN.toGRB()), timeout)),
 
-        DEFAULT(() -> generateInterpolatedBuffer(
-                getAllianceThemedLeds()
-        ));
+        DEFAULT(timeout ->
+                getCommandFromColours(() -> generateScrollBuffer(getAllianceThemedLeds()), 0));
 
-        private final Supplier<Colour[]> colours;
+        private final Function<Double, Command> ledCommandFunction;
 
-        LEDMode(Supplier<Colour[]> colors) {
-            this.colours = colors;
+        LEDMode(Function<Double, Command> ledCommandFunction) {
+            this.ledCommandFunction = ledCommandFunction;
         }
 
-        public Supplier<Colour[]> getColours() {
-            return colours;
+        public Command getLedCommand(double timeout) {
+            return ledCommandFunction.apply(timeout);
         }
     }
 
     private static final AddressableLED ledstrip = new AddressableLED(LEDSTRIP_PORT_PWM);
     private static final AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_COUNT);
-
-    private static LEDMode currentMode;
-    private static LEDMode previousMode;
 
     public Leds() {
         ledstrip.setLength(LEDS_COUNT);
@@ -82,44 +78,50 @@ public class Leds extends SubsystemBase {
         ledstrip.start();
     }
 
+    public Command setLEDStatus(LEDMode mode, double timeout) {
+        return mode.getLedCommand(timeout);
+    }
+
+    /**
+     * Sets the LED strip to indicate the robot's position relative to the target position.
+     * This is command-less as the target position may change during the assignment of the autonomous.
+     *
+     * @param robotPosition  The current robot position.
+     * @param targetPosition The target position, where the robot should be.
+     */
+    public void setLEDToPositionIndicator(Translation2d robotPosition, Translation2d targetPosition) {
+        flashLEDStrip(
+                generatePositionIndicatorBuffer(
+                        Colour.RED,
+                        Colour.GOLD,
+                        robotPosition,
+                        targetPosition
+                ));
+    }
+
+    private static Command getCommandFromColours(Supplier<Colour[]> colours, double timeout) {
+        if (timeout == 0)
+            return Commands.run(() -> flashLEDStrip(colours.get()), LEDS)
+                    .ignoringDisable(true);
+
+        return Commands.run(() -> flashLEDStrip(colours.get()), LEDS).withTimeout(timeout)
+                .ignoringDisable(true);
+    }
+
+    private static void flashLEDStrip(Colour[] colours) {
+        ledstrip.setData(getBufferFromColours(buffer, colours));
+    }
+
     private static Colour[] getAllianceThemedLeds() {
-        if (Flippable.isRedAlliance()) {
-            return new Colour[]{
-                    Colour.DARK_RED,
-                    Colour.RED,
-                    Colour.DARK_RED,
-                    Colour.ORANGE};
-        }
-
-        return new Colour[]{Colour.SKY_BLUE,
-                Colour.CORNFLOWER_BLUE,
-                Colour.BLUE,
-                Colour.LIGHT_BLUE,
-                Colour.SILVER};
-    }
-
-    public void periodic() {
-        ledstrip.setData(getBufferFromColours(buffer, currentMode.getColours().get()));
-    }
-
-
-    public void setToDefault() {
-        currentMode = LEDMode.DEFAULT;
-    }
-
-    public Command setLEDStatus(LEDMode mode, double durationSeconds) {
-        return Commands.runOnce(() -> setMode(mode))
-                .andThen(Commands.waitSeconds(durationSeconds))
-                .andThen(Commands.runOnce(this::restorePreviousMode)
-                );
-    }
-
-    private void setMode(LEDMode mode) {
-        previousMode = currentMode;
-        currentMode = mode;
-    }
-
-    private void restorePreviousMode() {
-        setMode(previousMode);
+        return new Colour[]{
+                Colour.DARK_RED.toGRB(),
+                Colour.RED.toGRB(),
+                Colour.DARK_RED.toGRB(),
+                Colour.ORANGE.toGRB()};
+//        return new Colour[]{Colour.SKY_BLUE.toGRB(),
+//                Colour.CORNFLOWER_BLUE.toGRB(),
+//                Colour.BLUE.toGRB(),
+//                Colour.LIGHT_BLUE.toGRB(),
+//                Colour.SILVER.toGRB()};
     }
 }

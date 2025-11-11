@@ -46,7 +46,7 @@ public class CoralIntake extends GenericSubsystem {
     }
 
     public Command scoreToL4() {
-        return setMotorVoltage(-5).withTimeout(0.3); //TODO: HAS CHANGED
+        return setMotorVoltage(-5).withTimeout(1.3);
     }
 
     public Command releaseGamePiece() {

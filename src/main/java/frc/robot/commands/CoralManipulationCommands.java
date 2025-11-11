@@ -114,7 +114,7 @@ public class CoralManipulationCommands {
 
                 ELEVATOR.setTargetHeight(L1)
                         .until(() -> ELEVATOR.isAtTargetHeight(L1))
-                        .andThen(CORAL_INTAKE.setMotorVoltage(3.4)),
+                        .andThen(CORAL_INTAKE.setMotorVoltage(2)),
 
                 new Trigger(() -> CURRENT_SCORING_LEVEL.getRotations() != L1.getRotations())
         );

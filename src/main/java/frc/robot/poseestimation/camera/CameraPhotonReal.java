@@ -1,13 +1,11 @@
 package frc.robot.poseestimation.camera;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import org.photonvision.PhotonCamera;
 
 import java.util.ArrayList;
 
-import static frc.robot.RobotContainer.POSE_ESTIMATOR;
 import static frc.robot.poseestimation.PoseEstimatorConstants.MAX_AMBIGUITY;
 import static frc.robot.poseestimation.PoseEstimatorConstants.TAG_ID_TO_POSE;
 
@@ -30,37 +28,40 @@ public class CameraPhotonReal extends CameraIO {
             return;
         }
 
-        final var estimations = new ArrayList<EstimateData>();
+        var estimations = new ArrayList<EstimateData>();
 
         for (var result : results) {
-            final var bestTarget = result.getBestTarget();
+            if (!result.hasTargets()) continue;
+
+            var bestTarget = result.getBestTarget();
 
             if (bestTarget == null || bestTarget.poseAmbiguity > MAX_AMBIGUITY) continue;
 
-            final int fiducialId = bestTarget.fiducialId;
+            int fiducialId = bestTarget.fiducialId;
 
-            final var bestCameraTransform = bestTarget.bestCameraToTarget;
-            final var alternateCameraTransform = bestTarget.altCameraToTarget;
-
-            final double currentYaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
-
-            final double bestYawError = Math.abs(MathUtil.inputModulus(
-                    bestCameraTransform.getRotation().getZ() - currentYaw,
-                    -180.0,
-                    180.0));
-
-            final double alternateYawError = Math.abs(MathUtil.inputModulus(
-                    alternateCameraTransform.getRotation().getZ() - currentYaw,
-                    -180.0,
-                    180.0));
-
-            final var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
+            var bestCameraTransform = bestTarget.bestCameraToTarget;
+//            var alternateCameraTransform = bestTarget.altCameraToTarget;
+//
+//            double currentYaw = POSE_ESTIMATOR.getCurrentAngle().getDegrees();
+//
+//            double bestYawError = Math.abs(MathUtil.inputModulus(
+//                    bestCameraTransform.getRotation().getZ() - currentYaw,
+//                    -180.0,
+//                    180.0));
+//
+//            double alternateYawError = Math.abs(MathUtil.inputModulus(
+//                    alternateCameraTransform.getRotation().getZ() - currentYaw,
+//                    -180.0,
+//                    180.0));
+//
+//            var bestTransform = bestYawError < alternateYawError ? bestCameraTransform : alternateCameraTransform;
 
             final Pose3d tagPose = TAG_ID_TO_POSE.get(fiducialId);
 
+            if (tagPose == null || bestCameraTransform == null) return;
             inputs.hasResult = true;
 
-            final var estimatedPose = tagPose.transformBy(bestTransform.inverse()).transformBy(cameraToRobot);
+            final var estimatedPose = tagPose.transformBy(bestCameraTransform.inverse()).transformBy(cameraToRobot);
 
             estimations.add(new EstimateData(
                     estimatedPose,

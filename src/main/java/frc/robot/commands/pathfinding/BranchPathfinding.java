@@ -27,20 +27,23 @@ import static frc.robot.RobotContainer.*;
 import static frc.robot.commands.ConveyorCommands.moveFromIntakeToL4;
 import static frc.robot.commands.ConveyorCommands.scoreToL4;
 import static frc.robot.commands.CoralManipulationCommands.CURRENT_SCORING_LEVEL;
+import static frc.robot.commands.CoralManipulationCommands.eatFromFeeder;
+import static frc.robot.commands.pathfinding.PathfindingCommands.decideFeederPose;
 import static frc.robot.commands.pathfinding.PathfindingCommands.pathfindToBranch;
 import static frc.robot.subsystems.algaeblaster.AlgaeBlasterConstants.BlasterArmState.*;
 import static frc.robot.subsystems.elevator.ElevatorConstants.ElevatorHeight.L4;
 import static frc.robot.utilities.PathPlannerConstants.PATHPLANNER_CONSTRAINTS;
 
 public class BranchPathfinding {
-    public static Transform2d L4DistanceFromReef = new Transform2d(-0.53,0, Rotation2d.kZero);
+    public static Transform2d L4DistanceFromReef = new Transform2d(-0.53, 0, Rotation2d.kZero);
+    public static Transform2d feederDistance = new Transform2d(-0.3, 0, Rotation2d.kZero);
 
     public static Command pathAndScoreWithOverrideAutonomous(PathfindingConstants.Branch branch,
-                                                   DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier,
-                                                   Trigger shouldOverride) {
+                                                             DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier,
+                                                             Trigger shouldOverride) {
 
         final Command L4Sequence =
-                (SwerveCommands.driveOpenLoop(xSupplier,ySupplier,rotationSupplier, ()-> false)
+                (SwerveCommands.driveOpenLoop(xSupplier, ySupplier, rotationSupplier, () -> false)
                         .onlyWhile(shouldOverride)
                         .andThen(getPathToBranch(branch, L4DistanceFromReef, 0.1))
                 ).alongWith((moveFromIntakeToL4()
@@ -58,6 +61,21 @@ public class BranchPathfinding {
 
 
         return L4Sequence;
+    }
+
+    public static Command pathToFeeder(DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier rotationSupplier,
+                                                   Trigger shouldOverride) {
+
+        final Command normalDriving = SwerveCommands.driveOpenLoop(xSupplier, ySupplier, rotationSupplier, () -> false)
+                .onlyWhile(shouldOverride);
+
+        final Command pathplannerToClosest = pathToClosestFeeder(feederDistance, 0.1);
+        final Command finalPIDToPose = SwerveCommands.goToPosePID(decideFeederPose());
+
+        final Command rest = (normalDriving.andThen(pathplannerToClosest).andThen(finalPIDToPose))
+                .alongWith(eatFromFeeder().asProxy());
+
+        return rest;
     }
 
     public static Command pathAndScoreWithOverride(PathfindingConstants.Branch branch,
@@ -86,12 +104,12 @@ public class BranchPathfinding {
                 ((SwerveCommands.driveOpenLoop(xSupplier,ySupplier,rotationSupplier, ()-> false).onlyWhile(shouldOverride)
                 .andThen((getPathToBranch(branch)
                         .andThen(SwerveCommands.goToPosePID(branch.getBranchPose()))
-                        .onlyIf(() -> !SWERVE.isAtPose(branch.getBranchPose(), 0.01, 0.5)))))
+                        .onlyIf(() -> !SWERVE.isAtPose(branch.getBranchPose(), 0.01, 0.8)))))
                         .alongWith(
                                 CORAL_INTAKE.prepareThenTakeBack(),
                                 ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL.getMiddlePoint())
                         )
-                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.06, 0.5))
+                        .until(() -> SWERVE.isAtPose(branch.getBranchPose(), 0.06, 0.8))
                         .andThen(
                              (ELEVATOR.setTargetHeight(() -> CURRENT_SCORING_LEVEL)
                              .until(() -> ELEVATOR.isAtTargetHeight(CURRENT_SCORING_LEVEL))
@@ -119,6 +137,18 @@ public class BranchPathfinding {
         );
     }
 
+    public static Command pathToClosestFeeder(Transform2d offset, double endVelocity) {
+        return new DeferredCommand(
+                () -> {
+                    final Pose2d currentPose = POSE_ESTIMATOR.getCurrentPose();
+                    final Pose2d targetPose = decideFeederPose().transformBy(offset);
+
+                    return followPath(currentPose, targetPose, endVelocity);
+                },
+                Set.of(SWERVE)
+        );
+    }
+
     public static Command getPathToBranch(PathfindingConstants.Branch branch, Transform2d transform2d, double endVelocity) {
         return new DeferredCommand(
                 () -> {
@@ -132,7 +162,7 @@ public class BranchPathfinding {
     }
 
     public static Command getPathToBranch(PathfindingConstants.Branch branch) {
-        return getPathToBranch(branch, 0.1);
+        return getPathToBranch(branch, 0.05);
     }
 
     public static Command getPathToBranch(PathfindingConstants.Branch branch, double endVelocity) {

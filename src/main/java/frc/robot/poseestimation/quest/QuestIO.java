@@ -12,16 +12,12 @@ public class QuestIO {
         if (CURRENT_MODE == GlobalConstants.Mode.REPLAY)
             return new QuestIO();
 
-        if (CURRENT_MODE == GlobalConstants.Mode.SIMULATION) {
-//            return new CameraPhotonSimulation(name, cameraToRobot);
-        }
-
         return new QuestReal(robotToQuest);
     }
 
     public void setQuestFieldPose(Pose2d pose2d) {}
 
-    public void updateInputs(QuestIOInputsAutoLogged inputs) {}
+    public void updateInputs(QuestIOInputsAutoLogged inputs) { }
 
     @AutoLog
     public static class QuestIOInputs {

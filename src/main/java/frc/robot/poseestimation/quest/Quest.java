@@ -2,8 +2,9 @@ package frc.robot.poseestimation.quest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import org.littletonrobotics.junction.Logger;
 
-public class Quest {
+public class Quest { //todo hardware manager
     private final QuestIO questIO;
     private final QuestIOInputsAutoLogged inputs;
 
@@ -14,6 +15,15 @@ public class Quest {
 
     public void refreshInputs() {
         questIO.updateInputs(inputs);
+        Logger.processInputs("Quest", inputs);
+    }
+
+    public void setPose(Pose2d pose2d) {
+        questIO.setQuestFieldPose(pose2d);
+    }
+
+    public boolean isConnected() {
+        return inputs.connected;
     }
 
     public double getTimestamp() {

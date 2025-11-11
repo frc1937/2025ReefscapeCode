@@ -14,16 +14,16 @@ import java.util.List;
 
 public class PoseEstimatorConstants {
     public static final Matrix<N3, N1> QUEST_STD_DEVS = VecBuilder.fill(0.02, 0.02, 0.035);
-    public static final Matrix<N3, N1> ODOMETRY_STD_DEVS = VecBuilder.fill(0.003, 0.003, 0.0002);
+    public static final Matrix<N3, N1> ODOMETRY_STD_DEVS = VecBuilder.fill(0.03, 0.03, 0.002);
 
-    public static final double VISION_STD_LINEAR = 0.014;
-    public static final double VISION_STD_ANGULAR = 0.01;
+    public static final double VISION_STD_LINEAR = 0.015;
+    public static final double VISION_STD_ANGULAR = 0.012;
 
     public static double MAX_Z_ERROR = 0.75;
     public static double MAX_AMBIGUITY = 0.4;
 
     private static final List<Integer> TAGS_TO_IGNORE = List.of(
-            13, 12, 16, 15, 14, 4, 5, 3, 2,1
+            1,2,3,4,5, 12, 13, 14, 15 ,16
     );
 
     public static final AprilTagFieldLayout APRIL_TAG_FIELD_LAYOUT = createAprilTagFieldLayout();
