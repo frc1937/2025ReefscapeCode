@@ -1,6 +1,7 @@
 package frc.robot.poseestimation.quest;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import gg.questnav.questnav.QuestNav;
 
@@ -14,18 +15,17 @@ public class QuestReal extends QuestIO {
 
     @Override
     public void setQuestFieldPose(Pose2d robotPose) {
-        questNav.setPose(robotPose.transformBy(robotToQuest));
+        questNav.setPose(new Pose3d(robotPose.transformBy(robotToQuest)));
     }
 
     @Override
-    public void updateInputs(QuestIOInputsAutoLogged inputs) {
+    public void updateInputs(QuestInputs inputs) {
         inputs.connected = questNav.isConnected();
         inputs.tracking = questNav.isTracking();
 
-        inputs.batteryPercent = questNav.getBatteryPercent();
-        inputs.timestamp = questNav.getDataTimestamp();
+        inputs.batteryPercent = questNav.getBatteryPercent().isPresent() ? questNav.getBatteryPercent().getAsInt() : 0;
 
-        inputs.robotPose = questNav.getPose().transformBy(robotToQuest.inverse());
+        inputs.robotPoses = questNav.getAllUnreadPoseFrames();
 
         questNav.commandPeriodic();
     }

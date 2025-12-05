@@ -2,15 +2,16 @@ package frc.robot.poseestimation.quest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import gg.questnav.questnav.PoseFrame;
 import org.littletonrobotics.junction.Logger;
 
 public class Quest { //todo hardware manager
     private final QuestIO questIO;
-    private final QuestIOInputsAutoLogged inputs;
+    private final QuestInputs inputs;
 
     public Quest(Transform2d robotToQuest) {
         questIO = QuestIO.generateQuest(robotToQuest);
-        inputs = new QuestIOInputsAutoLogged();
+        inputs = new QuestInputs();
     }
 
     public void refreshInputs() {
@@ -26,12 +27,8 @@ public class Quest { //todo hardware manager
         return inputs.connected;
     }
 
-    public double getTimestamp() {
-        return inputs.timestamp;
-    }
-
-    public Pose2d getEstimatedPose() {
-        return inputs.robotPose;
+    public PoseFrame[] getEstimatedPoses() {
+        return inputs.robotPoses;
     }
 
     public double getBatteryPercent() { //TODO: Add alert if battery is low

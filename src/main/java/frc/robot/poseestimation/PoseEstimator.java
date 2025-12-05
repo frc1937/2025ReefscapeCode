@@ -14,6 +14,7 @@ import frc.robot.poseestimation.camera.Camera;
 import frc.robot.poseestimation.camera.EstimateData;
 import frc.robot.poseestimation.quest.Quest;
 import frc.robot.subsystems.swerve.SwerveConstants;
+import gg.questnav.questnav.PoseFrame;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -79,11 +80,15 @@ public class PoseEstimator {
 
         if (!quest.isConnected() || !quest.isResultValid()) return;
 
-        poseEstimator.addVisionMeasurement(
-                quest.getEstimatedPose(),
-                quest.getTimestamp(),
-                QUEST_STD_DEVS
-        );
+        for(int i = 0; i < quest.getEstimatedPoses().length; i++) {
+            final PoseFrame current = quest.getEstimatedPoses()[i];
+
+            poseEstimator.addVisionMeasurement(
+                    current.questPose3d().toPose2d(),
+                    current.dataTimestamp(),
+                    QUEST_STD_DEVS
+            );
+        }
     }
 
     public void updateFromVision() {
